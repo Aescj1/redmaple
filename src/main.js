@@ -4,7 +4,7 @@ import VueRouter from 'vue-router'
 import 'babel-polyfill'
 import Home from './Home.vue'
 import {routes} from './routes'
-import {store} from './store/store.js'
+import store from './store/store.js'
 
 
 Vue.use(VueRouter);

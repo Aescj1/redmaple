@@ -49,6 +49,7 @@
     </v-content>
 </template>
 <script>
+import {mapState} from 'vuex'
 
   export default {
     data: () => ({
@@ -62,6 +63,10 @@
       show1:false,
     }),
 
+      computed:{
+    ...mapState(['ngs'])
+  },
+
     methods: {
       submit () {
         if ((this.$refs.form.validate())&& (this.name == 'User')) {
@@ -71,6 +76,8 @@
         },
         clear () {
         this.$refs.form.reset()
+        // eslint-disable-next-line
+        console.log(this.ngs)
       }
       },
 

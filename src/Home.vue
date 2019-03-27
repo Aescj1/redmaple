@@ -27,9 +27,12 @@
 
 <script>
 import UserTab from './components/UserTab.vue'
-import {bus} from './main.js'; 
+import {bus} from './main.js'
 
   export default {
+    mounted(){
+      this.$store.dispatch('loadNgs')
+    },
   components: {
     UserTab,
   },

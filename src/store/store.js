@@ -1,351 +1,56 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from 'vue'
+import Vuex from 'vuex'
+import axios from 'axios'
 
-Vue.use(Vuex);
+Vue.use(Vuex, axios)
+
+export default new Vuex.Store({
+  state:{
+    ngstest: []
+  },
+  actions: {
+    loadNgs ({commit}){
+      axios
+        .get('http://147.87.118.201:3000/api/ngs')
+        .then((result) => {
+            // eslint-disable-next-line no-console
+            console.log(result.data)
+            let ngs = result.data
+            commit('SET_NGS', ngs)
+          
+        }).catch((err) => {
+            // eslint-disable-next-line no-console
+            console.log(err)
+          
+        })
+    }
+  },
+  mutations: {
+    SET_NGS (state, ngs){
+      state.ngs = ngs;
+    }
+  }
+}) 
+
+
+
+
+
+
+
+
+
+
+
+
+//This can be used but the store import in the main.js has to be altered to {store}
+/*
 export const store = new Vuex.Store({
     state:{
-        drawerState: false,
-        darkTheme:true,
-        NgsList:[
-            {
-                bactNr: '23611-19',
-                wiederholung:'',
-                infOldList: '',
-                altId: '',
-                priority:'B',
-                abbreviation: 'aciint',
-                lastName: 'Peter',
-                firstName:'Müller',
-                birthdate: '12.03.1950',
-                entry: '13.11.2018',
-                abnahmeDatum: '14.11.2018',
-                einsender: 'Spital Basel',
-                station: 'Intensiv',
-                bearbeitung: '16.11.2018',
-                material: 'Blut',
-                ngsProject: 'NGS000012',
-                datumPrep: '10.11.2018',
-                konzentration: '34',
-                visumDna: 'BMA',
-                runNr: '00542',
-                runProbeNr: 'NGS4230498',
-                libraryTyp: 'next Generation',
-                libraryDatum: '20.08.2017',
-                libraryVisum: 'BMA',
-                seqDatum: '20.11.2018',
-                modalität: 'NextSeq',
-                datenqualVisum: 'BMA',
-                publicIdentifier: '00003',
-                process: 1,
-                selected: false,
-                received:true,
-
-        
-                  },
-                       {
-                bactNr: '31225-18',
-                wiederholung:'',
-                infOldList: '',
-                altId: '',
-                priority:'A',
-                abbreviation: 'ciint',
-                lastName: 'Walter',
-                firstName:'Reyes',
-                birthdate: '12.03.1950',
-                entry: '13.11.2018',
-                abnahmeDatum: '14.11.2018',
-                einsender: 'Spital Basel',
-                station: 'Intensiv',
-                bearbeitung: '16.11.2018',
-                material: 'Blut',
-                ngsProject: 'NGS000012',
-                datumPrep: '10.11.2018',
-                konzentration: '34',
-                visumDna: 'BMA',
-                runNr: '00542',
-                runProbeNr: 'NGS4230498',
-                libraryTyp: 'next Generation',
-                libraryDatum: '20.08.2017',
-                libraryVisum: 'BMA',
-                seqDatum: '20.11.2018',
-                modalität: 'NextSeq',
-                datenqualVisum: 'BMA',
-                publicIdentifier: '00003',
-                process: 2,
-                selected: false,
-                received:false,
-
-
-        
-                  },
-                       {
-                bactNr: '31233-19',
-                wiederholung:'',
-                infOldList: '',
-                altId: '',
-                priority:'B',
-                abbreviation: 'bciint',
-                lastName: 'Müller',
-                firstName:'Hans',
-                birthdate: '12.05.1950',
-                entry: '13.11.2018',
-                abnahmeDatum: '12.11.2018',
-                einsender: 'Spital Bern',
-                station: 'Intensiv',
-                bearbeitung: '16.11.2018',
-                material: 'Blut',
-                ngsProject: 'NGS000012',
-                datumPrep: '10.11.2018',
-                konzentration: '34',
-                visumDna: 'BMA',
-                runNr: '00542',
-                runProbeNr: 'NGS4230498',
-                libraryTyp: 'next Generation',
-                libraryDatum: '20.08.2017',
-                libraryVisum: 'BMA',
-                seqDatum: '20.11.2018',
-                modalität: 'NextSeq',
-                datenqualVisum: 'BMA',
-                publicIdentifier: '00003',
-                process: 3,
-                selected: false,
-                received:false,
-
-
-                  },
-                     {
-                bactNr: '31641-18',
-                wiederholung:'',
-                infOldList: '',
-                altId: '',
-                priority:'A',
-                abbreviation: 'aciint',
-                lastName: 'Walter',
-                firstName:'Reyes',
-                birthdate: '12.03.1950',
-                entry: '13.11.2018',
-                abnahmeDatum: '14.11.2018',
-                einsender: 'Spital Basel',
-                station: 'Intensiv',
-                bearbeitung: '16.11.2018',
-                material: 'Blut',
-                ngsProject: 'NGS000012',
-                datumPrep: '10.11.2018',
-                konzentration: '34',
-                visumDna: 'BMA',
-                runNr: '00542',
-                runProbeNr: 'NGS4230498',
-                libraryTyp: 'next Generation',
-                libraryDatum: '20.08.2017',
-                libraryVisum: 'BMA',
-                seqDatum: '20.11.2018',
-                modalität: 'NextSeq',
-                datenqualVisum: 'BMA',
-                publicIdentifier: '00003',
-                process: 4,
-                selected: false,
-                received:false,
-
-
-                  },
-                       {
-                bactNr: '31255-18',
-                wiederholung:'',
-                infOldList: '',
-                altId: '',
-                priority:'A',
-                abbreviation: 'ciint',
-                lastName: 'Walter',
-                firstName:'Reyes',
-                birthdate: '12.03.1950',
-                entry: '13.11.2018',
-                abnahmeDatum: '14.11.2018',
-                einsender: 'Spital Basel',
-                station: 'Intensiv',
-                bearbeitung: '16.11.2018',
-                material: 'Blut',
-                ngsProject: 'NGS000012',
-                datumPrep: '10.11.2018',
-                konzentration: '34',
-                visumDna: 'BMA',
-                runNr: '00542',
-                runProbeNr: 'NGS4230498',
-                libraryTyp: 'next Generation',
-                libraryDatum: '20.08.2017',
-                libraryVisum: 'BMA',
-                seqDatum: '20.11.2018',
-                modalität: 'NextSeq',
-                datenqualVisum: 'BMA',
-                publicIdentifier: '00003',
-                process: 1,
-                selected: false,
-                received:false,
-
-
-                  },
-                       {
-                bactNr: '31263-19',
-                wiederholung:'',
-                infOldList: '',
-                altId: '',
-                priority:'B',
-                abbreviation: 'bciint',
-                lastName: 'Müller',
-                firstName:'Hans',
-                birthdate: '12.05.1950',
-                entry: '13.11.2018',
-                abnahmeDatum: '12.11.2018',
-                einsender: 'Spital Bern',
-                station: 'Intensiv',
-                bearbeitung: '16.11.2018',
-                material: 'Blut',
-                ngsProject: 'NGS000012',
-                datumPrep: '10.11.2018',
-                konzentration: '34',
-                visumDna: 'BMA',
-                runNr: '00542',
-                runProbeNr: 'NGS4230498',
-                libraryTyp: 'next Generation',
-                libraryDatum: '20.08.2017',
-                libraryVisum: 'BMA',
-                seqDatum: '20.11.2018',
-                modalität: 'NextSeq',
-                datenqualVisum: 'BMA',
-                publicIdentifier: '00003',
-                process: 3,
-                selected: false,
-                received:false,
-
-
-                  },
-        ],
-        currentDataset1: {
-            bactNr: '',
-            wiederholung:'',
-            infOldList: '',
-            altId: '',
-            priority:'',
-            abbreviation: '',
-            lastName: '',
-            firstName:'',
-            birthdate: '',
-            entry: '',
-            abnahmeDatum: '',
-            einsender: '',
-            station: '',
-            bearbeitung: '',
-            material: '',
-            ngsProject: '',
-            selected: false,
-            received:false,
-
-
-          },
-          currentDataset2: {
-            bactNr: '',
-            wiederholung:'',
-            infOldList: '',
-            altId: '',
-            priority:'',
-            abbreviation: '',
-            lastName: '',
-            firstName:'',
-            birthdate: '',
-            entry: '',
-            abnahmeDatum: '',
-            einsender: '',
-            station: '',
-            bearbeitung: '',
-            material: '',
-            ngsProject: '',
-            datumPrep: '',
-            konzentration: '',
-            visumDna: '',
-            runNr: '',
-            runProbeNr: '',
-            libraryTyp: '',
-            libraryDatum: '',
-            libraryVisum: '',
-            seqDatum: '',
-            modalität: '',
-            datenqualVisum: '',
-            publicIdentifier: '',
-            process:'',
-            selected: false,
-            received:false,
-
-
-          },
-          currentDataset3: {
-            bactNr: '',
-            wiederholung:'',
-            infOldList: '',
-            altId: '',
-            priority:'',
-            abbreviation: '',
-            lastName: '',
-            firstName:'',
-            birthdate: '',
-            entry: '',
-            abnahmeDatum: '',
-            einsender: '',
-            station: '',
-            bearbeitung: '',
-            material: '',
-            ngsProject: '',
-            datumPrep: '',
-            konzentration: '',
-            visumDna: '',
-            runNr: '',
-            runProbeNr: '',
-            libraryTyp: '',
-            libraryDatum: '',
-            libraryVisum: '',
-            seqDatum: '',
-            modalität: '',
-            process:'',
-            selected: false,
-            received:false,
-
-
-          },
-          currentDataset4: {
-            bactNr: '',
-            wiederholung:'',
-            infOldList: '',
-            altId: '',
-            priority:'',
-            abbreviation: '',
-            lastName: '',
-            firstName:'',
-            birthdate: '',
-            entry: '',
-            abnahmeDatum: '',
-            einsender: '',
-            station: '',
-            bearbeitung: '',
-            material: '',
-            ngsProject: '',
-            datumPrep: '',
-            konzentration: '',
-            visumDna: '',
-            runNr: '',
-            runProbeNr: '',
-            libraryTyp: '',
-            libraryDatum: '',
-            libraryVisum: '',
-            seqDatum: '',
-            modalität: '',
-            datenqualVisum: '',
-            publicIdentifier: '',
-            process:'',
-            received:false,
-
-          },
+        ngs:[]
+           
     },
     setters:{
-        changeDrawerState: state =>{
-            state.drawerState = !state.drawerState;
-        }
     }
-});
+})
+*/
