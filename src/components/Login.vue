@@ -19,7 +19,7 @@
                         <br>
                         <v-text-field class="textFields"
                         v-model="name"
-                        :rules="nameRules"
+                        
                         label="Name"
                         light
                         required
@@ -32,14 +32,28 @@
                         light
                         ></v-text-field>
                         </div>
-                        <div class="text-xs-right">
+
+                        <div class="text-xs-center">
+                        <v-btn 
+                        small
+                         flat
+                        color="red" 
+                          @click="clear()"
+                          style="font-size:80%"
+                          >
+                          löschen</v-btn>
+
+                        </div>
+                        <div class="text-xs-center">
                         <v-btn
+                        large
                         :disabled="!valid"
                         @click="submit"
+                        color="primary"
+                        style="width:50%"
                         >
-                        submit
+                        Login
                         </v-btn>
-                        <v-btn @click="clear()">clear</v-btn>
                         </div>
                     </v-form>
                     </form>
@@ -69,7 +83,7 @@ import {mapState} from 'vuex'
 
     methods: {
       submit () {
-        if ((this.$refs.form.validate())&& (this.name == 'User')) {
+        if ((this.$refs.form.validate())) {
           // Native form submission is not yet supported
           this.$router.push('/workflow')
           }
