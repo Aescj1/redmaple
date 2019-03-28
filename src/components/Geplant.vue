@@ -92,31 +92,31 @@
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-4">
                     <v-flex> 
-                  <v-text-field v-model="this.$store.state.currentDataset1.bactNr" label="Bact Nummer*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex> 
-                  <v-text-field v-model="this.$store.state.currentDataset1.wiederholung" label="Wiederholung*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.wiederholung" label="Wiederholung*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.altId" label="alternative ID"></v-text-field>
+                  <v-text-field v-model="currentDataset1.altId" label="alternative ID"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.priority" label="Priority*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.priority" label="Priority*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.abbreviation" label="Pathogen (g)*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.abbreviation" label="Pathogen (g)*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.lastName" label="lastName*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.lastName" label="lastName*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.firstName" label="fistName*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.firstName" label="fistName*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
             </v-card>
@@ -124,31 +124,31 @@
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-3">
                 <v-flex >
-                  <v-text-field v-if="this.$route.path == '/geplant'" v-model="this.$store.state.currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>
+                  <v-text-field v-if="this.$route.path == '/geplant'" v-model="currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.entry" label="Eingang*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.entry" label="Eingang*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.abnahmeDatum" label="Abnahme"></v-text-field>
+                  <v-text-field v-model="currentDataset1.abnahmeDatum" label="Abnahme"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.einsender" label="Einsender*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.einsender" label="Einsender*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.station" label="Station*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.station" label="Station*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.bearbeitung" label="Bearbeitungsdatum"></v-text-field>
+                  <v-text-field v-model="currentDataset1.bearbeitung" label="Bearbeitungsdatum"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset1.material" label="Material*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.material" label="Material*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
             </v-card>
@@ -156,7 +156,7 @@
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-2">
                 <v-flex>
-                  <v-text-field v-model="this.$store.state.currentDataset1.ngsProject" label="NGS - Projekt"></v-text-field>
+                  <v-text-field v-model="currentDataset1.ngsProject" label="NGS - Projekt"></v-text-field>
                 </v-flex>
             </v-card>
                 </v-flex>
@@ -209,6 +209,7 @@
 
 <script>
 import _ from 'lodash';
+import store from '../store/store.js'
 
 
 
@@ -226,10 +227,9 @@ import _ from 'lodash';
         { title: 'Einsender' },
         { title: 'Pathogen' }
       ],
-      patientList:[
-      ],
+      patientList:[],
       currentDataset1: {
-        bactNr: '',
+        bactnr: '',
         wiederholung:'',
         infOldList: '',
         altId: '',
@@ -247,33 +247,40 @@ import _ from 'lodash';
         ngsProject: '',
         selected:false,
         received:false,
+        processnr:'',
+        id:'',
       },
     }),
     computed: {
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
-         //   this.patientList = this.$store.state.NgsList
-            return _.orderBy(this.patientList.filter(patient => {
-              //the if just checks if the search is null, which happens when you clear the searchfield with the clearSearch() method
-              if(!this.search) return this.patientList;
-              //that block checks if any search input matches the data in the patientList. It loops trought the Patient and checks if a match results in true.
-              //ex. patient.bactNr is the same as this.search then it returns the patients --> this could be written in a loop..couldnt make it work
-              return patient.bactNr.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.wiederholung.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.infOldList.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.altId.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.priority.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.abbreviation.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.lastName.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.firstName.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.birthdate.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.abnahmeDatum.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.einsender.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.bearbeitung.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.material.toLowerCase().includes(this.search.toLowerCase())  || 
-              patient.ngsProject.toLowerCase().includes(this.search.toLowerCase())    
-            }));
+
+         //   store.NgsList = the list that gets transmitted from the DB to the store
+            return _.orderBy(
+              store.state.ngs.filter(patient => {
+                //gets the list and parsed it for all Data with processNr = 1 (1= geplant, 2= extrahiert, 3=lauf,4=sequenziert)
+                for(var i=0; i< store.state.ngs.length; i++ ){
+                if(store.state.ngs[i].processnr == 1){
+                //the if just checks if the search is null, which happens when you clear the searchfield with the clearSearch() method
+                if(!this.search) return this.patientList;
+                //that block checks if any search input matches the data in the patientList. It loops trought the Patient and checks if a match results in true.
+                //ex. patient.bactNr is the same as this.search then it returns the patients --> this could be written in a loop..couldnt make it work
+                return patient.bactnr.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.wiederholung.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.infOldList.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.altId.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.priority.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.abbreviation.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.lastName.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.firstName.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.birthdate.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.abnahmeDatum.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.einsender.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.bearbeitung.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.material.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.ngsProject.toLowerCase().includes(this.search.toLowerCase())    
+                  }}}));
         }
     },
     methods:{
@@ -281,21 +288,23 @@ import _ from 'lodash';
         this.$router.push('/workflow')
 
       },
-           created(){
-          for(var i=0; i< this.$store.state.NgsList.length; i++ ){
-          if(this.$store.state.NgsList[i].process == 1){
-          this.currentDataset1 = this.$store.state.NgsList[i]
-          this.patientList.push(this.currentDataset1)
-          }
-          }
-      },
+      /* This was the old method to get the ngsList from the store and pushs it locally
+      created(){
+        for(var i=0; i< store.state.ngs.length; i++ ){
+        if(store.state.ngs[i].processnr == 1){
+        this.currentDataset1 = store.state.ngs[i]          
+        this.patientList.push(this.currentDataset1)
+        }
+        }
+      }, */
+
       //clears the search and sets the value null
       clearSearch(){
         this.search='';
         },
       //sets the currentPatient
       setCurrentData(patient){
-      this.$store.state.currentDataset1 = patient
+      this.currentDataset1 = patient
       },
       //deletes a dataset
       delete(){

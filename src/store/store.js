@@ -6,6 +6,10 @@ Vue.use(Vuex, axios)
 
 export default new Vuex.Store({
   state:{
+<<<<<<< HEAD
+=======
+    ngs: []
+>>>>>>> 9e755b80e95164acd76c5c93a3ad3028a35b53b3
   },
   actions: {
     loadNgs ({commit}){
