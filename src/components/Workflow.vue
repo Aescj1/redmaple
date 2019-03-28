@@ -7,7 +7,6 @@
                 <v-flex>
                     <v-card color="blue lighten-4" class="processCard" dark>
                     <v-card-title primary class="title">Geplant<v-spacer></v-spacer><v-icon class="mr-1" @click="changeworkflow('geplant')" right>open_in_new</v-icon></v-card-title>
-                      <geplant class="workProcess"></geplant>
                     </v-card>
                 </v-flex>
 
@@ -25,14 +24,12 @@
                 <v-flex>
                     <v-card color="blue lighten-4" class="processCard" dark>
                     <v-card-title primary class="title">Extrahiert<v-spacer></v-spacer><v-icon class="mr-1" @click="changeworkflow('extrahiert')" right>open_in_new</v-icon></v-card-title>
-                    <Extrahiert class="workProcess"></Extrahiert>
                     </v-card>
                 </v-flex>
 
                 <v-flex>
                     <v-card color="blue lighten-4" class="processCard"  dark>
                     <v-card-title primary class="title">Sequenziert<v-spacer></v-spacer><v-icon class="mr-1" @click="changeworkflow('sequenziert')" right>open_in_new</v-icon></v-card-title>
-                    <Sequenziert class="workProcess"></Sequenziert>
                     </v-card>
                 </v-flex>
             </v-layout>
@@ -68,18 +65,11 @@
 </template>
 
 <script>
-import Geplant from './Geplant.vue'
-import Extrahiert from './Extrahiert.vue'
-import Lauf from './Lauf.vue'
-import Sequenziert from './Sequenziert.vue'
 
 
   export default {
     components:{
-      Geplant,
-      Extrahiert,
-      Lauf,
-      Sequenziert
+      
     },
     data: () => ({
     
