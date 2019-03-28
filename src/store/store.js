@@ -6,7 +6,7 @@ Vue.use(Vuex, axios)
 
 export default new Vuex.Store({
   state:{
-    ngstest: []
+    ngs: []
   },
   actions: {
     loadNgs ({commit}){
