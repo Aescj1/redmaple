@@ -9,20 +9,20 @@
               color="primary"
               dark
             >
-              Sortieren nach:
+              Sortieren nach: {{this.sorted.title}}
             </v-btn>
             <v-list>
               <v-list-tile
                 v-for="(item, index) in items"
                 :key="index"
+                @click="setSorted(item)"
               >
                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
               </v-list-tile>
             </v-list>
           </v-menu>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" @click="created()">Refresh</v-btn>
-          <v-spacer></v-spacer><v-icon class="mr-1" @click="changeworkflow()" right>transit_enterexit</v-icon>
+            <v-spacer></v-spacer>
+            <v-icon class="mr-1" @click="changeworkflow()" right>transit_enterexit</v-icon>
           <v-spacer></v-spacer>
           <v-text-field
             hide-details
@@ -47,7 +47,7 @@
 
             <v-list-tile
               class="tile"
-              :key="patient.bactnr"
+              :key="patient.index"
               @click="setCurrentData(patient)"
             >
                         <v-list-tile-action>
@@ -225,12 +225,13 @@ import {mapState} from 'vuex'
       search:'',
       notifications: false,
       selectedPatientsList:[],
+      sorted:'',
 
       items: [
-        { title: 'Bact-Nr' },
-        { title: 'Priority' },
-        { title: 'Einsender' },
-        { title: 'Pathogen' }
+        { title: 'Bact-Nr', value: 'bactnr' },
+        { title: 'Priority', value:'priority' },
+        { title: 'Einsender', value:'sender'},
+        { title: 'Pathogen', value:'pathogen' }
       ],
       patientList:[],
       currentDataset1: {
@@ -262,7 +263,6 @@ import {mapState} from 'vuex'
     computed: {
           ...mapState(['ngs']),
 
-
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
 
@@ -276,21 +276,15 @@ import {mapState} from 'vuex'
                 if(!this.search) return this.ngs;
                 //that block checks if any search input matches the data in the patientList. It loops trought the Patient and checks if a match results in true.
                 //ex. patient.bactNr is the same as this.search then it returns the patients --> this could be written in a loop..couldnt make it work
-                return patient.bactnr.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.wiederholung.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.infOldList.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.altId.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.priority.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.abbreviation.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.lastName.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.firstName.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.birthdate.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.abnahmeDatum.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.einsender.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.bearbeitung.toLowerCase().includes(this.search.toLowerCase())  || 
+                return (patient.bactnr.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.pathogen.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.lastname.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.firstname.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.sender.toLowerCase().includes(this.search.toLowerCase())  || 
                 patient.material.toLowerCase().includes(this.search.toLowerCase())  || 
-                patient.ngsProject.toLowerCase().includes(this.search.toLowerCase())    
-                  }}}));
+                patient.ngsproject.toLowerCase().includes(this.search.toLowerCase())    
+                //this.sorted calls the sorted method, which then defines what the filter (sortieren nach) is.
+            )}}}),this.sorted.value );
         }
     },
     methods:{
@@ -298,6 +292,7 @@ import {mapState} from 'vuex'
         this.$router.push('/workflow')
 
       },
+
       /* This was the old method to get the ngsList from the store and pushs it locally
       created(){
         for(var i=0; i< store.state.ngs.length; i++ ){
@@ -312,9 +307,26 @@ import {mapState} from 'vuex'
       clearSearch(){
         this.search='';
         },
+        dateformatter(date){  
+          var str = date
+          if(str.length >12){
+          var day = str.substring(8, 10);
+          var month = str.substring(5, 7);
+          var year = str.substring(0, 4);
+          var newDate = day+"-"+month+"-"+year
+          return newDate       }
+          else return date
+        },
       //sets the currentPatient
       setCurrentData(patient){
+              console.log(patient)
+
       this.currentDataset1 = patient
+      this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
+      this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
+      this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
+      this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
+
       },
       //deletes a dataset
       delete(){
@@ -331,6 +343,9 @@ import {mapState} from 'vuex'
           }
           return "hello"
         } 
+      },
+      setSorted(item){
+        this.sorted = item
       }
     }
   }
