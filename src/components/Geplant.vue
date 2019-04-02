@@ -47,7 +47,7 @@
 
             <v-list-tile
               class="tile"
-              :key="patient.bactNr"
+              :key="patient.bactnr"
               @click="setCurrentData(patient)"
             >
                         <v-list-tile-action>
@@ -56,7 +56,7 @@
               ></v-checkbox>
             </v-list-tile-action> 
               <v-list-tile-content >
-                <v-list-tile-title>{{patient.bactNr}}</v-list-tile-title>
+                <v-list-tile-title>{{patient.bactnr}}</v-list-tile-title>
                 <v-list-tile-sub-title>{{patient.priority}}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-btn fab flat  small color="transparent" 
@@ -96,11 +96,11 @@
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex> 
-                  <v-text-field v-model="currentDataset1.wiederholung" label="Wiederholung*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.altId" label="alternative ID"></v-text-field>
+                  <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
@@ -108,15 +108,15 @@
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.abbreviation" label="Pathogen (g)*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.lastName" label="lastName*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.lastname" label="lastName*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.firstName" label="fistName*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.firstname" label="fistName*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
             </v-card>
@@ -124,27 +124,27 @@
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-3">
                 <v-flex >
-                  <v-text-field v-if="this.$route.path == '/geplant'" v-model="currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.entry" label="Eingang*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.abnahmeDatum" label="Abnahme"></v-text-field>
+                  <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.einsender" label="Einsender*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.sender" label="Einsender*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.station" label="Station*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.department" label="Station*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.bearbeitung" label="Bearbeitungsdatum"></v-text-field>
+                  <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
@@ -156,60 +156,65 @@
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-2">
                 <v-flex>
-                  <v-text-field v-model="currentDataset1.ngsProject" label="NGS - Projekt"></v-text-field>
+                  <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
+                </v-flex>
+                <v-flex>
+                  <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
                 </v-flex>
             </v-card>
                 </v-flex>
               </v-layout>
             </v-container>
+            <div class="text-xs-right">
+            <v-btn>löschen</v-btn>
+              <v-btn
+              color="primary"
+              dark
+              @click.stop="dialog = true"
+              >
+                Extrahieren
+              </v-btn>
+              <v-dialog
+                v-model="dialog"
+                width="700" 
+              >
+              <v-card>
+              <v-card-title
+                class="headline grey lighten-2"
+                primary-title
+              >
+                Datenset extrahieren
+              </v-card-title>
+              <v-card-text>
+                Sollen folgende Datensets extrahiert werden?
+                {{this.selectedPatients()}}
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="primary"
+                  flat
+                  @click="dialog = false"
+                >
+                  accept
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          </div>
           </v-card-text>
         </v-card>
        </v-flex>
       </v-layout>
-      <v-btn>löschen</v-btn>
-      <v-btn
-          color="primary"
-          dark
-          @click.stop="dialog = true"
-        >
-          Extrahieren
-        </v-btn>
-        <v-dialog
-          v-model="dialog"
-          width="700" 
-        >
-        <v-card>
-          <v-card-title
-          class="headline grey lighten-2"
-          primary-title
-          >
-          Datenset extrahieren
-          </v-card-title>
-          <v-card-text>
-            Sollen folgende Datensets extrahiert werden?
-            {{this.selectedPatients()}}
-          </v-card-text>
-          <v-divider></v-divider>
 
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            flat
-            @click="dialog = false"
-          >
-            I accept
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
 
 <script>
 import _ from 'lodash';
-import store from '../store/store.js'
+import {mapState} from 'vuex'
 
 
 
@@ -229,41 +234,46 @@ import store from '../store/store.js'
       ],
       patientList:[],
       currentDataset1: {
-        bactnr: '',
-        wiederholung:'',
-        infOldList: '',
-        altId: '',
-        priority:'',
-        abbreviation: '',
-        lastName: '',
-        firstName:'',
-        birthdate: '',
-        entry: '',
-        abnahmeDatum: '',
-        einsender: '',
-        station: '',
-        bearbeitung: '',
-        material: '',
-        ngsProject: '',
-        selected:false,
-        received:false,
-        processnr:'',
-        id:'',
+        bactnr: "",
+        processnr: 1,
+        received: true,
+        firstname: "",
+        lastname: "",
+        birthdate: "",
+        sender: "",
+        department: "",
+        entrydate: "",
+        samplingdate: "",
+        material: "",
+        repetition: 0,
+        altid: "",
+        comment: "",
+        pathogen: "",
+        processingdate: "",
+        ngsproject: "",
+        publicid: 0,
+        priority: "",
+        isoentrydate: "",
+        billing: ""
+
+
       },
     }),
     computed: {
+          ...mapState(['ngs']),
+
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
 
          //   store.NgsList = the list that gets transmitted from the DB to the store
             return _.orderBy(
-              store.state.ngs.filter(patient => {
+              this.ngs.filter(patient => {
                 //gets the list and parsed it for all Data with processNr = 1 (1= geplant, 2= extrahiert, 3=lauf,4=sequenziert)
-                for(var i=0; i< store.state.ngs.length; i++ ){
-                if(store.state.ngs[i].processnr == 1){
+                for(var i=0; i< this.ngs.length; i++ ){
+                if(this.ngs[i].processnr == 1){
                 //the if just checks if the search is null, which happens when you clear the searchfield with the clearSearch() method
-                if(!this.search) return this.patientList;
+                if(!this.search) return this.ngs;
                 //that block checks if any search input matches the data in the patientList. It loops trought the Patient and checks if a match results in true.
                 //ex. patient.bactNr is the same as this.search then it returns the patients --> this could be written in a loop..couldnt make it work
                 return patient.bactnr.toLowerCase().includes(this.search.toLowerCase())  || 
