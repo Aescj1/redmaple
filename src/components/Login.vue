@@ -61,6 +61,9 @@ import {mapState} from 'vuex'
       ],
       password: '',
       show1:false,
+      json:{"bactnr":"8882",
+        "name":"TEST PUT"
+        },
     }),
 
       computed:{
@@ -78,6 +81,7 @@ import {mapState} from 'vuex'
         this.$refs.form.reset()
         // eslint-disable-next-line
         console.log(this.ngs)
+        this.$store.dispatch('putNgs', this.json)
       }
       },
 
