@@ -8,21 +8,22 @@
               slot="activator"
               color="primary"
               dark
+              v-model="this.sorted"
             >
-              Sortieren nach:
+              Sortieren nach: {{this.sorted.title}}
             </v-btn>
             <v-list>
               <v-list-tile
                 v-for="(item, index) in items"
                 :key="index"
+                @click="setSorted(item)"
               >
                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
               </v-list-tile>
             </v-list>
           </v-menu>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" @click="created()">Refresh</v-btn>
-          <v-spacer></v-spacer><v-icon class="mr-1" @click="changeworkflow()" right>transit_enterexit</v-icon>
+            <v-spacer></v-spacer>
+            <v-icon class="mr-1" @click="changeworkflow()" right>transit_enterexit</v-icon>
           <v-spacer></v-spacer>
           <v-text-field
             hide-details
@@ -46,55 +47,80 @@
           <template v-for="(patient, index) in filteredItems">
 
             <v-list-tile
-              :key="patient.bactNr"
-              avatar
+              class="tile"
+              :key="patient.index"
               @click="setCurrentData(patient)"
             >
-              <v-list-tile-content>
-                <v-list-tile-title>{{patient.bactNr}}</v-list-tile-title>
+                        <v-list-tile-action>
+              <v-checkbox
+                v-model="filteredItems[index].selected"
+                @click.capture.stop="selectPatient(filteredItems[index])"
+              ></v-checkbox>
+            </v-list-tile-action> 
+              <v-list-tile-content >
+                <v-list-tile-title v-if="sorted.title == 'Bact-Nr' ||sorted.title == 'Priority' ">{{patient.bactnr}}</v-list-tile-title>
+                <v-list-tile-title v-if="sorted.title == 'Pathogen'">{{patient.pathogen}}</v-list-tile-title>
+                <v-list-tile-title v-if="sorted.title == 'Einsender'">{{patient.sender}}</v-list-tile-title>
                 <v-list-tile-sub-title>{{patient.priority}}</v-list-tile-sub-title>
               </v-list-tile-content>
+              <v-btn fab flat  small color="transparent" 
+              @click.stop="filteredItems[index].received = !filteredItems[index].received"
+              >
+                  <v-icon
+                  v-if="filteredItems[index].received"
+                  color="yellow darken-2"
+                >
+                  star
+                </v-icon>
+
+                <v-icon
+                  v-else
+                  color="grey lighten-1"
+                >
+                  star_border
+                </v-icon>
+              </v-btn>
             </v-list-tile>
              <v-divider
-                    v-if="index + 1 < patientList.length"
-                    :key="index"
-                  ></v-divider>
+              v-if="index + 1 < patientList.length"
+              :key="index"
+              ></v-divider>
           </template>
         </v-list>
     </v-flex>
         <v-flex d-flex xs10 sm10 md10 xl10 lg10>
-                  <v-card>
+          <v-card>
           <v-card-text>
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-4">
                     <v-flex> 
-                  <v-text-field v-model="this.$store.state.currentDataset2.bactNr" label="Bact Nummer*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex> 
-                  <v-text-field v-model="this.$store.state.currentDataset2.wiederholung" label="Wiederholung*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.altId" label="alternative ID"></v-text-field>
+                  <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.priority" label="Priority*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.priority" label="Priority*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.abbreviation" label="Pathogen (g)*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.lastName" label="lastName*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.lastname" label="lastName*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.firstName" label="fistName*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.firstname" label="fistName*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
             </v-card>
@@ -102,156 +128,265 @@
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-3">
                 <v-flex >
-                  <v-text-field  v-model="this.$store.state.currentDataset2.birthdate" label="Geburtsdatum*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.entry" label="Eingang*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.abnahmeDatum" label="Abnahme"></v-text-field>
+                  <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.einsender" label="Einsender*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.sender" label="Einsender*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.station" label="Station*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.department" label="Station*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.bearbeitung" label="Bearbeitungsdatum"></v-text-field>
+                  <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="this.$store.state.currentDataset2.material" label="Material*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.material" label="Material*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
             </v-card>
                 </v-flex>
-              
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-2">
                 <v-flex>
-                  <v-text-field v-model="this.$store.state.currentDataset2.ngsProject" label="NGS - Projekt"></v-text-field>
+                  <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
                 </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-if="this.$store.state.currentDataset2.process>=2" v-model="this.$store.state.currentDataset2.datumPrep" label="DNA Vorbereitungsdatum"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field  v-if="this.$store.state.currentDataset2.process>=2" v-model="this.$store.state.currentDataset2.konzentration" label="DNA Konzentration"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-if="this.$store.state.currentDataset2.process>=2" v-model="this.$store.state.currentDataset2.visumDna" label="DNA Visum"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field   v-model="this.$store.state.currentDataset2.runNr" label="Run NR"></v-text-field>
+                <v-flex>
+                  <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
                 </v-flex>
             </v-card>
                 </v-flex>
               </v-layout>
             </v-container>
+            <div class="text-xs-right">
+            <v-btn @click="deleteSet">löschen</v-btn>
+              <v-btn
+              color="primary"
+              dark
+              @click.stop="startExtraction"
+              v-if="this.selected.length>0"
+              >
+                Extrahieren
+              </v-btn>
+              <v-dialog
+                v-model="dialog"
+                width="700" 
+                scrollable
+              >
+              <v-card>
+              <v-card-title
+                class="headline grey lighten-2"
+                primary-title
+              >
+              <div>
+               <div class="headline">Datenset extrahieren</div>
+                <span class="subheading grey--text">Sollen folgende Datensets extrahiert werden?</span>
+              </div>
+              </v-card-title>
+              <v-card-text>
+                Sollen folgende Datensets extrahiert werden?
+                <v-form v-for="item in selected" :key="item.index">
+                  <v-layout>
+                    <v-flex
+                    xs6
+                    md6
+                    >
+                  <v-text-field v-text="item.bactnr">
+                  </v-text-field>
+                    </v-flex>
+                    <v-flex
+                    xs6
+                    md6>
+                    <v-text-field
+                      label="DNA Konzentration"
+                      single-line
+                      color="red"
+                      @input ="setConcetration"
+                    ></v-text-field>
+                    </v-flex>
+                    </v-layout>
+                    <v-divider></v-divider>
+                </v-form>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-btn
+                  color="primary"
+                  flat
+                  @click="extrahieren"
+                >
+                  accept
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          </div>
           </v-card-text>
         </v-card>
        </v-flex>
       </v-layout>
+
   </v-container>
 </template>
 
 
 <script>
 import _ from 'lodash';
+import {mapState} from 'vuex'
 
 
 
   export default {
 
     data: () => ({
+      dialog:false,
       search:'',
-      items: [
-        { title: 'Bact-Nr' },
-        { title: 'Priority' },
-        { title: 'Einsender' },
-        { title: 'Pathogen' }
-      ],
-      patientList:[
-      ],
-      currentDataset2: {
-        bactNr: '',
-        wiederholung:'',
-        infOldList: '',
-        altId: '',
-        priority:'',
-        abbreviation: '',
-        lastName: '',
-        firstName:'',
-        birthdate: '',
-        entry: '',
-        abnahmeDatum: '',
-        einsender: '',
-        station: '',
-        bearbeitung: '',
-        material: '',
-        ngsProject: '',
-        datumPrep: '',
-        konzentration: '',
-        visumDna: '',
-        runNr: '',
-        runProbeNr: '',
-        libraryTyp: '',
-        libraryDatum: '',
-        libraryVisum: '',
-        seqDatum: '',
-        modalität: '',
-        datenqualVisum: '',
-        publicIdentifier: '',
-        process:'',
+      notifications: false,
+      selected:[],
+      sorted: {
+        title: 'Bact-Nr', value: 'bactnr'
       },
+
+      items: [
+        { title: 'Bact-Nr', value: 'bactnr' },
+        { title: 'Priority', value:'priority' },
+        { title: 'Einsender', value:'sender'},
+        { title: 'Pathogen', value:'pathogen' }
+      ],
+      patientList:[],
+      currentDataset1: {
+        bactnr: "",
+        processnr: 2,
+        received: true,
+        firstname: "",
+        lastname: "",
+        birthdate: "",
+        sender: "",
+        department: "",
+        entrydate: "",
+        samplingdate: "",
+        material: "",
+        repetition: 0,
+        altid: "",
+        comment: "",
+        pathogen: "",
+        processingdate: "",
+        ngsproject: "",
+        publicid: 0,
+        priority: "",
+        isoentrydate: "",
+        billing: ""
+      },
+      testset:{},
     }),
     computed: {
+          ...mapState(['ngs']),
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
-         //   this.patientList = this.$store.state.NgsList
-            return _.orderBy(this.patientList.filter(patient => {
-              //the if just checks if the search is null, which happens when you clear the searchfield with the clearSearch() method
-              if(!this.search) return this.items;
-              //that block checks if any search input matches the data in the patientList. It loops trought the Patient and checks if a match results in true.
-              //ex. patient.bactNr is the same as this.search then it returns the patients
-                for (var item in patient){
-                    return patient[item].toLowerCase().includes(this.search.toLowerCase())
-                }
-            }));
-        }
+         //   store.NgsList = the list that gets transmitted from the DB to the store
+            return _.orderBy(
+              this.ngs.filter(patient => {
+                //gets the list and parsed it for all Data with processNr = 1 (1= geplant, 2= extrahiert, 3=lauf,4=sequenziert)
+                if(patient.processnr == 2){
+                //the if just checks if the search is null, which happens when you clear the searchfield with the clearSearch() method
+                if(!this.search) return this.ngs;
+                //that block checks if any search input matches the data in the patientList. It loops trought the Patient and checks if a match results in true.
+                //ex. patient.bactNr is the same as this.search then it returns the patients --> this could be written in a loop..couldnt make it work
+                return (patient.bactnr.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.pathogen.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.lastname.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.firstname.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.sender.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.material.toLowerCase().includes(this.search.toLowerCase())  || 
+                patient.ngsproject.toLowerCase().includes(this.search.toLowerCase())    
+                //this.sorted calls the sorted method, which then defines what the filter (sortieren nach) is.
+            )}}),this.sorted.value );
+        },
     },
     methods:{
       changeworkflow(){
         this.$router.push('/workflow')
 
       },
-           created(){
-          for(var i=0; i< this.$store.state.NgsList.length; i++ ){
-          if(this.$store.state.NgsList[i].process == 2){
-          this.currentDataset2 = this.$store.state.NgsList[i]
-          this.patientList.push(this.currentDataset2)
-          }
-          }
-      },
       //clears the search and sets the value null
-        clearSearch(){
-          this.search='';
-          },
-          //sets the currentPatient
-          setCurrentData(patient){
-            this.$store.state.currentDataset2 = patient
-          }
-          }
+      clearSearch(){
+        this.search='';
+        },
+
+        dateformatter(date){  
+          var str = date
+          if(str.length >12){
+          var day = str.substring(8, 10);
+          var month = str.substring(5, 7);
+          var year = str.substring(0, 4);
+          var newDate = day+"-"+month+"-"+year
+          return newDate       }
+          else return date
+        },
+      //sets the currentPatient
+      setCurrentData(patient){
+      this.currentDataset1 = JSON.parse(JSON.stringify(patient))
+      if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
+      if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
+      if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
+      if(this.currentDataset1.processingdat)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
+      },
+
+      //deletes a dataset
+      deleteSet(){
+        confirm('Sollen folgende Datensets wirklich gelöscht werden? ') 
+      },
+      startExtraction(){
+        var myDate = new Date();
+        var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
+        var date = ('0' + myDate.getDate()).slice(-2);
+        var year = myDate.getFullYear();
+        var formattedDate = year + '-' + month + '-' + date;
+        for(var i=0; i<this.selected.length;i++){
+          this.selected[i].concentration = 'N/A'
+          this.selected[i].extractiondate = formattedDate
+          this.selected[i].extractionvisum = 'User'
+        }
+        this.dialog=true
+      },
+      setConcetration(value){
+
+        this.selected[0].concentration =parseInt(value)
+      },
+      //sends a dataset to the next processstep (extrahiert) and opens a popup 
+ extrahieren(){
+
+        for(var i=0; i<this.selected.length;i++){
+          this.selected[i].processnr = 2
+          this.$store.dispatch('putNgs', this.selected[i])
+        }
+        this.selected = []
+        this.dialog = false
+      },
+      selectPatient(patient){
+        if (this.selected.includes(patient)) {
+        // Removing the data
+        this.selected.splice(this.selected.indexOf(patient), 1);
+      } else {
+        this.selected.push(patient);
+      }
+      },
+      setSorted(item){
+        this.sorted = item
+      }
+    }
   }
 </script>
 <style>
