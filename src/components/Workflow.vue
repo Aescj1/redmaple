@@ -165,7 +165,6 @@ import {mapState} from 'vuex'
         var counter=0;
         this.ngs.filter(patient => {
            if(patient.priority == item && patient.processnr == nr){
-             console.log(item)
            counter++;
            }
         })
