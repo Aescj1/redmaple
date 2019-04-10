@@ -23,7 +23,7 @@
             </v-list>
           </v-menu>
             <v-spacer></v-spacer>
-            <v-icon class="mr-1" @click="changeworkflow()" right>transit_enterexit</v-icon>
+            <v-icon class="mr-1" @click="changeworkflow('workflow')" right>transit_enterexit</v-icon>
           <v-spacer></v-spacer>
           <v-text-field
             hide-details
@@ -63,23 +63,6 @@
                 <v-list-tile-title v-if="sorted.title == 'Einsender'">{{patient.sender}}</v-list-tile-title>
                 <v-list-tile-sub-title>{{patient.priority}}</v-list-tile-sub-title>
               </v-list-tile-content>
-              <v-btn fab flat  small color="transparent" 
-              @click.stop="filteredItems[index].received = !filteredItems[index].received"
-              >
-                  <v-icon
-                  v-if="filteredItems[index].received"
-                  color="yellow darken-2"
-                >
-                  star
-                </v-icon>
-
-                <v-icon
-                  v-else
-                  color="grey lighten-1"
-                >
-                  star_border
-                </v-icon>
-              </v-btn>
             </v-list-tile>
              <v-divider
               v-if="index + 1 < patientList.length"
@@ -88,7 +71,7 @@
           </template>
         </v-list>
     </v-flex>
-        <v-flex d-flex xs10 sm10 md10 xl10 lg10>
+        <v-flex d-flex xs9 sm9 md9 xl9 lg9>
           <v-card>
           <v-card-text>
             <v-container grid-list-md>
@@ -163,6 +146,15 @@
                   <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
                 </v-flex>
                 <v-flex>
+                  <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-Prep"></v-text-field>
+                </v-flex>
+                <v-flex>
+                  <v-text-field v-model="currentDataset1.concentration" label="DNA Konz. (ng/ul)"></v-text-field>
+                </v-flex>
+                <v-flex>
+                  <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA"></v-text-field>
+                </v-flex>
+                <v-flex>
                   <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
                 </v-flex>
             </v-card>
@@ -235,7 +227,29 @@
           </v-card-text>
         </v-card>
        </v-flex>
-      </v-layout>
+             <v-item-group class="item-group">
+                <v-flex>
+                    <v-btn @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
+                      G
+                     </v-btn>
+                </v-flex>
+                <v-flex>
+                    <v-btn @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
+                        E
+                     </v-btn>
+                </v-flex>
+                <v-flex>
+                    <v-btn @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
+                        L
+                     </v-btn>
+                </v-flex>
+                <v-flex>
+                    <v-btn @click="changeworkflow('sequenziert')" class="processButton" fab dark large color="green">
+                        S
+                     </v-btn>
+                </v-flex>
+                </v-item-group>
+            </v-layout>
 
   </v-container>
 </template>
@@ -286,7 +300,10 @@ import {mapState} from 'vuex'
         publicid: 0,
         priority: "",
         isoentrydate: "",
-        billing: ""
+        billing: "",
+        concentration:"",
+        extractiondate:"",
+        extractionvisum:"",
       },
       testset:{},
     }),
@@ -316,8 +333,8 @@ import {mapState} from 'vuex'
         },
     },
     methods:{
-      changeworkflow(){
-        this.$router.push('/workflow')
+      changeworkflow(item){
+        this.$router.push('/'+item)
 
       },
       //clears the search and sets the value null
@@ -341,7 +358,9 @@ import {mapState} from 'vuex'
       if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
       if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
       if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
-      if(this.currentDataset1.processingdat)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
+      if(this.currentDataset1.processingdate)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
+      if(this.currentDataset1.extractiondate)this.currentDataset1.extractiondate = this.dateformatter(this.currentDataset1.extractiondate)
+
       },
 
       //deletes a dataset
@@ -394,5 +413,9 @@ import {mapState} from 'vuex'
       overflow-y: auto;
       max-height: 72vh;
     }
-
+.item-group{
+  text-align: center;
+  margin-left:10px;
+  margin-top:80px;
+}
 </style>

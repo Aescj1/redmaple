@@ -23,7 +23,7 @@
             </v-list>
           </v-menu>
             <v-spacer></v-spacer>
-            <v-icon class="mr-1" @click="changeworkflow()" right>transit_enterexit</v-icon>
+            <v-icon class="mr-1" @click="changeworkflow('workflow')" right>transit_enterexit</v-icon>
           <v-spacer></v-spacer>
           <v-text-field
             hide-details
@@ -88,7 +88,7 @@
           </template>
         </v-list>
     </v-flex>
-        <v-flex d-flex xs10 sm10 md10 xl10 lg10>
+        <v-flex d-flex xs9 sm9 md9 xl9 lg9>
           <v-card>
           <v-card-text>
             <v-container grid-list-md>
@@ -212,7 +212,7 @@
                       label="DNA Konzentration"
                       single-line
                       color="red"
-                      @input ="setConcetration"
+                      v-model ="item.concentration"
                     ></v-text-field>
                     </v-flex>
                     </v-layout>
@@ -235,7 +235,29 @@
           </v-card-text>
         </v-card>
        </v-flex>
-      </v-layout>
+             <v-item-group class="item-group">
+                <v-flex>
+                    <v-btn @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
+                      G
+                     </v-btn>
+                </v-flex>
+                <v-flex>
+                    <v-btn @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
+                        E
+                     </v-btn>
+                </v-flex>
+                <v-flex>
+                    <v-btn @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
+                        L
+                     </v-btn>
+                </v-flex>
+                <v-flex>
+                    <v-btn @click="changeworkflow('sequenziert')" class="processButton" fab dark large color="green">
+                        S
+                     </v-btn>
+                </v-flex>
+                </v-item-group>
+            </v-layout>
 
   </v-container>
 </template>
@@ -316,16 +338,17 @@ import {mapState} from 'vuex'
         },
     },
     methods:{
-      changeworkflow(){
-        this.$router.push('/workflow')
+      //Method that allows to change the view.
+      changeworkflow(item){
+        this.$router.push('/'+item)
 
       },
       //clears the search and sets the value null
       clearSearch(){
         this.search='';
         },
-
-        dateformatter(date){  
+      //Method to format the date into DD-MM-YYYY instead of the default JSON date
+      dateformatter(date){  
           var str = date
           if(str.length >12){
           var day = str.substring(8, 10);
@@ -335,19 +358,21 @@ import {mapState} from 'vuex'
           return newDate       }
           else return date
         },
-      //sets the currentPatient
+      //sets the currentPatient. Does a copy of the JS.Object which allows to change information without changing the source object. (needed for the date property)
       setCurrentData(patient){
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
       if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
       if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
       if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
-      if(this.currentDataset1.processingdat)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
+      if(this.currentDataset1.processingdate)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
+
       },
 
       //deletes a dataset
       deleteSet(){
         confirm('Sollen folgende Datensets wirklich gelöscht werden? ') 
       },
+      //functio
       startExtraction(){
         var myDate = new Date();
         var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
@@ -355,21 +380,18 @@ import {mapState} from 'vuex'
         var year = myDate.getFullYear();
         var formattedDate = year + '-' + month + '-' + date;
         for(var i=0; i<this.selected.length;i++){
-          this.selected[i].concentration = 'N/A'
+          this.selected[i].concentration = ''
           this.selected[i].extractiondate = formattedDate
           this.selected[i].extractionvisum = 'User'
         }
         this.dialog=true
-      },
-      setConcetration(value){
-
-        this.selected[0].concentration =parseInt(value)
       },
       //sends a dataset to the next processstep (extrahiert) and opens a popup 
  extrahieren(){
 
         for(var i=0; i<this.selected.length;i++){
           this.selected[i].processnr = 2
+          delete this.selected[i].selected
           this.$store.dispatch('putNgs', this.selected[i])
         }
         this.selected = []
@@ -394,5 +416,9 @@ import {mapState} from 'vuex'
       overflow-y: auto;
       max-height: 72vh;
     }
-
+.item-group{
+  text-align: center;
+  margin-left:10px;
+  margin-top:80px;
+}
 </style>
