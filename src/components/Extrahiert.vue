@@ -1,7 +1,8 @@
 <template>
   <v-container fluid grid-list-md>
     <v-layout  row wrap>
-      <v-flex d-flex xs12 sm12 md12 xl12 lg12>
+      <!--Defines the length of the toolbar (md12 = use all 12 grid columns on medium devices). the toolbar contains a search(row 29) and a sort button (row 8)  -->
+      <v-flex d-flex xs11 sm11 md11 xl11 lg11>
         <v-toolbar>
           <v-menu offset-y>
             <v-btn
@@ -23,11 +24,11 @@
             </v-list>
           </v-menu>
             <v-spacer></v-spacer>
-            <v-icon class="mr-1" @click="changeworkflow('workflow')" right>transit_enterexit</v-icon>
+            
           <v-spacer></v-spacer>
           <v-text-field
             hide-details
-             prepend-inner-icon="search"
+            prepend-inner-icon="search"
             single-line
             color="red"
             solo-inverted
@@ -38,10 +39,16 @@
           </v-text-field>
         </v-toolbar>
         </v-flex>
+        <v-flex d-flex xs1 sm1 md1 xl1 lg1>
+          <v-btn outline color="blue-grey darken-3" large @click="changeworkflow('workflow')">
+            <v-icon light>work</v-icon>
+          </v-btn>
+        </v-flex>
               </v-layout>
 
     
     <v-layout row wrap>
+      <!--  This part defines the DataList and displays all the bact-Nr and the Priority       -->
         <v-flex  xs2 sm2 md2 xl2 lg2 class="scroll">
         <v-list  fill-height>
           <template v-for="(patient, index) in filteredItems">
@@ -51,7 +58,7 @@
               :key="patient.index"
               @click="setCurrentData(patient)"
             >
-                        <v-list-tile-action>
+            <v-list-tile-action>
               <v-checkbox
                 v-model="filteredItems[index].selected"
                 @click.capture.stop="selectPatient(filteredItems[index])"
@@ -76,6 +83,7 @@
           <v-card-text>
             <v-container grid-list-md>
               <v-layout wrap>
+                <!--Defines the first red square that contains meta data  -->
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-4">
                     <v-flex> 
@@ -108,6 +116,7 @@
                 <v-spacer></v-spacer>
             </v-card>
                 </v-flex>
+                <!--Defines the second red square that contains meta data  -->
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-3">
                 <v-flex >
@@ -140,6 +149,8 @@
                 <v-spacer></v-spacer>
             </v-card>
                 </v-flex>
+
+              <!--Defines the third red square that contains meta data  -->
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-2">
                 <v-flex>
@@ -166,11 +177,13 @@
               <v-btn
               color="primary"
               dark
-              @click.stop="startExtraction"
+              @click.stop="startRun"
               v-if="this.selected.length>0"
               >
-                Extrahieren
+                Run konfigurieren
               </v-btn>
+
+<!----------- THIS is the popup for the additional data input to bring the data to the next processstepp    -->
               <v-dialog
                 v-model="dialog"
                 width="700" 
@@ -182,12 +195,138 @@
                 primary-title
               >
               <div>
-               <div class="headline">Datenset extrahieren</div>
-                <span class="subheading grey--text">Sollen folgende Datensets extrahiert werden?</span>
+               <div class="headline">Run für die Sequenzierung vorbereiten </div>
               </div>
               </v-card-title>
               <v-card-text>
-                Sollen folgende Datensets extrahiert werden?
+                <v-expansion-panel expand>
+                  <v-expansion-panel-content class="grey lighten-2">
+                    <div slot="header"  grey>Sequenzierungslauf Einstellungen</div>
+                      <v-card>
+                        <v-card-text class="grey lighten-4"> <v-layout>
+                    <v-flex
+                    xs6
+                    md6
+                    >
+                    <v-text-field v-text="'Run grösse auswählen: '"></v-text-field>
+                    </v-flex>
+                  <v-flex
+                    xs6
+                    md6>
+                    <v-select
+                      :items="runSize"
+                      label="Run size"
+                      v-model="chosenSize"
+                    ></v-select>
+                  </v-flex>
+                </v-layout>
+
+                <v-layout>
+                  <v-flex
+                    xs6
+                    md6
+                    >
+                    <v-text-field v-text="'Librarytyp auswählen: '"></v-text-field>
+                  </v-flex>
+                  <v-flex
+                    xs6
+                    md6>
+                    <v-select
+                      :items="libraryType"
+                      label="Library Typ"
+                      v-model="chosenLibrary"
+                    ></v-select>
+                  </v-flex>
+                </v-layout>
+
+                <v-layout>
+                  <v-flex
+                    xs6
+                    md6
+                    >
+                    <v-text-field v-text="'NGS-Gerät auswählen: '"></v-text-field>
+                  </v-flex>
+                  <v-flex
+                    xs6
+                    md6>
+                    <v-select
+                      :items="ngsmodality"
+                      label="NGS-Gerät"
+                      v-model="chosenModality"
+                    ></v-select>
+                  </v-flex>
+                </v-layout>
+
+                <v-layout>
+                  <v-flex
+                    xs6
+                    md6
+                    >
+                    <v-text-field v-text="'NGS Run Nummer eingeben: '"></v-text-field>
+                  </v-flex>
+                  <v-flex
+                    xs6
+                    md6>
+                    <v-text-field
+                      label="NGS Run Nr"
+                      v-model="runNr"
+                    ></v-text-field>
+                  </v-flex>
+                </v-layout>
+
+                <v-menu
+                  lazy
+                  :close-on-content-click="false"
+                  v-model="menu"
+                  transition="scale-transition"
+                  offset-y
+                  full-width
+                  :nudge-right="40"
+                  max-width="290px"
+                  min-width="290px"
+                  >
+                  <v-text-field
+                    slot="activator"
+                    label="Library Datum auswählen"
+                    v-model="libraryDate"
+                    prepend-icon="event"
+                    readonly
+                    ></v-text-field>
+                    <v-date-picker v-model="libraryDate" no-title scrollable actions @input="menu =false" locale="de">
+                      <template>
+                      </template>
+                    </v-date-picker>
+                </v-menu>
+
+                <v-menu
+                  lazy
+                  :close-on-content-click="false"
+                  v-model="Seqmenu"
+                  transition="scale-transition"
+                  offset-y
+                  full-width
+                  :nudge-right="40"
+                  max-width="290px"
+                  min-width="290px"
+                  >
+                  <v-text-field
+                    slot="activator"
+                    label="Sequenzierungs Datum auswählen"
+                    v-model="sequencingDate"
+                    prepend-icon="event"
+                    readonly
+                    ></v-text-field>
+                    <v-date-picker v-model="sequencingDate" no-title scrollable actions @input="Seqmenu =false" locale="de">
+                      <template>
+                      </template>
+                    </v-date-picker>
+                </v-menu></v-card-text>
+      </v-card>
+    </v-expansion-panel-content>
+  </v-expansion-panel>
+
+                <v-subheader class="headline">Ausgewählte Datensets</v-subheader>
+                <v-divider></v-divider>
                 <v-form v-for="item in selected" :key="item.index">
                   <v-layout>
                     <v-flex
@@ -201,14 +340,10 @@
                     xs6
                     md6>
                     <v-text-field
-                      label="DNA Konzentration"
-                      single-line
-                      color="red"
-                      @input ="setConcetration"
+                    v-text="item.priority"
                     ></v-text-field>
                     </v-flex>
                     </v-layout>
-                    <v-divider></v-divider>
                 </v-form>
               </v-card-text>
               <v-divider></v-divider>
@@ -216,9 +351,17 @@
                 <v-btn
                   color="primary"
                   flat
-                  @click="extrahieren"
+                  @click="dialog=false"
                 >
-                  accept
+                  Abbrechen
+                </v-btn>
+
+                <v-btn
+                  color="primary"
+                  flat
+                  @click="sendRun"
+                >
+                  Starten
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -226,10 +369,13 @@
           </div>
           </v-card-text>
         </v-card>
+
+
+<!------------------------   THOSE ARE THE BUTTONS ON THE RIGHT SIDE TO NAVIGATE THE WORKPROCESS     -------------------->
        </v-flex>
              <v-item-group class="item-group">
                 <v-flex>
-                    <v-btn @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
+                    <v-btn outline @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
                       G
                      </v-btn>
                 </v-flex>
@@ -239,16 +385,33 @@
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
+                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
                         L
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn @click="changeworkflow('sequenziert')" class="processButton" fab dark large color="green">
+                    <v-btn outline @click="changeworkflow('sequenziert')" class="processButton" fab dark large color="green">
                         S
                      </v-btn>
                 </v-flex>
                 </v-item-group>
+<!------------------------   This is the notification that popsup when the transaction was successful    -------------------->    
+                <v-snackbar
+              v-model="snackbar"
+              :color="snackColor"
+              multi-line
+              :timeout="4000"
+
+            >
+              {{ snackText }}
+              <v-btn
+                dark
+                flat
+                @click="snackbar = false"
+              >
+                Close
+              </v-btn>
+            </v-snackbar>
             </v-layout>
 
   </v-container>
@@ -264,14 +427,30 @@ import {mapState} from 'vuex'
   export default {
 
     data: () => ({
+      snackText:'',
+      snackColor:'',
+      snackbar:false,
       dialog:false,
+      show:false,
       search:'',
       notifications: false,
       selected:[],
       sorted: {
         title: 'Bact-Nr', value: 'bactnr'
       },
-
+      libraryType:['Nextera XT'],
+      chosenLibrary: 'Nextera XT',
+      runSize:['4','24','48','96'],
+      chosenSize:'',
+      ngsmodality:['NextSeq'],
+      chosenModality:'NextSeq',
+      menu: false,
+      modal: false,
+      libraryDate: new Date().toISOString().substr(0, 10),
+      Seqmenu:false,
+      sequencingDate:new Date().toISOString().substr(0, 10),
+      runNr:1,
+      isorunnr:1,
       items: [
         { title: 'Bact-Nr', value: 'bactnr' },
         { title: 'Priority', value:'priority' },
@@ -305,7 +484,6 @@ import {mapState} from 'vuex'
         extractiondate:"",
         extractionvisum:"",
       },
-      testset:{},
     }),
     computed: {
           ...mapState(['ngs']),
@@ -334,6 +512,10 @@ import {mapState} from 'vuex'
     },
     methods:{
       changeworkflow(item){
+        for(var i=0; i<this.selected.length;i++){
+          this.selected[i].selected =false
+        }
+        this.selected = []
         this.$router.push('/'+item)
 
       },
@@ -367,33 +549,42 @@ import {mapState} from 'vuex'
       deleteSet(){
         confirm('Sollen folgende Datensets wirklich gelöscht werden? ') 
       },
-      startExtraction(){
-        var myDate = new Date();
-        var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
-        var date = ('0' + myDate.getDate()).slice(-2);
-        var year = myDate.getFullYear();
-        var formattedDate = year + '-' + month + '-' + date;
-        for(var i=0; i<this.selected.length;i++){
-          this.selected[i].concentration = 'N/A'
-          this.selected[i].extractiondate = formattedDate
-          this.selected[i].extractionvisum = 'User'
-        }
+      //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
+      startRun(){
         this.dialog=true
       },
-      setConcetration(value){
-
-        this.selected[0].concentration =parseInt(value)
-      },
-      //sends a dataset to the next processstep (extrahiert) and opens a popup 
- extrahieren(){
+      //sends a dataset to the next processstep (Lauf) and opens a popup 
+ sendRun(){
+          var myDate = new Date();
+          var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
+          var date = ('0' + myDate.getDate()).slice(-2);
+          var year = myDate.getFullYear();
+          var formattedDate = year + '-' + month + '-' + date;
 
         for(var i=0; i<this.selected.length;i++){
-          this.selected[i].processnr = 2
+          this.selected[i].processnr = 3
+          this.selected[i].runnr = this.runNr
+          this.selected[i].runtype = formattedDate
+          this.selected[i].isorunnr = this.isorunnr
+          this.selected[i].librarytype = this.chosenLibrary
+          this.selected[i].librarydate = this.libraryDate
+          this.selected[i].libraryvisum = 'User'
+          this.selected[i].sequencingdate = this.sequencingDate
+          this.selected[i].modality = this.chosenModality
+          this.isorunnr++
+          delete this.selected[i].selected
           this.$store.dispatch('putNgs', this.selected[i])
         }
+        this.snackColor="success"
+        this.snackText="Übertragung erfolgreich"
+        this.selected = []
+        this.dialog = false
+        this.snackbar =true
         this.selected = []
         this.dialog = false
       },
+      //Method that is being used for the checkboxes. It adds or removes the datasets to a list, which is used for handling the data that need to be send 
+      //to the next processstep
       selectPatient(patient){
         if (this.selected.includes(patient)) {
         // Removing the data

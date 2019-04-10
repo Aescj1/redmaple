@@ -4,7 +4,13 @@
 
 
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
-                    <v-card color="blue lighten-4" class="processCard" dark>
+                  <v-hover>
+                    <v-card color="blue lighten-4"         
+                    :class="`elevation-${hover ? 12 : 2}`"
+                    class="processCard" 
+                    dark 
+                    slot-scope="{hover }"
+                    @click="changeworkflow('geplant')">
                     <v-card-title primary class="title">Geplant<v-spacer></v-spacer><v-icon class="mr-1" @click="changeworkflow('geplant')" right>open_in_new</v-icon></v-card-title>
                     <v-img
                     class="picture"
@@ -26,10 +32,17 @@
                       </v-container>
                     </v-img>
                     </v-card>
+                  </v-hover>
                 </v-flex>
 
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
-                    <v-card color="blue lighten-4" class="processCard" dark>
+                  <v-hover>
+                    <v-card color="blue lighten-4"                     
+                    :class="`elevation-${hover ? 12 : 2}`"
+                    class="processCard" 
+                    dark 
+                    slot-scope="{hover }"
+                    @click="changeworkflow('extrahiert')">
                     <v-card-title primary class="title">Extrahiert<v-spacer></v-spacer><v-icon class="mr-1" @click="changeworkflow('extrahiert')" right>open_in_new</v-icon></v-card-title>
                     <v-img
                     class="picture"
@@ -51,10 +64,17 @@
                       </v-container>
                     </v-img>
                     </v-card>
+                    </v-hover>
                 </v-flex>
 
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
-                    <v-card color="blue lighten-4" class="processCard" dark>
+                  <v-hover>
+                    <v-card color="blue lighten-4"                     
+                    :class="`elevation-${hover ? 12 : 2}`"
+                    class="processCard" 
+                    dark 
+                    slot-scope="{hover }"
+                    @click="changeworkflow('lauf')">
                     <v-card-title primary class="title">Lauf<v-spacer></v-spacer><v-icon class="mr-1" @click="changeworkflow('lauf')" right>open_in_new</v-icon></v-card-title>
                     <v-img
                     class="picture"
@@ -76,10 +96,17 @@
                       </v-container>
                     </v-img>
                     </v-card>
+                    </v-hover>
                 </v-flex>
 
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
-                    <v-card color="blue lighten-4" class="processCard"  dark>
+                  <v-hover>
+                    <v-card color="blue lighten-4"                     
+                    :class="`elevation-${hover ? 12 : 2}`"
+                    class="processCard" 
+                    dark 
+                    slot-scope="{hover }"
+                    @click="changeworkflow('sequenziert')">
                     <v-card-title primary class="title">Sequenziert<v-spacer></v-spacer><v-icon class="mr-1" @click="changeworkflow('sequenziert')" right>open_in_new</v-icon></v-card-title>
                     <v-img
                     class="picture"
@@ -102,6 +129,7 @@
                       </v-container>
                     </v-img>
                     </v-card>
+                    </v-hover>
                 </v-flex>
 
     </v-layout>
@@ -109,22 +137,22 @@
             <v-layout >
              <v-item-group class="item-group">
                 <v-flex>
-                    <v-btn @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
+                    <v-btn outline @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
                       G
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
+                    <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
                         E
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
+                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
                         L
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn @click="changeworkflow('sequenziert')" class="processButton" fab dark large color="green">
+                    <v-btn outline @click="changeworkflow('sequenziert')" class="processButton" fab dark large color="green">
                         S
                      </v-btn>
                 </v-flex>

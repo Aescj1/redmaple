@@ -38,7 +38,7 @@ import {bus} from './main.js'
   },
 
     data: () => ({
-      isDark:true,
+      isDark:false,
       drawer: false,
       state: 0,
     }),

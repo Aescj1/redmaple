@@ -1,7 +1,8 @@
 <template>
   <v-container fluid grid-list-md>
     <v-layout  row wrap>
-      <v-flex d-flex xs12 sm12 md12 xl12 lg12>
+      <!--Defines the length of the toolbar (md12 = use all 12 grid columns on medium devices). the toolbar contains a search(row 29) and a sort button (row 8)  -->
+      <v-flex d-flex xs11 sm11 md11 xl11 lg11>
         <v-toolbar>
           <v-menu offset-y>
             <v-btn
@@ -23,11 +24,11 @@
             </v-list>
           </v-menu>
             <v-spacer></v-spacer>
-            <v-icon class="mr-1" @click="changeworkflow('workflow')" right>transit_enterexit</v-icon>
+            
           <v-spacer></v-spacer>
           <v-text-field
             hide-details
-             prepend-inner-icon="search"
+            prepend-inner-icon="search"
             single-line
             color="red"
             solo-inverted
@@ -37,6 +38,11 @@
             >
           </v-text-field>
         </v-toolbar>
+        </v-flex>
+        <v-flex d-flex xs1 sm1 md1 xl1 lg1>
+          <v-btn outline color="blue-grey darken-3" large @click="changeworkflow('workflow')">
+            <v-icon light>work</v-icon>
+          </v-btn>
         </v-flex>
               </v-layout>
 
@@ -197,6 +203,7 @@
               <v-card-text>
                 Sollen folgende Datensets extrahiert werden?
                 <v-form v-for="item in selected" :key="item.index">
+                  <v-divider></v-divider>
                   <v-layout>
                     <v-flex
                     xs6
@@ -216,7 +223,6 @@
                     ></v-text-field>
                     </v-flex>
                     </v-layout>
-                    <v-divider></v-divider>
                 </v-form>
               </v-card-text>
               <v-divider></v-divider>
@@ -242,24 +248,39 @@
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
+                    <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
                         E
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
+                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
                         L
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn @click="changeworkflow('sequenziert')" class="processButton" fab dark large color="green">
+                    <v-btn outline @click="changeworkflow('sequenziert')" class="processButton" fab dark large color="green">
                         S
                      </v-btn>
                 </v-flex>
                 </v-item-group>
             </v-layout>
+            <v-snackbar
+              v-model="snackbar"
+              :color="snackColor"
+              multi-line
+              :timeout="4000"
 
-  </v-container>
+            >
+              {{ snackText }}
+              <v-btn
+                dark
+                flat
+                @click="snackbar = false"
+              >
+                Close
+              </v-btn>
+            </v-snackbar>
+      </v-container>
 </template>
 
 
@@ -272,6 +293,9 @@ import {mapState} from 'vuex'
   export default {
 
     data: () => ({
+      snackText:'',
+      snackColor:'',
+      snackbar:false,
       dialog:false,
       search:'',
       notifications: false,
@@ -340,6 +364,10 @@ import {mapState} from 'vuex'
     methods:{
       //Method that allows to change the view.
       changeworkflow(item){
+        for(var i=0; i<this.selected.length;i++){
+          this.selected[i].selected =false
+        }
+        this.selected = []
         this.$router.push('/'+item)
 
       },
@@ -394,8 +422,12 @@ import {mapState} from 'vuex'
           delete this.selected[i].selected
           this.$store.dispatch('putNgs', this.selected[i])
         }
+        this.snackColor="success"
+        this.snackText="Übertragung erfolgreich"
         this.selected = []
         this.dialog = false
+        this.snackbar =true
+
       },
       selectPatient(patient){
         if (this.selected.includes(patient)) {

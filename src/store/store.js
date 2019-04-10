@@ -22,7 +22,6 @@ export default new Vuex.Store({
           
         }).catch((err) => {
             console.log(err)
-          
         })
     },
 
@@ -36,8 +35,7 @@ export default new Vuex.Store({
         
       }).catch((err) => {
           console.log(err)
-
-      })
+        })
       
     }
 
