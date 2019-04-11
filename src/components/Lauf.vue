@@ -263,7 +263,7 @@
               </v-layout>
             </v-container>
           </v-card-text>
-                      <div v-if="sorted.title == 'Lauf Nummer'" class="text-xs-right">
+            <div v-if="sorted.title == 'Lauf Nummer'" class="text-xs-right">
             <v-btn @click="deleteSet">löschen</v-btn>
               <v-btn
               color="primary"
@@ -325,7 +325,7 @@
               <v-divider></v-divider>
               <v-card-actions>
                 <v-btn
-                  color="primary"
+                  color="error"
                   flat
                   @click="dialog=false"
                 >
@@ -334,10 +334,10 @@
 
                 <v-btn
                   color="primary"
-                  flat
+                  
                   @click="sendRun"
                 >
-                  Starten
+                  Bestätigen
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -539,7 +539,7 @@ import {mapState} from 'vuex'
 
       //deletes a dataset
       deleteSet(){
-        confirm('Sollen folgende Datensets wirklich gelöscht werden? ') 
+        confirm('Sollen folgende Datensets endgültig gelöscht werden? Dies kann NICHT rückgängig gemacht werden! ') 
       },
       //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
       startRun(){
@@ -549,6 +549,9 @@ import {mapState} from 'vuex'
  sendRun(){
         for(var i=0; i<this.selected.length;i++){
           this.selected[i].processnr = 4
+          this.selected[i].sequencingvisum ="User"
+          this.selected[i].dataqualityvisum="User"
+
           this.$store.dispatch('putNgs', this.selected[i])
         }
         this.selected = []
