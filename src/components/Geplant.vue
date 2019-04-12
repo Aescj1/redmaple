@@ -55,7 +55,8 @@
             <v-list-tile
               class="tile"
               :key="patient.index"
-              @click="setCurrentData(patient)"
+              @click="setCurrentData(patient,index)"
+              :class="{'is-active': index == activeIndex}"
             >
                         <v-list-tile-action>
               <v-checkbox
@@ -219,6 +220,7 @@
                       label="DNA Konzentration"
                       single-line
                       color="red"
+                      type="number"
                       v-model ="item.concentration"
                     ></v-text-field>
                     </v-flex>
@@ -293,6 +295,7 @@ import {mapState} from 'vuex'
   export default {
 
     data: () => ({
+      activeIndex: null,
       snackText:'',
       snackColor:'',
       snackbar:false,
@@ -387,7 +390,8 @@ import {mapState} from 'vuex'
           else return date
         },
       //sets the currentPatient. Does a copy of the JS.Object which allows to change information without changing the source object. (needed for the date property)
-      setCurrentData(patient){
+      setCurrentData(patient,index){
+      this.activeIndex = index
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
       if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
       if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
@@ -453,4 +457,5 @@ import {mapState} from 'vuex'
   margin-left:10px;
   margin-top:80px;
 }
+
 </style>

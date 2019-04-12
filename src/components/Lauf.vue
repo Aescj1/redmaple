@@ -55,7 +55,8 @@
             <v-list-tile
               class="tile"
               :key="patient.index"
-              @click="setCurrentData(patient)"
+              @click="setCurrentData(patient,index)"
+              :class="{'is-active': index == activeIndex}"
             >
             <v-list-tile-action v-if="sorted.title == 'Lauf Nummer'">
               <v-checkbox
@@ -78,6 +79,8 @@
           </template>
         </v-list>
     </v-flex>
+
+    <!------------- This defines the expandables Rows that displays the content of the NGS List (only gets shown when selected Lauf Nummer) -->
         <v-flex d-flex xs9 sm9 md9 xl9 lg9>
           <v-card>
           <v-card-text v-if="this.sorted.value =='runnr'" class="scroll">
@@ -101,7 +104,6 @@
                             xs4
                             md4
                             >
-                             
                             <p><b>Wiederholung:</b> {{item.repetition}}</p>
                             <p><b>alternative ID:</b> {{item.altid}}</p>
                             <p><b>Priorität:</b> {{item.priority}}</p>
@@ -385,6 +387,7 @@ import {mapState} from 'vuex'
   export default {
 
     data: () => ({
+      activeIndex: null,
       dialog:false,
       show:false,
       search:'',
@@ -519,12 +522,12 @@ import {mapState} from 'vuex'
           else return date
         },
       //sets the currentPatient
-      setCurrentData(patient){
+      setCurrentData(patient,index){
+      this.activeIndex = index
         this.runList = []
         if(this.sorted.title == 'Lauf Nummer'){
           for(var i=0; i<patient.length;i++){
             this.runList.push(patient[i])
-
           }
         }
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
@@ -564,7 +567,7 @@ import {mapState} from 'vuex'
       },
       setSorted(item){
         this.sorted = item
-      }
+      },
     }
   }
 </script>
