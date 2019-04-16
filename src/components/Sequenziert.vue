@@ -146,7 +146,7 @@
           <!---------          This Parte defines the V-Card that gets displayed when the Filter is set to NGS Nummer     ----------------------------------->
           <v-card-text v-else-if="this.sorted.value =='ngsproject'" class="scroll">
               <!-- defines the Sortingbutton that is displayed when filter is set to NGS Nummer - contains Bact. Nr and so on ------------------>
-            <v-layout>
+            <v-layout style="max-height: -webkit-fill-available">
               <v-flex  xs3 sm3 md3 class="scroll">
                 <v-menu offset-y>
                   <v-btn
@@ -197,44 +197,44 @@
                 </v-list>
             </v-flex>
               <v-flex xs2 md2> 
-                <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer*" required></v-text-field>
-                <v-text-field v-model="currentDataset1.repetition" label="Wiederholung*" required></v-text-field>
-                <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
-                <v-text-field v-model="currentDataset1.priority" label="Priority*" required></v-text-field>
-                <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)*" required></v-text-field>
-                <v-text-field v-model="currentDataset1.lastname" label="Nachname*" required></v-text-field>
-                <v-text-field v-model="currentDataset1.firstname" label="Vorname*" required></v-text-field>
-                <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>           
-                <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang*" required></v-text-field>
+                <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer"  readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.repetition" label="Wiederholung" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.altid" label="alternative ID" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.priority" label="Priority" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.lastname" label="Nachname" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.firstname" label="Vorname" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum" readonly></v-text-field>           
+                <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang" readonly></v-text-field>
               </v-flex>
               <v-flex xs2 md2> 
-                <v-text-field v-model="currentDataset1.sender" label="Einsender*" required></v-text-field>
-                <v-text-field v-model="currentDataset1.department" label="Station*" required></v-text-field>
-                <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum"></v-text-field>
-                <v-text-field v-model="currentDataset1.material" label="Material*" required></v-text-field>
-                <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
-                <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-extraktion"></v-text-field>  
-                <v-text-field v-model="currentDataset1.concentration" label="DNA Konz. (ng/ul)"></v-text-field>
-                <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA"></v-text-field>
-                <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme"></v-text-field>              
+                <v-text-field v-model="currentDataset1.sender" label="Einsender" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.department" label="Station" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.material" label="Material" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-extraktion" readonly></v-text-field>  
+                <v-text-field v-model="currentDataset1.concentration" label="DNA Konz. (ng/ul)" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme" readonly></v-text-field>              
               </v-flex>
               <v-flex xs2 md2>
-                <v-text-field v-model="currentDataset1.runtype" label="Runtype"></v-text-field>
-                <v-text-field v-model="currentDataset1.runnr" label="NGS Run Nummer"></v-text-field>
-                <v-text-field v-model="currentDataset1.isorunnr" label="Isolat Run Nummer"></v-text-field>
-                <v-text-field v-model="currentDataset1.librarytype" label="Library Typ"></v-text-field>
-                <v-text-field v-model="currentDataset1.librarydate" label="Datum Library"></v-text-field>
-                <v-text-field v-model="currentDataset1.libraryvisum" label="Visum Library"></v-text-field>
-                <v-text-field v-model="currentDataset1.sequencingdate" label="Datum Sequenzierung"></v-text-field>
-                <v-text-field v-model="currentDataset1.modality" label="NGS-Gerät"></v-text-field>
-                <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>  
+                <v-text-field v-model="currentDataset1.runtype" label="Runtype" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.runnr" label="NGS Run Nummer" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.isorunnr" label="Isolat Run Nummer" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.librarytype" label="Library Typ" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.librarydate" label="Datum Library" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.libraryvisum" label="Visum Library" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.sequencingdate" label="Datum Sequenzierung" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.modality" label="NGS-Gerät" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.comment" label="Kommentar" readonly></v-text-field>  
               </v-flex>
               <v-flex xs2 md2>
-                <v-text-field v-model="currentDataset1.sequencingvisum" label="Sequenzierungs Visum"></v-text-field>
-                <v-text-field v-model="currentDataset1.dataqualityvisum" label="Datenqualität Visum"></v-text-field>
-                <v-text-field v-model="currentDataset1.oldinformation" label="Alte Information"></v-text-field>
-                <v-text-field v-model="currentDataset1.publicid" label="Public ID"></v-text-field>
-                <v-text-field v-model="currentDataset1.billing" label="Abrechnung"></v-text-field>
+                <v-text-field v-model="currentDataset1.sequencingvisum" label="Sequenzierungs Visum" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.dataqualityvisum" label="Datenqualität Visum" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.oldinformation" label="Alte Information" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.publicid" label="Public ID" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.billing" label="Abrechnung" readonly></v-text-field>
               </v-flex>
             </v-layout>
           </v-card-text>
@@ -666,9 +666,14 @@ import {mapState} from 'vuex'
         this.dialog = false
       },
       //Method that is being used for the checkboxes. It adds or removes the datasets to a list, which is used for handling the data that need to be send 
-      //to the next processstep
+      //to the next processstep. The if checks what the outersorting is, if it is ngs projekt it will check the checkboxes of the dataset inside a NGS Project on selection.
       selectRun(run){
         this.selected =run
+        if(this.sorted.value =='ngsproject'){
+          for(var i=0;i<run.length;i++){
+           run[i].selected = run.selected
+          }
+        }
       },
       //Method that sets the filter for the Sorted Property (Card where the Lists (Lauf NR or NGS Project NR) gets displayed)
       setSorted(item){
@@ -682,10 +687,9 @@ import {mapState} from 'vuex'
   }
 </script>
 <style>
-    .scroll {
-      overflow-y: auto;
-      max-height: 72vh;
-    }
+.scroll {
+  max-height: 71vh;
+}
 .item-group{
   text-align: center;
   margin-left:10px;

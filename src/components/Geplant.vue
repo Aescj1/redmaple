@@ -60,8 +60,8 @@
             >
                         <v-list-tile-action>
               <v-checkbox
-                v-model="filteredItems[index].selected"
-                @click.capture.stop="selectPatient(filteredItems[index])"
+                v-model="selected"
+                :value ="filteredItems[index]"
               ></v-checkbox>
             </v-list-tile-action> 
               <v-list-tile-content >
@@ -95,87 +95,40 @@
           </template>
         </v-list>
     </v-flex>
-        <v-flex d-flex xs9 sm9 md9 xl9 lg9>
+        <v-flex d-flex xs9 sm9 md9 xl9 lg9 style="max-height: -webkit-fill-available">
           <v-card>
           <v-card-text>
-            <v-container grid-list-md>
-              <v-layout wrap>
+              <v-layout wrap >
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-4">
-                    <v-flex> 
-                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex> 
-                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
+                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung" required></v-text-field>
                   <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.priority" label="Priority*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.lastname" label="lastName*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.firstname" label="fistName*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
+                  <v-text-field v-model="currentDataset1.priority" :mask="priorityMask" label="Priority" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.lastname" label="Nachname" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.firstname" label="Vorname" required></v-text-field>
             </v-card>
                 </v-flex>
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-3">
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.sender" label="Einsender*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.department" label="Station*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.material" label="Material*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
+                  <v-text-field v-model="currentDataset1.birthdate" :mask="dateMask" label="Geburtsdatum*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.isoentrydate" :mask="dateMask" label="Eingang*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.samplingdate" :mask="dateMask" label="Abnahme"></v-text-field>
+                  <v-text-field v-model="currentDataset1.sender" label="Einsender" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.department" label="Station" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.processingdate" :mask="dateMask" label="Bearbeitungsdatum"></v-text-field>
+                  <v-text-field v-model="currentDataset1.material" label="Material" required></v-text-field>
             </v-card>
                 </v-flex>
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-2">
-                <v-flex>
                   <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
-                </v-flex>
-                <v-flex>
+                  <v-text-field v-model="currentDataset1.billing" label="Abrechnung" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
-                </v-flex>
             </v-card>
                 </v-flex>
               </v-layout>
-            </v-container>
             <div class="text-xs-right">
             <v-btn @click="deleteSet">löschen</v-btn>
               <v-btn
@@ -221,6 +174,7 @@
                       single-line
                       color="red"
                       type="number"
+                      suffix="ng/µl"
                       v-model ="item.concentration"
                     ></v-text-field>
                     </v-flex>
@@ -295,6 +249,8 @@ import {mapState} from 'vuex'
   export default {
 
     data: () => ({
+      dateMask:'##-##-####',
+      priorityMask:'A',
       activeIndex: null,
       snackText:'',
       snackColor:'',
@@ -432,14 +388,6 @@ import {mapState} from 'vuex'
         this.dialog = false
         this.snackbar =true
 
-      },
-      selectPatient(patient){
-        if (this.selected.includes(patient)) {
-        // Removing the data
-        this.selected.splice(this.selected.indexOf(patient), 1);
-      } else {
-        this.selected.push(patient);
-      }
       },
       setSorted(item){
         this.sorted = item
