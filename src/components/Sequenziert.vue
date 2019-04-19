@@ -598,6 +598,7 @@ import {mapState} from 'vuex'
           this.selected[i].selected =false
         }
         this.selected = []
+        this.$store.state.export = this.selected;
         this.$router.push('/'+item)
 
       },
@@ -669,6 +670,7 @@ import {mapState} from 'vuex'
       //to the next processstep
       selectRun(run){
         this.selected =run
+        this.$store.state.export = this.selected;
       },
       //Method that sets the filter for the Sorted Property (Card where the Lists (Lauf NR or NGS Project NR) gets displayed)
       setSorted(item){

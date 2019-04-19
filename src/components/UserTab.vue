@@ -132,7 +132,7 @@ import {bus} from '../main.js'
     methods:{
       logout(){
         this.$router.push('/')
-        this.$store.state.drawerState = false
+        bus.$emit('drawerReset',false)
       },
 
       viewWorkflow(){

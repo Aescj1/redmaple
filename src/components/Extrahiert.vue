@@ -518,6 +518,7 @@ import {mapState} from 'vuex'
           this.selected[i].selected =false
         }
         this.selected = []
+        this.$store.state.export = this.selected;
         this.$router.push('/'+item)
 
       },
@@ -595,6 +596,7 @@ import {mapState} from 'vuex'
       } else {
         this.selected.push(patient);
       }
+      this.$store.state.export = this.selected;
       },
       setSorted(item){
         this.sorted = item

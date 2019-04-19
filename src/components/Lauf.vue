@@ -503,6 +503,7 @@ import {mapState} from 'vuex'
           this.selected[i].selected =false
         }
         this.selected = []
+        this.$store.state.export = this.selected;
         this.$router.push('/'+item)
 
       },
