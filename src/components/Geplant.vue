@@ -60,8 +60,8 @@
             >
                         <v-list-tile-action>
               <v-checkbox
-                v-model="selected"
-                :value ="filteredItems[index]"
+                v-model="filteredItems[index].selected"
+                @click.capture.stop="selectPatient(filteredItems[index])"
               ></v-checkbox>
             </v-list-tile-action> 
               <v-list-tile-content >
@@ -98,9 +98,10 @@
         <v-flex d-flex xs9 sm9 md9 xl9 lg9 style="max-height: -webkit-fill-available">
           <v-card>
           <v-card-text>
+            <v-container grid-list-md>
               <v-layout wrap >
                 <v-flex d-flex xs4 sm4 md4>
-            <v-card row wrap flat color="red lighten-4">
+            <v-card row wrap flat color="light-blue lighten-4">
                   <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer" required></v-text-field>
                   <v-text-field v-model="currentDataset1.repetition" label="Wiederholung" required></v-text-field>
                   <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
@@ -111,7 +112,7 @@
             </v-card>
                 </v-flex>
                 <v-flex d-flex xs4 sm4 md4>
-            <v-card row wrap flat color="red lighten-3">
+            <v-card row wrap flat color="light-blue lighten-3">
                   <v-text-field v-model="currentDataset1.birthdate" :mask="dateMask" label="Geburtsdatum*" required></v-text-field>
                   <v-text-field v-model="currentDataset1.isoentrydate" :mask="dateMask" label="Eingang*" required></v-text-field>
                   <v-text-field v-model="currentDataset1.samplingdate" :mask="dateMask" label="Abnahme"></v-text-field>
@@ -122,13 +123,15 @@
             </v-card>
                 </v-flex>
                 <v-flex d-flex xs4 sm4 md4>
-            <v-card row wrap flat color="red lighten-2">
+            <v-card row wrap flat color="light-blue lighten-2">
                   <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
                   <v-text-field v-model="currentDataset1.billing" label="Abrechnung" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
             </v-card>
                 </v-flex>
               </v-layout>
+            </v-container>
+
             <div class="text-xs-right">
             <v-btn @click="deleteSet">löschen</v-btn>
               <v-btn
@@ -199,17 +202,17 @@
        </v-flex>
              <v-item-group class="item-group">
                 <v-flex>
-                    <v-btn @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
+                    <v-btn @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="blue">
                       G
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
+                    <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="cyan">
                         E
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
+                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="teal">
                         L
                      </v-btn>
                 </v-flex>
@@ -338,7 +341,7 @@ import {mapState} from 'vuex'
       //Method to format the date into DD-MM-YYYY instead of the default JSON date
       dateformatter(date){  
           var str = date
-          if(str.length >12){
+           if( date != null && str.length >12){
           var day = str.substring(8, 10);
           var month = str.substring(5, 7);
           var year = str.substring(0, 4);
@@ -355,6 +358,15 @@ import {mapState} from 'vuex'
       if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
       if(this.currentDataset1.processingdate)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
 
+      },
+      selectPatient(patient){
+        if (this.selected.includes(patient)) {
+        // Removing the data
+        this.selected.splice(this.selected.indexOf(patient), 1);
+      } else {
+        this.selected.push(patient);
+      }
+      this.$store.state.export = this.selected
       },
 
       //deletes a dataset
@@ -386,6 +398,7 @@ import {mapState} from 'vuex'
         this.snackColor="success"
         this.snackText="Übertragung erfolgreich"
         this.selected = []
+        this.$store.state.export = this.selected
         this.dialog = false
         this.snackbar =true
 
@@ -406,5 +419,7 @@ import {mapState} from 'vuex'
   margin-left:10px;
   margin-top:80px;
 }
-
+.is-active{
+background-color:rgba(21, 109, 224, 0.226);
+}
 </style>

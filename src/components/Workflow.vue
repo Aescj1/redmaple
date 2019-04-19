@@ -5,7 +5,7 @@
 
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
                   <v-hover>
-                    <v-card color="blue lighten-4"         
+                    <v-card color="blue"         
                     :class="`elevation-${hover ? 12 : 2}`"
                     class="processCard" 
                     dark 
@@ -37,7 +37,7 @@
 
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
                   <v-hover>
-                    <v-card color="blue lighten-4"                     
+                    <v-card color="cyan"                     
                     :class="`elevation-${hover ? 12 : 2}`"
                     class="processCard" 
                     dark 
@@ -69,7 +69,7 @@
 
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
                   <v-hover>
-                    <v-card color="blue lighten-4"                     
+                    <v-card color="teal"                     
                     :class="`elevation-${hover ? 12 : 2}`"
                     class="processCard" 
                     dark 
@@ -101,7 +101,7 @@
 
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
                   <v-hover>
-                    <v-card color="blue lighten-4"                     
+                    <v-card color="green"                     
                     :class="`elevation-${hover ? 12 : 2}`"
                     class="processCard" 
                     dark 
@@ -137,17 +137,17 @@
             <v-layout >
              <v-item-group class="item-group">
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
+                    <v-btn outline @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="blue">
                       G
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
+                    <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="cyan">
                         E
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
+                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="teal">
                         L
                      </v-btn>
                 </v-flex>

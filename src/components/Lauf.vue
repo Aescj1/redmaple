@@ -80,7 +80,6 @@
           <v-card-text v-if="this.sorted.value =='runnr'" class="scroll">
             <v-expansion-panel>
                   <v-expansion-panel-content 
-                  class="grey lighten-2" 
                   v-for="(item, index) in orderedRunList "
                   :key="index"
                   >
@@ -89,10 +88,9 @@
                     <span class="spacer"><b> Run Nr.:</b> {{item.runnr}}</span>
                     <span class="spacer"><b> NGS-Nr:</b> {{item.isorunnr}}</span>
                     <span class="spacer"><b>Patientenname:</b> {{item.lastname}} {{item.firstname}} </span>
-
                     </div>
                      <v-card>
-                        <v-card-text class="grey lighten-4"> 
+                        <v-card-text class="teal lighten-4"> 
                           <v-layout>
                             <v-flex
                             xs4
@@ -142,118 +140,50 @@
               <v-layout wrap>
                 <!--Defines the first red square that contains meta data  -->
                 <v-flex d-flex xs3 sm3 md3>
-            <v-card row wrap flat color="red lighten-4">
-                    <v-flex> 
+            <v-card row wrap flat color="teal  lighten-4">
                   <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex> 
                   <v-text-field v-model="currentDataset1.repetition" label="Wiederholung*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.priority" label="Priority*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.lastname" label="lastName*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.firstname" label="fistName*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
             </v-card>
                 </v-flex>
                 <!--Defines the second red square that contains meta data  -->
                 <v-flex d-flex xs3 sm3 md3>
-            <v-card row wrap flat color="red lighten-3">
-                <v-flex >
+            <v-card row wrap flat color="teal  lighten-3">
                   <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.sender" label="Einsender*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.department" label="Station*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.material" label="Material*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
             </v-card>
                 </v-flex>
 
               <!--Defines the third red square that contains meta data  -->
                 <v-flex d-flex xs3 sm3 md3>
-            <v-card row wrap flat color="red lighten-2">
-                <v-flex>
+            <v-card row wrap flat color="teal  lighten-2">
                   <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-Prep"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.concentration" label="DNA Konz. (ng/ul)"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.runtype" label="runtype"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.runnr" label="NGS Run Nummer"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.isorunnr" label="Isolat Run Nummer"></v-text-field>
-                </v-flex>
             </v-card>
                 </v-flex>
             <!--Defines the fourth red square that contains meta data  -->
             <v-flex d-flex xs3 sm3 md3>
-            <v-card row wrap flat color="red lighten-2">
-                <v-flex>
+            <v-card row wrap flat color="teal  lighten-2">
                   <v-text-field v-model="currentDataset1.librarytype" label="Library Typ"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.librarydate" label="Datum Library"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.libraryvisum" label="Visum Library"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.sequencingdate" label="Datum Sequenzierung"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.modality" label="NGS-Gerät"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
-                </v-flex>
             </v-card>
                 </v-flex>
               </v-layout>
@@ -287,15 +217,6 @@
               </div>
               </v-card-title>
                 <v-card-text>
-     <!--             <v-expansion-panel expand>
-                    <v-expansion-panel-content class="grey lighten-2">
-                      <div slot="header"  grey>Sequenzierungslauf Einstellungen</div>
-                      <v-card>
-                        <v-card-text class="grey lighten-4">
-                        </v-card-text>
-                        </v-card>
-                    </v-expansion-panel-content>
-                  </v-expansion-panel>-->
                 <v-subheader class="headline">Run Nummer: <b>{{this.currentDataset1.runnr}}</b></v-subheader>
                 <v-subheader class="body-2">Enthaltene Datensets</v-subheader>
                 <v-divider></v-divider>
@@ -346,17 +267,17 @@
        </v-flex>
              <v-item-group class="item-group">
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
+                    <v-btn outline @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="blue">
                       G
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
+                    <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="cyan">
                         E
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn  @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
+                    <v-btn  @click="changeworkflow('lauf')" class="processButton" fab dark large color="teal">
                         L
                      </v-btn>
                 </v-flex>
@@ -499,7 +420,7 @@ import {mapState} from 'vuex'
 
         dateformatter(date){  
           var str = date
-          if(str.length >12){
+          if( date != null && str.length >12){
           var day = str.substring(8, 10);
           var month = str.substring(5, 7);
           var year = str.substring(0, 4);
@@ -511,11 +432,15 @@ import {mapState} from 'vuex'
       setCurrentData(patient,index){
       this.activeIndex = index
         this.runList = []
+      this.$store.state.export = this.selected
+
         if(this.sorted.title == 'Lauf Nummer'){
           this.selected = patient
           for(var i=0; i<patient.length;i++){
             this.runList.push(patient[i])
           }
+          this.$store.state.export = this.runList
+
         }
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
       if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
@@ -546,6 +471,7 @@ import {mapState} from 'vuex'
           this.$store.dispatch('putNgs', this.selected[i])
         }
         this.selected = []
+        this.$store.state.export = this.selected
         this.dialog = false
       },
       setSorted(item){

@@ -86,7 +86,7 @@
           <v-card-text v-if="this.sorted.value =='runnr'" class="scroll">
             <v-expansion-panel>
                   <v-expansion-panel-content 
-                  class="grey lighten-2" 
+                  class="green lighten-2" 
                   v-for="(item, index) in orderedRunList "
                   :key="index"
                   >
@@ -98,7 +98,7 @@
 
                     </div>
                      <v-card>
-                        <v-card-text class="grey lighten-4"> 
+                        <v-card-text class="green lighten-4"> 
                           <v-layout>
                             <v-flex
                             xs4
@@ -196,7 +196,8 @@
                   </template>
                 </v-list>
             </v-flex>
-              <v-flex xs2 md2> 
+              <v-flex xs2 md2 > 
+                <v-card row wrap flat color="green lighten-4">
                 <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer"  readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.repetition" label="Wiederholung" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.altid" label="alternative ID" readonly></v-text-field>
@@ -206,8 +207,10 @@
                 <v-text-field v-model="currentDataset1.firstname" label="Vorname" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum" readonly></v-text-field>           
                 <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang" readonly></v-text-field>
+                </v-card>
               </v-flex>
               <v-flex xs2 md2> 
+                <v-card row wrap flat color="green lighten-3">
                 <v-text-field v-model="currentDataset1.sender" label="Einsender" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.department" label="Station" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum" readonly></v-text-field>
@@ -216,9 +219,11 @@
                 <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-extraktion" readonly></v-text-field>  
                 <v-text-field v-model="currentDataset1.concentration" label="DNA Konz. (ng/ul)" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA" readonly></v-text-field>
-                <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme" readonly></v-text-field>              
+                <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme" readonly></v-text-field>     
+                </v-card>         
               </v-flex>
-              <v-flex xs2 md2>
+              <v-flex xs2 md2> 
+                <v-card row wrap flat color="green lighten-2">
                 <v-text-field v-model="currentDataset1.runtype" label="Runtype" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.runnr" label="NGS Run Nummer" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.isorunnr" label="Isolat Run Nummer" readonly></v-text-field>
@@ -228,13 +233,16 @@
                 <v-text-field v-model="currentDataset1.sequencingdate" label="Datum Sequenzierung" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.modality" label="NGS-Gerät" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.comment" label="Kommentar" readonly></v-text-field>  
+                </v-card>
               </v-flex>
-              <v-flex xs2 md2>
+              <v-flex xs2 md2> 
+                <v-card row wrap flat color="green lighten-1">
                 <v-text-field v-model="currentDataset1.sequencingvisum" label="Sequenzierungs Visum" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.dataqualityvisum" label="Datenqualität Visum" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.oldinformation" label="Alte Information" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.publicid" label="Public ID" readonly></v-text-field>
                 <v-text-field v-model="currentDataset1.billing" label="Abrechnung" readonly></v-text-field>
+                </v-card>
               </v-flex>
             </v-layout>
           </v-card-text>
@@ -243,121 +251,54 @@
             <v-container grid-list-md>
               <v-layout wrap>
                 <!--Defines the first red square that contains meta data  -->
-                <v-flex d-flex xs2 sm2 md2>
-            <v-card row wrap flat color="red lighten-4">
-                    <v-flex> 
-                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex> 
-                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.priority" label="Priority*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.lastname" label="lastName*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.firstname" label="fistName*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-            </v-card>
-                </v-flex>
-                <!--Defines the second red square that contains meta data  -->
-                <v-flex d-flex xs3 sm3 md3>
-            <v-card row wrap flat color="red lighten-3">
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.sender" label="Einsender*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.department" label="Station*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
-                  <v-text-field v-model="currentDataset1.material" label="Material*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-            </v-card>
-                </v-flex>
-
-              <!--Defines the third red square that contains meta data  -->
-                <v-flex d-flex xs3 sm3 md3>
-            <v-card row wrap flat color="red lighten-2">
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-Prep"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.concentration" label="DNA Konz. (ng/ul)"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.runtype" label="runtype"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.runnr" label="NGS Run Nummer"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.isorunnr" label="Isolat Run Nummer"></v-text-field>
-                </v-flex>
-            </v-card>
-                </v-flex>
-            <!--Defines the fourth red square that contains meta data  -->
-            <v-flex d-flex xs3 sm3 md3>
-            <v-card row wrap flat color="red lighten-2">
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.librarytype" label="Library Typ"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.librarydate" label="Datum Library"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.libraryvisum" label="Visum Library"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.sequencingdate" label="Datum Sequenzierung"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.modality" label="NGS-Gerät"></v-text-field>
-                </v-flex>
-                <v-flex>
-                  <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
-                </v-flex>
-            </v-card>
-                </v-flex>
+              <v-flex xs3 md3 > 
+                <v-card row wrap flat color="green lighten-4">
+                <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer"  readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.repetition" label="Wiederholung" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.altid" label="alternative ID" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.priority" label="Priority" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.lastname" label="Nachname" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.firstname" label="Vorname" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum" readonly></v-text-field>           
+                <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang" readonly></v-text-field>
+                </v-card>
+              </v-flex>
+              <v-flex xs3 md3> 
+                <v-card row wrap flat color="green lighten-3">
+                <v-text-field v-model="currentDataset1.sender" label="Einsender" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.department" label="Station" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.material" label="Material" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-extraktion" readonly></v-text-field>  
+                <v-text-field v-model="currentDataset1.concentration" label="DNA Konz. (ng/ul)" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme" readonly></v-text-field>     
+                </v-card>         
+              </v-flex>
+              <v-flex xs3 md3> 
+                <v-card row wrap flat color="green lighten-2">
+                <v-text-field v-model="currentDataset1.runtype" label="Runtype" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.runnr" label="NGS Run Nummer" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.isorunnr" label="Isolat Run Nummer" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.librarytype" label="Library Typ" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.librarydate" label="Datum Library" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.libraryvisum" label="Visum Library" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.sequencingdate" label="Datum Sequenzierung" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.modality" label="NGS-Gerät" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.comment" label="Kommentar" readonly></v-text-field>  
+                </v-card>
+              </v-flex>
+              <v-flex xs3 md3> 
+                <v-card row wrap flat color="green lighten-1">
+                <v-text-field v-model="currentDataset1.sequencingvisum" label="Sequenzierungs Visum" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.dataqualityvisum" label="Datenqualität Visum" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.oldinformation" label="Alte Information" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.publicid" label="Public ID" readonly></v-text-field>
+                <v-text-field v-model="currentDataset1.billing" label="Abrechnung" readonly></v-text-field>
+                </v-card>
+              </v-flex>
               </v-layout>
             </v-container>
           
@@ -435,17 +376,17 @@
        </v-flex>
              <v-item-group class="item-group">
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
+                    <v-btn outline @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="blue">
                       G
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
+                    <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="cyan">
                         E
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
+                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="teal">
                         L
                      </v-btn>
                 </v-flex>
@@ -598,6 +539,7 @@ import {mapState} from 'vuex'
           this.selected[i].selected =false
         }
         this.selected = []
+        this.$store.state.export = this.selected
         this.$router.push('/'+item)
 
       },
@@ -608,7 +550,7 @@ import {mapState} from 'vuex'
         //Method that formats the date into the EU standard DD-MM-YYYY
         dateformatter(date){  
           var str = date
-          if(str &&str.length >12){
+           if( date != null && str.length >12){
           var day = str.substring(8, 10);
           var month = str.substring(5, 7);
           var year = str.substring(0, 4);
@@ -636,7 +578,7 @@ import {mapState} from 'vuex'
       //Method that copied the data from the ngs information, creates a new object ad applies it to the currentDataset which then gets displayed in textfields.
       setCurrentInnerData(patient,index){
       this.innerActiveIndex = index
-        this.isLoading =!this.isLoading
+      this.isLoading =!this.isLoading
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
         if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
         if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
@@ -663,12 +605,14 @@ import {mapState} from 'vuex'
           this.$store.dispatch('putNgs', this.selected[i])
         }*/
         this.selected = []
+        this.$store.state.export = this.selected
         this.dialog = false
       },
       //Method that is being used for the checkboxes. It adds or removes the datasets to a list, which is used for handling the data that need to be send 
       //to the next processstep. The if checks what the outersorting is, if it is ngs projekt it will check the checkboxes of the dataset inside a NGS Project on selection.
       selectRun(run){
         this.selected =run
+        this.$store.state.export = this.selected
         if(this.sorted.value =='ngsproject'){
           for(var i=0;i<run.length;i++){
            run[i].selected = run.selected
@@ -699,6 +643,6 @@ import {mapState} from 'vuex'
   margin-left: 10%;
 }
 .is-active{
-background-color:rgba(224, 21, 21, 0.226);
+background-color:rgba(21, 109, 224, 0.226);
 }
 </style>

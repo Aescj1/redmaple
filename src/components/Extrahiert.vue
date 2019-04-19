@@ -61,8 +61,8 @@
             >
             <v-list-tile-action>
               <v-checkbox
-                v-model="selected"
-                :value ="filteredItems[index]"
+                v-model="filteredItems[index].selected"
+                @click.capture.stop="selectPatient(filteredItems[index])"
               ></v-checkbox>
             </v-list-tile-action> 
               <v-list-tile-content >
@@ -86,89 +86,37 @@
               <v-layout wrap>
                 <!--Defines the first red square that contains meta data  -->
                 <v-flex d-flex xs4 sm4 md4>
-            <v-card row wrap flat color="red lighten-4">
-                    <v-flex> 
+            <v-card row wrap flat color="cyan lighten-4">
                   <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex> 
                   <v-text-field v-model="currentDataset1.repetition" label="Wiederholung*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.priority" :mask="priorityMask" label="Priority*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.lastname" label="lastName*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.firstname" label="fistName*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
             </v-card>
                 </v-flex>
                 <!--Defines the second red square that contains meta data  -->
                 <v-flex d-flex xs4 sm4 md4>
-            <v-card row wrap flat color="red lighten-3">
-                <v-flex >
+            <v-card row wrap flat color="cyan lighten-3">
                   <v-text-field v-model="currentDataset1.birthdate" :mask="dateMask" label="Geburtsdatum*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.isoentrydate" :mask="dateMask" label="Eingang*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.samplingdate" :mask="dateMask" label="Abnahme"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.sender" label="Einsender*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.department" label="Station*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.processingdate" :mask="dateMask" label="Bearbeitungsdatum"></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex >
                   <v-text-field v-model="currentDataset1.material" label="Material*" required></v-text-field>
-                </v-flex>
-                <v-spacer></v-spacer>
             </v-card>
                 </v-flex>
 
               <!--Defines the third red square that contains meta data  -->
                 <v-flex d-flex xs4 sm4 md4>
-            <v-card row wrap flat color="red lighten-2">
-                <v-flex>
+            <v-card row wrap flat color="cyan lighten-2">
                   <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.extractiondate" :mask="dateMask" label="Datum DNA-Prep"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.concentration" suffix="ng/µl" label="DNA Konzentration"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA"></v-text-field>
-                </v-flex>
-                <v-flex>
                   <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
-                </v-flex>
             </v-card>
                 </v-flex>
               </v-layout>
@@ -374,17 +322,17 @@
        </v-flex>
              <v-item-group class="item-group">
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="purple">
+                    <v-btn outline @click="changeworkflow('geplant')" class="processButton" id="first" fab dark large color="blue">
                       G
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="red">
+                    <v-btn @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="cyan">
                         E
                      </v-btn>
                 </v-flex>
                 <v-flex>
-                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="blue">
+                    <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="teal">
                         L
                      </v-btn>
                 </v-flex>
@@ -529,7 +477,7 @@ import {mapState} from 'vuex'
 
         dateformatter(date){  
           var str = date
-          if(str.length >12){
+          if( date != null && str.length >12){
           var day = str.substring(8, 10);
           var month = str.substring(5, 7);
           var year = str.substring(0, 4);
@@ -547,6 +495,15 @@ import {mapState} from 'vuex'
       if(this.currentDataset1.processingdate)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
       if(this.currentDataset1.extractiondate)this.currentDataset1.extractiondate = this.dateformatter(this.currentDataset1.extractiondate)
 
+      },
+      selectPatient(patient){
+        if (this.selected.includes(patient)) {
+        // Removing the data
+        this.selected.splice(this.selected.indexOf(patient), 1);
+      } else {
+        this.selected.push(patient);
+      }
+      this.$store.state.export = this.selected
       },
 
       //deletes a dataset
@@ -582,6 +539,7 @@ import {mapState} from 'vuex'
         this.snackColor="success"
         this.snackText="Übertragung erfolgreich"
         this.selected = []
+        this.$store.state.export = this.selected
         this.dialog = false
         this.snackbar =true
         this.selected = []

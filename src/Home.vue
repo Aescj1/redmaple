@@ -110,14 +110,12 @@ import {mapState} from 'vuex'
        this.ngsList[i].entrydate = this.dateFormat(this.ngsList[i].entrydate)
        this.ngsList[i].isoentrydate = this.dateFormat(this.ngsList[i].isoentrydate)
        this.ngsList[i].samplingdate = this.dateFormat(this.ngsList[i].samplingdate)
-        console.log(this.ngsList[i])
         this.ngsList[i].processnr = 1
         this.$store.dispatch('putNgs', this.ngsList[i])
         }
         }
         this.ngsList = []
         this.dialog = false
-        console.log("DONE?")
     },
     dateFormat(date){
       var str = date
@@ -212,5 +210,8 @@ overflow:auto;
 .main{
     overflow-y: unset !important;
     height:100vh;
+}
+.test{
+  font-size: 3em;
 }
 </style>
