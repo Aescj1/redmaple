@@ -58,12 +58,6 @@
               @click="setCurrentData(patient,index)"
               :class="{'is-active': index == activeIndex}"
             >
-            <v-list-tile-action v-if="sorted.title == 'Lauf Nummer'">
-              <v-checkbox
-                v-model="filteredItems[index].selected"
-                @click.capture.stop="selectRun(filteredItems[index])"
-              ></v-checkbox>
-            </v-list-tile-action> 
               <v-list-tile-content >
                 <v-list-tile-title v-if="sorted.title == 'Bact-Nr' ||sorted.title == 'Priority' ">{{patient.bactnr}}</v-list-tile-title>
                 <v-list-tile-title v-if="sorted.title == 'Pathogen'">{{patient.pathogen}}</v-list-tile-title>
@@ -270,10 +264,10 @@
               <v-btn
               color="primary"
               dark
-              @click.stop="startRun"
+              @click.stop="startRun()"
               v-if="this.selected.length>0"
               >
-                Run konfigurieren
+              Run abschliessen
               </v-btn>
 
 <!----------- THIS is the popup for the additional data input to bring the data to the next processstepp    -->
@@ -302,7 +296,7 @@
                         </v-card>
                     </v-expansion-panel-content>
                   </v-expansion-panel>-->
-                <v-subheader class="headline">Run Nummer: <b>0</b></v-subheader>
+                <v-subheader class="headline">Run Nummer: <b>{{this.currentDataset1.runnr}}</b></v-subheader>
                 <v-subheader class="body-2">Enthaltene Datensets</v-subheader>
                 <v-divider></v-divider>
                 <v-form v-for="item in selected" :key="item.index">
@@ -397,15 +391,6 @@ import {mapState} from 'vuex'
         title: 'Lauf Nummer', value: 'runnr'
       },
       runList:[],
-
-      libraryType:['Nextera XT'],
-      chosenLibrary: 'Nextera XT',
-
-      runSize:['4','24','48','96'],
-      chosenSize:'',
-
-      ngsmodality:['NextSeq'],
-      chosenModality:'NextSeq',
 
       menu: false,
       modal: false,
@@ -527,6 +512,7 @@ import {mapState} from 'vuex'
       this.activeIndex = index
         this.runList = []
         if(this.sorted.title == 'Lauf Nummer'){
+          this.selected = patient
           for(var i=0; i<patient.length;i++){
             this.runList.push(patient[i])
           }
@@ -548,6 +534,7 @@ import {mapState} from 'vuex'
       //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
       startRun(){
         this.dialog=true
+        this.currentDataset1.runnr = this.selected[0].runnr
       },
       //sends a dataset to the next processstep (Lauf) and opens a popup 
  sendRun(){
@@ -560,11 +547,6 @@ import {mapState} from 'vuex'
         }
         this.selected = []
         this.dialog = false
-      },
-      //Method that is being used for the checkboxes. It adds or removes the datasets to a list, which is used for handling the data that need to be send 
-      //to the next processstep
-      selectRun(run){
-        this.selected =run
       },
       setSorted(item){
         this.sorted = item
