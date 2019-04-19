@@ -587,17 +587,6 @@ import {mapState} from 'vuex'
         this.selected = []
         this.dialog = false
       },
-      //Method that is being used for the checkboxes. It adds or removes the datasets to a list, which is used for handling the data that need to be send 
-      //to the next processstep
-      selectPatient(patient){
-        if (this.selected.includes(patient)) {
-        // Removing the data
-        this.selected.splice(this.selected.indexOf(patient), 1);
-      } else {
-        this.selected.push(patient);
-      }
-      this.$store.state.export = this.selected;
-      },
       setSorted(item){
         this.sorted = item
       }
