@@ -61,8 +61,8 @@
             >
             <v-list-tile-action>
               <v-checkbox
-                v-model="filteredItems[index].selected"
-                @click.capture.stop="selectPatient(filteredItems[index])"
+                v-model="selected"
+                :value ="filteredItems[index]"
               ></v-checkbox>
             </v-list-tile-action> 
               <v-list-tile-content >
@@ -100,7 +100,7 @@
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.priority" label="Priority*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.priority" :mask="priorityMask" label="Priority*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
@@ -121,15 +121,15 @@
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="red lighten-3">
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.birthdate" :mask="dateMask" label="Geburtsdatum*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.isoentrydate" :mask="dateMask" label="Eingang*" required></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme"></v-text-field>
+                  <v-text-field v-model="currentDataset1.samplingdate" :mask="dateMask" label="Abnahme"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
@@ -141,7 +141,7 @@
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
-                  <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum"></v-text-field>
+                  <v-text-field v-model="currentDataset1.processingdate" :mask="dateMask" label="Bearbeitungsdatum"></v-text-field>
                 </v-flex>
                 <v-spacer></v-spacer>
                 <v-flex >
@@ -158,10 +158,10 @@
                   <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
                 </v-flex>
                 <v-flex>
-                  <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-Prep"></v-text-field>
+                  <v-text-field v-model="currentDataset1.extractiondate" :mask="dateMask" label="Datum DNA-Prep"></v-text-field>
                 </v-flex>
                 <v-flex>
-                  <v-text-field v-model="currentDataset1.concentration" label="DNA Konz. (ng/ul)"></v-text-field>
+                  <v-text-field v-model="currentDataset1.concentration" suffix="ng/µl" label="DNA Konzentration"></v-text-field>
                 </v-flex>
                 <v-flex>
                   <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA"></v-text-field>
@@ -318,8 +318,6 @@
                     readonly
                     ></v-text-field>
                     <v-date-picker v-model="sequencingDate" no-title scrollable actions @input="Seqmenu =false" locale="de">
-                      <template>
-                      </template>
                     </v-date-picker>
                 </v-menu></v-card-text>
       </v-card>
@@ -428,6 +426,8 @@ import {mapState} from 'vuex'
   export default {
 
     data: () => ({
+      dateMask:'##-##-####',
+      priorityMask:'A',
       activeIndex: null,
       snackText:'',
       snackColor:'',
@@ -587,11 +587,12 @@ import {mapState} from 'vuex'
         this.selected = []
         this.dialog = false
       },
+      },
       setSorted(item){
         this.sorted = item
       }
     }
-  }
+
 </script>
 <style>
     .scroll {
