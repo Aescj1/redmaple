@@ -5,7 +5,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 
 //Check if this works on the server
-const REST_BASE_URL = 'http://127.0.0.1:3000/api/'
+const REST_BASE_URL = 'http://147.87.118.201:3000/api/'
 
 Vue.use(Vuex, axios)
 
