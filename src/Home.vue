@@ -134,7 +134,7 @@ import {mapState} from 'vuex'
       escapeChar: ' ',
       delimiter: ';', //sets the delimiter, each delimiter gets read as new column
       header: true,
-      skipEmptyLines: false, //or 'greedy',
+      skipEmptyLines: false, //or 'greedy', greedy will grab all the information and not skip
       columns: null //or array of strings
 
     });
