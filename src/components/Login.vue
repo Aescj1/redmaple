@@ -63,6 +63,7 @@
     </v-content>
 </template>
 <script>
+/* eslint-disable */
 import {mapState} from 'vuex'
 
   export default {
@@ -88,7 +89,7 @@ import {mapState} from 'vuex'
       submit () {
         if ((this.$refs.form.validate())) {
           // Native form submission is not yet supported
-          //this.$router.push('/workflow')
+          this.$router.push('/workflow')
           this.$socket.emit('unlock', 13)
           }
         },
