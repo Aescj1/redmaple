@@ -88,14 +88,15 @@ import {mapState} from 'vuex'
       submit () {
         if ((this.$refs.form.validate())) {
           // Native form submission is not yet supported
-          this.$router.push('/workflow')
+          //this.$router.push('/workflow')
+          this.$socket.emit('unlock', 13)
           }
         },
         clear () {
         this.$refs.form.reset()
-        // eslint-disable-next-line
         console.log(this.ngs)
-        this.$store.dispatch('putNgs', this.json)
+        //this.$store.dispatch('putNgs', this.json)
+        this.$socket.emit('lock', 13)
       }
       },
 
