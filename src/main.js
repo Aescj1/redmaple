@@ -11,7 +11,7 @@ import VueSocketIO from 'vue-socket.io'
 
 Vue.use(new VueSocketIO({
 debug: true,
-    connection: SocketIO('http://147.87.118.201:3000'), //options object is optional
+    connection: SocketIO('http://147.87.118.201:3000'), //Change to localhost for development
     vuex: {
       store,
       actionPrefix: 'socket_',
@@ -23,7 +23,7 @@ debug: true,
 
 Vue.use(VueRouter);
 
-const router = new VueRouter({
+export const router = new VueRouter({
     routes,
     mode:'history',
 
@@ -35,5 +35,8 @@ export const bus = new Vue()
 new Vue({
  router,
  store,
+ beforeCreate() {
+  this.$store.commit('initialiseStore');
+},
  render: h => h(Home)
 }).$mount('#app')

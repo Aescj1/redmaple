@@ -65,6 +65,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import {mapState} from 'vuex'
 import {bus} from '../main.js';
 
@@ -111,6 +112,12 @@ import {bus} from '../main.js';
           return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
         } 
       }, 
+    mounted(){
+      this.$store.dispatch('loadNgs')
+      .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+      })
+    },
     created () {
       bus.$on('hideHeader', (data) =>{
       this.headerindex = data;

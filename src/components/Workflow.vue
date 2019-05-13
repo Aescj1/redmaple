@@ -2,6 +2,21 @@
   <v-container fill-height fluid >
     <v-layout row wrap grid-list-md>
 
+    <div>
+      <v-btn outline @click="testCreate()">Create Test Dataset</v-btn>
+      <v-btn outline @click="testDelete()">Delete Test Dataset</v-btn>
+    </div>
+
+    <div>
+      <v-btn outline @click="testCreatePathogen()">Create Test Pathogen</v-btn>
+      <v-btn outline @click="testDeletePathogen()">Delete Test Pathogen</v-btn>
+    </div>
+
+    <div>  
+      <v-btn outline @click="testLock()">Request Lock</v-btn>
+      <v-btn outline @click="testUnlock()">Request Unlock</v-btn>
+      <v-btn outline @click="testUnlockAll()">Unlock all</v-btn>
+    </div>
 
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
                   <v-hover>
@@ -20,7 +35,7 @@
                       <v-container fill-height fluid>
                         <v-layout fill-height>
                           <v-flex class="infoHolder" xs12 align-end flexbox>
-                            <span class="headline">Anzahl Datensätze: {{getGeplant(1)}}</span>
+                            <span class="headline">Anzahl Datensätze: {{count(1)}}</span>
                             <br>
                             <span class="headline">Priorität "A": {{getPriority("A",1)}}</span>
                             <br>
@@ -52,7 +67,7 @@
                       <v-container fill-height fluid>
                         <v-layout fill-height>
                           <v-flex class="infoHolder" xs12 align-end flexbox>
-                            <span class="headline">Anzahl Datensätze: {{getGeplant(2)}}</span>
+                            <span class="headline">Anzahl Datensätze: {{count(2)}}</span>
                             <br>
                             <span class="headline">Priorität "A": {{getPriority("A",2)}}</span>
                             <br>
@@ -84,7 +99,7 @@
                       <v-container fill-height fluid>
                         <v-layout fill-height>
                           <v-flex class="infoHolder" xs12 align-end flexbox>
-                            <span class="headline">Anzahl Datensätze: {{getGeplant(3)}}</span>
+                            <span class="headline">Anzahl Datensätze: {{count(3)}}</span>
                             <br>
                             <span class="headline">Priorität "A": {{getPriority("A",3)}}</span>
                             <br>
@@ -117,7 +132,7 @@
                       <v-container fill-height fluid>
                         <v-layout fill-height>
                           <v-flex class="infoHolder" xs12 align-end flexbox>
-                            <span class="headline">Anzahl Datensätze: {{getGeplant(4)}}</span>
+                            <span class="headline">Anzahl Datensätze: {{count(4)}}</span>
                             <br>
                             <span class="headline">Priorität "A": {{getPriority("A",4)}}</span>
                             <br>
@@ -163,6 +178,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import {mapState} from 'vuex'
 
 
@@ -171,16 +187,37 @@ import {mapState} from 'vuex'
       
     },
     data: () => ({
-    
+      json:{
+        "bactnr":"8882",
+        "name":"TEST PUT"
+        },
+        pjson:{
+        "Abbreviation": "test",
+        "Name": "test pathogen",
+        },
+        id:{
+          "id": "12"
+        }
     }),
+    mounted(){
+      this.$store.dispatch('loadNgs')
+      .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+      }),
+      this.$store.dispatch('loadPathogen')
+      .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+      })
+    },
     computed:{
       ...mapState(['ngs']),
+      ...mapState(['pathogen'])
     },
     methods:{
-            changeworkflow(item){
+      changeworkflow(item){
                 this.$router.push('/'+item)
       },
-      getGeplant(item){
+      count(item){
         var counter=0;
         this.ngs.filter(patient => {
            if(patient.processnr == item){
@@ -197,8 +234,54 @@ import {mapState} from 'vuex'
            }
         })
         return counter
-      }
-    },
+      },
+      testCreate(){
+        this.$store.dispatch('putNgs', this.json)
+        .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+      })
+      },
+      testDelete(){
+        let id = this.ngs[this.ngs.length - 1].id
+        console.log(id)
+        this.$store.dispatch('deleteNgs', id)
+        .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+      })
+      },
+      testCreatePathogen(){
+        this.$store.dispatch('putPathogen', this.pjson)
+        .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+      })
+      },
+      testDeletePathogen(){
+        let id = this.pathogen[this.pathogen.length - 1].id
+        console.log(id)
+        this.$store.dispatch('deletePathogen', id)
+        .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+      })
+      },
+      testLock(){
+        this.$store.dispatch('requestLock', this.id)
+        .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      },
+      testUnlock(){
+        this.$store.dispatch('requestUnlock', this.id)
+        .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      },
+      testUnlockAll(){
+        this.$store.dispatch('unlockAll')
+        .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      },
+    }
   }
 </script>
 

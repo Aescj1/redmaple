@@ -11,6 +11,7 @@ import Sequenziert from './components/Sequenziert.vue'
 
 
 export const routes = [
+ { path: '/invalid', redirect: '/' },
  { path: '/', component: Login},
  { path: '/table', component: Table},
  { path: '/workflow', component: Workflow},
