@@ -244,6 +244,7 @@
 
 
 <script>
+/* eslint-disable */
 import _ from 'lodash';
 import {mapState} from 'vuex'
 
@@ -298,6 +299,12 @@ import {mapState} from 'vuex'
       },
       testset:{},
     }),
+    mounted(){
+      this.$store.dispatch('validateAccessToken')
+      .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+      })
+    },
     computed: {
           ...mapState(['ngs']),
 

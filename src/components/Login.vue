@@ -18,14 +18,14 @@
                         <br>
                         <br>
                         <v-text-field class="textFields"
-                        v-model="name"
+                        v-model="credentials.username"
                         
-                        label="Name"
+                        label="Username"
                         light
                         required
                         ></v-text-field>
                         <v-text-field class="textFields"
-                        v-model="password"
+                        v-model="credentials.password"
                         :type="show1 ? 'text' : 'password'"
                         label="Password"
                         required
@@ -63,44 +63,67 @@
     </v-content>
 </template>
 <script>
-import {mapState} from 'vuex'
+/* eslint-disable */
+import { async } from 'q';
+
 
   export default {
     data: () => ({
       valid: true,
-      name: '',
-      nameRules: [
-        v => !!v || 'Name is required',
-        v => (v && v.length <= 10) || 'Name must be less than 10 characters'
+      credentials: {
+        username: '',
+        password: ''
+      },
+      /*
+      username: '',
+      usernameRules: [
+        v => !!v || 'Username is required',
+        v => (v && v.length <= 10) || 'Username must be less than 10 characters'
       ],
       password: '',
-      show1:false,
-      json:{"bactnr":"8882",
-        "name":"TEST PUT"
-        },
+      */
+      show1:false
     }),
-
-      computed:{
-    ...mapState(['ngs'])
-  },
 
     methods: {
       submit () {
         if ((this.$refs.form.validate())) {
           // Native form submission is not yet supported
           //this.$router.push('/workflow')
-          this.$socket.emit('unlock', 13)
-          }
-        },
-        clear () {
-        this.$refs.form.reset()
-        console.log(this.ngs)
-        //this.$store.dispatch('putNgs', this.json)
-        this.$socket.emit('lock', 13)
-      }
+          //this.$socket.emit('unlock', 13)
+          //this.$store.dispatch('loginWorkaround', {self: this})
+          //.then(() => {
+            //this.$store.dispatch('loadNgs')
+            //console.log("The accessToken is: " + this.$store.state.accessToken)
+            //this.$router.push('/workflow')
+          //})
+          this.$store.dispatch('login', this.credentials)
+            .then(() => {
+              //this.$store.dispatch('loadNgs')
+              console.log("The accessToken is: " + this.$store.state.accessToken)
+              this.$router.push('/workflow')
+            }).catch((err) => {
+              console.log("Ups: " + err.statusCode + ": " + err.statusMessage)
+            })
+        }
       },
 
-    
+        clear () {
+        //this.$refs.form.reset()
+        //this.$store.dispatch('putNgs', this.json)
+        //this.$socket.emit('lock', 13)
+        //this.$store.dispatch('logout', this.credentials)
+        this.$router.push('/workflow')
+      },
+
+
+        login () {
+         console.log("login method..")
+         if(this.$store.state.accessToken != null){
+            this.$router.push('/workflow')
+          }
+        }
+      },   
   }
 </script>
 

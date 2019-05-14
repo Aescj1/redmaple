@@ -67,7 +67,7 @@
     </v-toolbar>
     <v-content class="board-background">
       <v-container fluid>
-        <router-view/>
+        <router-view :key="$route.fullPath"></router-view>
       </v-container>
     </v-content> 
     <v-footer app fixed>
@@ -77,19 +77,15 @@
 </template>
 
 <script>
+/* eslint-disable */
 import UserTab from './components/UserTab.vue'
 import {bus} from './main.js'
 import Papa from 'papaparse'
-import {mapState} from 'vuex'
+import axios from 'axios'
+import store from './store/store.js'
 
 
   export default {
-    mounted(){
-      this.$store.dispatch('loadNgs')
-    },
-    computed: {
-          ...mapState(['ngs']),
-    },
   methods:{
       //var csv is the CSV file with headers
     fileSelection(csv){
@@ -172,7 +168,29 @@ import {mapState} from 'vuex'
       source: String
     },
     created(){
-       bus.$on('drawerReset', (data) =>{
+
+      axios.interceptors.response.use(undefined, function (err) {
+        return new Promise(function () {
+          const AUTH_REQUIRED = "AUTHORIZATION_REQUIRED"
+          const INVALID_TOKEN = "INVALID_TOKEN"
+          if (err.response.status === 401 && err.config && (err.response.data.error.code === AUTH_REQUIRED || err.response.data.error.code === INVALID_TOKEN)) {
+            store.commit('KICK')  
+          }
+          throw err;
+        });
+      });
+
+/*
+      axios.interceptors.response.use(undefined, function (err) {
+          console.log(err)
+          if (err.status === 401) {
+            this.$store.dispatch('logout')
+          }
+          return Promise.reject(err);
+      });
+*/     
+       
+      bus.$on('drawerReset', (data) =>{
         this.drawer = data;
       });
 

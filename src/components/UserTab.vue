@@ -131,7 +131,7 @@ import {bus} from '../main.js'
     ),
     methods:{
       logout(){
-        this.$router.push('/')
+        this.$store.dispatch('logout')
         bus.$emit('drawerReset',false)
       },
 
