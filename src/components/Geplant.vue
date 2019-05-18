@@ -23,9 +23,13 @@
               </v-list-tile>
             </v-list>
           </v-menu>
-            <v-spacer></v-spacer>
-            
-          <v-spacer></v-spacer>
+          <v-layout>
+              <v-text-field :value=this.lastIndex type="number" style="max-width:80px; margin-left:80px" hide-details label="Start" solo width="30px"></v-text-field>
+              bis
+              <v-text-field :value=this.activeIndex type="number" style="max-width:80px" hide-details label="Ende" solo></v-text-field>
+              <v-btn color="primary" @click="multiSelectIsolat">Auswählen</v-btn>
+          <v-btn style="margin-left:40px; margin-right:150px" color="primary" @click="resetSelected">Auswahl löschen</v-btn>
+          </v-layout>
           <v-text-field
             hide-details
             prepend-inner-icon="search"
@@ -54,21 +58,21 @@
 
             <v-list-tile
               class="tile"
+              id="listRow"
               :key="patient.index"
               @click="setCurrentData(patient,index)"
-              :class="{'is-active': index == activeIndex}"
+              :class="{'is-active': index == activeIndex, 'is-locked': displayLocked(patient)}"
             >
-                        <v-list-tile-action>
+            <v-list-tile-action>
               <v-checkbox
-                v-model="filteredItems[index].selected"
-                @click.capture.stop="selectPatient(filteredItems[index])"
+                :value ="patient"
+                v-model="selected"
+                multiple
               ></v-checkbox>
             </v-list-tile-action> 
               <v-list-tile-content >
-                <v-list-tile-title v-if="sorted.title == 'Bact-Nr' ||sorted.title == 'Priority' ">{{patient.bactnr}}</v-list-tile-title>
-                <v-list-tile-title v-if="sorted.title == 'Pathogen'">{{patient.pathogen}}</v-list-tile-title>
-                <v-list-tile-title v-if="sorted.title == 'Einsender'">{{patient.sender}}</v-list-tile-title>
-                <v-list-tile-sub-title>{{patient.priority}}</v-list-tile-sub-title>
+                <v-list-tile-title >{{patient.priority}} | {{patient.bactnr}} </v-list-tile-title>
+                <v-list-tile-sub-title>{{patient.pathogen}} | {{patient.sender}} </v-list-tile-sub-title>
               </v-list-tile-content>
               <v-btn fab flat  small color="transparent" 
               @click.stop="filteredItems[index].received = !filteredItems[index].received"
@@ -79,7 +83,6 @@
                 >
                   star
                 </v-icon>
-
                 <v-icon
                   v-else
                   color="grey lighten-1"
@@ -102,38 +105,47 @@
               <v-layout wrap >
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="light-blue lighten-4">
-                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
-                  <v-text-field v-model="currentDataset1.priority" :mask="priorityMask" label="Priority" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.lastname" label="Nachname" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.firstname" label="Vorname" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.altid" label="alternative ID" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.priority" :mask="priorityMask" label="Priority" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.lastname" label="Nachname" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.firstname" label="Vorname" readonly></v-text-field>
             </v-card>
                 </v-flex>
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="light-blue lighten-3">
-                  <v-text-field v-model="currentDataset1.birthdate" :mask="dateMask" label="Geburtsdatum*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.isoentrydate" :mask="dateMask" label="Eingang*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.samplingdate" :mask="dateMask" label="Abnahme"></v-text-field>
-                  <v-text-field v-model="currentDataset1.sender" label="Einsender" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.department" label="Station" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.processingdate" :mask="dateMask" label="Bearbeitungsdatum"></v-text-field>
-                  <v-text-field v-model="currentDataset1.material" label="Material" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.birthdate" :mask="dateMask" label="Geburtsdatum" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.isoentrydate" :mask="dateMask" label="Eingang" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.samplingdate" :mask="dateMask" label="Abnahme" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.sender" label="Einsender" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.department" label="Station" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.processingdate" :mask="dateMask" label="Bearbeitungsdatum" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.material" label="Material" readonly></v-text-field>
             </v-card>
                 </v-flex>
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="light-blue lighten-2">
-                  <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
+                  <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.billing" label="Abrechnung" readonly></v-text-field>
-                  <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
+                  <v-text-field v-model="currentDataset1.comment" label="Kommentar" readonly></v-text-field>
             </v-card>
                 </v-flex>
               </v-layout>
             </v-container>
 
             <div class="text-xs-right">
-            <v-btn @click="deleteSet">löschen</v-btn>
+            <v-btn v-if="currentDataset1.bactnr != ''" @click="this.editDataset">Bearbeiten</v-btn>
+              <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
+                <NgsFormular></NgsFormular>
+              </v-dialog>
+
+            <v-btn v-if="currentDataset1.bactnr != ''" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
+              <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
+                <DeleteWindow></DeleteWindow>
+              </v-dialog>
+
               <v-btn
               color="primary"
               dark
@@ -143,9 +155,11 @@
                 Extrahieren
               </v-btn>
               <v-dialog
-                v-model="dialog"
+                v-if="this.dialog==true"
+                v-model="this.dialog"
                 width="700" 
                 scrollable
+                persistent 
               >
               <v-card>
               <v-card-title
@@ -186,12 +200,13 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions>
+                <v-spacer></v-spacer>
+              <v-btn @click="closePopup" flat >Abbrechen</v-btn>
                 <v-btn
                   color="primary"
-                  flat
                   @click="extrahieren"
                 >
-                  accept
+                  Bestätigen
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -208,17 +223,17 @@
                 </v-flex>
                 <v-flex>
                     <v-btn outline @click="changeworkflow('extrahiert')" class="processButton" fab dark large color="cyan">
-                        E
+                      E
                      </v-btn>
                 </v-flex>
                 <v-flex>
                     <v-btn outline @click="changeworkflow('lauf')" class="processButton" fab dark large color="teal">
-                        L
+                      L
                      </v-btn>
                 </v-flex>
                 <v-flex>
                     <v-btn outline @click="changeworkflow('sequenziert')" class="processButton" fab dark large color="green">
-                        S
+                      S
                      </v-btn>
                 </v-flex>
                 </v-item-group>
@@ -228,7 +243,6 @@
               :color="snackColor"
               multi-line
               :timeout="4000"
-
             >
               {{ snackText }}
               <v-btn
@@ -247,15 +261,22 @@
 /* eslint-disable */
 import _ from 'lodash';
 import {mapState} from 'vuex'
+import NgsFormular from './NgsFormular.vue'
+import DeleteWindow from './DeleteWindow.vue'
 
 
 
   export default {
-
+    components: {
+      NgsFormular,
+      DeleteWindow,
+    },
     data: () => ({
       dateMask:'##-##-####',
+      lockedList:[],
       priorityMask:'A',
       activeIndex: null,
+      lastIndex:null,
       snackText:'',
       snackColor:'',
       snackbar:false,
@@ -274,6 +295,9 @@ import {mapState} from 'vuex'
         { title: 'Pathogen', value:'pathogen' }
       ],
       patientList:[],
+      lockedId:{
+          id:0,
+        },
       currentDataset1: {
         bactnr: "",
         processnr: 1,
@@ -295,9 +319,8 @@ import {mapState} from 'vuex'
         publicid: 0,
         priority: "",
         isoentrydate: "",
-        billing: ""
+        billing: "",
       },
-      testset:{},
     }),
     mounted(){
       this.$store.dispatch('validateAccessToken')
@@ -307,9 +330,12 @@ import {mapState} from 'vuex'
     },
     computed: {
           ...mapState(['ngs']),
+          ...mapState(['locks']),
+          ...mapState(['selectedIsolat']),
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
+
          //   store.NgsList = the list that gets transmitted from the DB to the store
             return _.orderBy(
               this.ngs.filter(patient => {
@@ -330,6 +356,11 @@ import {mapState} from 'vuex'
             )}}),this.sorted.value );
         },
     },
+        watch:{
+      locks(newValue, oldValue){
+        this.lockedList = newValue
+      },
+    },
     methods:{
       //Method that allows to change the view.
       changeworkflow(item){
@@ -337,9 +368,27 @@ import {mapState} from 'vuex'
           this.selected[i].selected =false
         }
         this.selected = []
-        this.$store.state.export = this.selected;
+        this.$store.state.export = this.selected;   // HIER überprüfen
         this.$router.push('/'+item)
 
+      },
+      positiveNotification(){
+        this.snackColor="success"
+        this.snackText="Übertragung erfolgreich"
+        this.snackbar =true
+      },
+      negativeNotification(){
+        this.snackColor="error"
+        this.snackText="Der Datensatz wird bereits bearbeitet."
+        this.snackbar=true
+      },
+      neutralNotification(){
+          this.snackColor="warning"
+          this.snackText="Sie können den Datensatz nun bearbeiten"
+          this.snackbar=true
+      },
+      closePopup(){
+        this.dialog = false
       },
       //clears the search and sets the value null
       clearSearch(){
@@ -358,15 +407,16 @@ import {mapState} from 'vuex'
         },
       //sets the currentPatient. Does a copy of the JS.Object which allows to change information without changing the source object. (needed for the date property)
       setCurrentData(patient,index){
+      this.lastIndex = this.activeIndex
       this.activeIndex = index
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
+      this.$store.commit('SET_SELECTEDISOLAT', patient)
       if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
       if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
       if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
       if(this.currentDataset1.processingdate)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
-
       },
-      selectPatient(patient){
+      selectIsolat(patient){
         if (this.selected.includes(patient)) {
         // Removing the data
         this.selected.splice(this.selected.indexOf(patient), 1);
@@ -376,12 +426,53 @@ import {mapState} from 'vuex'
       this.$store.state.export = this.selected
       },
 
+      //Method to select multiple IsolatDatasets
+      multiSelectIsolat(patient){
+        if(this.lastIndex<this.activeIndex && this.lastIndex !=null && this.activeIndex !=null){
+          var i = this.lastIndex
+          var o = this.activeIndex
+          while(i<=o){
+            if (this.selected.includes(this.filteredItems[i])) {
+              // Removing the data
+              this.selected.splice(this.selected.indexOf(i), 1);
+            } else {
+              this.selected.push(this.filteredItems[i]);
+            }
+            i++
+          }
+         this.$store.state.export = this.selected
+        }else{
+        alert("bitte gültige Auswahl treffen: 'kleinere Zahl' bis 'grössere Zahl'")
+        }
+      },
+      resetSelected(){
+        this.selected = []
+      },
+      //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
+      displayLocked(patient){  
+        if(this.lockedList.includes(patient.id)) return true  
+      },
       //deletes a dataset
-      deleteSet(){
-        confirm('Sollen folgende Datensets wirklich gelöscht werden? ') 
+      deleteStep1(){
+          this.lockedId.id = this.selectedIsolat.id
+          console.log(this.lockedId)
+          this.$store.dispatch('requestLock', this.lockedId)
+            .catch((error) => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification()
+              this.$store.state.deleteDialog = false
+          })
+            .then(
+              this.$store.state.deleteDialog = true,
+              this.neutralNotification()
+            )
+      },
+      deleteStep2(){
+
       },
       //functio
       startExtraction(){
+        console.log(this.selected)
         var myDate = new Date();
         var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
         var date = ('0' + myDate.getDate()).slice(-2);
@@ -396,22 +487,34 @@ import {mapState} from 'vuex'
       },
       //sends a dataset to the next processstep (extrahiert) and opens a popup 
  extrahieren(){
-
         for(var i=0; i<this.selected.length;i++){
           this.selected[i].processnr = 2
           delete this.selected[i].selected
           this.$store.dispatch('putNgs', this.selected[i])
         }
-        this.snackColor="success"
-        this.snackText="Übertragung erfolgreich"
+
         this.selected = []
         this.$store.state.export = this.selected
         this.dialog = false
-        this.snackbar =true
-
+        this.positiveNotification()
       },
       setSorted(item){
         this.sorted = item
+      },
+      editDataset(){
+          this.lockedId.id = this.selectedIsolat.id
+          console.log(this.lockedId)
+          this.$store.dispatch('requestLock', this.lockedId)
+            .catch((error) => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification()
+              this.$store.state.formDialog = false
+          })
+            .then(
+              this.$store.state.formDialog = true,
+              this.neutralNotification()
+            )
+        
       }
     }
   }
@@ -428,5 +531,8 @@ import {mapState} from 'vuex'
 }
 .is-active{
 background-color:rgba(21, 109, 224, 0.226);
+}
+.is-locked{
+background-color:rgba(224, 21, 21, 0.226);
 }
 </style>

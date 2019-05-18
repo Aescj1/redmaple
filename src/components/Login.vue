@@ -30,10 +30,22 @@
                         label="Password"
                         required
                         light
+                        @keyup.enter ="submit"
                         ></v-text-field>
                         </div>
 
                         <div class="text-xs-center">
+                        <div class="text-xs-center">
+                          <v-btn
+                          large
+                          :disabled="!valid"
+                          @click="submit"
+                          color="primary"
+                          style="width:50%"
+                          >
+                            Login
+                          </v-btn>
+                        </div>
                         <v-btn 
                         small
                          flat
@@ -43,17 +55,6 @@
                           >
                           löschen</v-btn>
 
-                        </div>
-                        <div class="text-xs-center">
-                        <v-btn
-                        large
-                        :disabled="!valid"
-                        @click="submit"
-                        color="primary"
-                        style="width:50%"
-                        >
-                        Login
-                        </v-btn>
                         </div>
                     </v-form>
                     </form>

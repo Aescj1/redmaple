@@ -40,7 +40,11 @@ export default new Vuex.Store({
     ngs: [],
     pathogen: [],
     locks: [],
-    accessToken: null
+    accessToken: null,
+    formDialog:'',
+    selectedIsolat: [],
+    deleteDialog:'',
+
   },
   actions: {
     //------------------------------------------------------
@@ -333,10 +337,11 @@ export default new Vuex.Store({
       localStorage.setItem('accessToken', this.state.accessToken)
       router.push('/')
 
+    },
+
+    SET_SELECTEDISOLAT(state, selectedIsolates){
+      state.selectedIsolat =selectedIsolates
     }
-
-
-
   }
 }) 
 

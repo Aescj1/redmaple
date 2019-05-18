@@ -8,6 +8,7 @@
       clipped
       fixed
       app
+      temporary
      >
     <UserTab></UserTab>
     </v-navigation-drawer>
