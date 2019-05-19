@@ -134,7 +134,11 @@
             <v-btn v-if="currentDataset1.bactnr != ''" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
-              </v-dialog>            
+              </v-dialog> 
+            <v-btn v-if="currentDataset1.bactnr != ''" color="orange lighten-1" @click="this.repeat">Wiederholen</v-btn>
+              <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
+                <RepeatWindow></RepeatWindow>
+              </v-dialog> 
               <v-btn
               color="primary"
               dark
@@ -302,7 +306,8 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                <v-btn @click="this.closePopup" flat>Nein</v-btn>
+                  <v-btn @click="this.closePopup" flat>Abbrechen</v-btn>
+                <v-btn @click="this.sendRun" flat>Nein</v-btn>
                   <v-btn color="primary" @click="fillRun">Ja</v-btn>
                 </v-card-actions>
               </v-card>
@@ -367,6 +372,8 @@ import _ from 'lodash';
 import {mapState} from 'vuex'
 import NgsFormular from './NgsFormular.vue'
 import DeleteWindow from './DeleteWindow.vue'
+import RepeatWindow from './RepeatWindow.vue'
+
 
 
 
@@ -374,6 +381,7 @@ import DeleteWindow from './DeleteWindow.vue'
     components: {
       NgsFormular,
       DeleteWindow,
+      RepeatWindow
     },
     data: () => ({
       dateMask:'##-##-####',
@@ -457,6 +465,7 @@ import DeleteWindow from './DeleteWindow.vue'
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
                 this.lockedList = this.locks
+
          //   store.NgsList = the list that gets transmitted from the DB to the store
             return _.orderBy(
               this.ngs.filter(patient => {
@@ -476,6 +485,16 @@ import DeleteWindow from './DeleteWindow.vue'
                 //this.sorted calls the sorted method, which then defines what the filter (sortieren nach) is.
             )}}),this.sorted.value );
         },
+    },
+    watch:{
+      locks(newValue, oldValue){
+        this.lockedList = newValue
+      },
+      ngs(newValue, oldValue){
+      },
+      selected(newValue, oldValue){
+        this.$store.state.export = newValue
+      }
     },
     methods:{
       changeworkflow(item){
@@ -571,7 +590,7 @@ import DeleteWindow from './DeleteWindow.vue'
       },
       //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
       editDataset(){
-          this.lockedId.id = this.selectedIsolat.id
+       /*   this.lockedId.id = this.selectedIsolat.id
           console.log(this.lockedId)
           this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
@@ -579,26 +598,30 @@ import DeleteWindow from './DeleteWindow.vue'
               this.negativeNotification()
               this.$store.state.formDialog = false
           })
-            .then(
+            .then(*/
               this.$store.state.formDialog = true,
               this.neutralNotification()
-            )
+        //    )
         
       },
        //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
       deleteStep1(){
-          this.lockedId.id = this.selectedIsolat.id
+        /*  this.lockedId.id = this.selectedIsolat.id
           console.log(this.lockedId)
           this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
               console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
               this.negativeNotification()
               this.$store.state.deleteDialog = false
-          })
-            .then(
+          }) 
+            .then( */
               this.$store.state.deleteDialog = true,
               this.neutralNotification()
-            )
+         //   )
+      },
+      repeat(){
+        this.$store.state.repeatDialog = true,
+        this.neutralNotification()
       },
       //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
       startRun(){
@@ -606,7 +629,7 @@ import DeleteWindow from './DeleteWindow.vue'
       },
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
       displayLocked(patient){  
-        if(this.lockedList.includes(patient.id)) return true  
+   //     if(this.lockedList.includes(patient.id)) return true  
       },
       //checks if the run is filled 
       initRun(){
@@ -646,7 +669,7 @@ import DeleteWindow from './DeleteWindow.vue'
         this.dialog = false
         this.snackbar =true
         this.selected = []
-        this.dialog = false
+        this.closePopup()
       },
       //Method that fills up the run with Isolat datasets that have priority D
       fillRun(){
@@ -667,7 +690,7 @@ import DeleteWindow from './DeleteWindow.vue'
       //method for the sorting algorithm, sets the item.
       setSorted(item){
         this.sorted = item
-      }
+      },
       },
     }
 
@@ -681,5 +704,11 @@ import DeleteWindow from './DeleteWindow.vue'
   text-align: center;
   margin-left:10px;
   margin-top:80px;
+}
+.is-active{
+background-color:rgba(21, 109, 224, 0.226);
+}
+.is-locked{
+background-color:rgba(224, 21, 21, 0.226);
 }
 </style>

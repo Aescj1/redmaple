@@ -103,10 +103,10 @@ import store from './store/store.js'
     importDataset(){
       for(var i=0; i<this.ngsList.length;i++){
         if(this.ngsList[i].bactnr != null){
-       this.ngsList[i].birthdate = this.dateFormat(this.ngsList[i].birthdate)
-       this.ngsList[i].entrydate = this.dateFormat(this.ngsList[i].entrydate)
-       this.ngsList[i].isoentrydate = this.dateFormat(this.ngsList[i].isoentrydate)
-       this.ngsList[i].samplingdate = this.dateFormat(this.ngsList[i].samplingdate)
+        if(this.ngsList[i].birthdate)this.ngsList[i].birthdate = this.dateFormat(this.ngsList[i].birthdate)
+       if(this.ngsList[i].entrydate)this.ngsList[i].entrydate = this.dateFormat(this.ngsList[i].entrydate)
+       if(this.ngsList[i].entrydate)this.ngsList[i].isoentrydate = this.dateFormat(this.ngsList[i].isoentrydate)
+       if(this.ngsList[i].entrydate)this.ngsList[i].samplingdate = this.dateFormat(this.ngsList[i].samplingdate)
         this.ngsList[i].processnr = 1
         this.$store.dispatch('putNgs', this.ngsList[i])
         }

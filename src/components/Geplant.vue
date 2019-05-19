@@ -294,9 +294,7 @@ import DeleteWindow from './DeleteWindow.vue'
         { title: 'Pathogen', value:'pathogen' }
       ],
       patientList:[],
-      lockedId:{
-          id:0,
-        },
+      lockedId:[],
       currentDataset1: {
         bactnr: "",
         processnr: 1,
@@ -335,7 +333,7 @@ import DeleteWindow from './DeleteWindow.vue'
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
-                this.lockedList = this.locks
+               // this.lockedList = this.locks
          //   store.NgsList = the list that gets transmitted from the DB to the store
             return _.orderBy(
               this.ngs.filter(patient => {
@@ -360,6 +358,9 @@ import DeleteWindow from './DeleteWindow.vue'
       locks(newValue, oldValue){
         this.lockedList = newValue
       },
+      selected(newValue, oldValue){
+        this.$store.state.export = newValue
+      }
     },
     methods:{
       //Method that allows to change the view.
@@ -451,11 +452,11 @@ import DeleteWindow from './DeleteWindow.vue'
       },
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
       displayLocked(patient){  
-        if(this.lockedList.includes(patient.id)) return true  
+     //   if(this.lockedList.includes(patient.id)) return true  
       },
        //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
       deleteStep1(){
-          this.lockedId.id = this.selectedIsolat.id
+      /*    this.lockedId = this.selectedIsolat.id
           console.log(this.lockedId)
           this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
@@ -463,10 +464,10 @@ import DeleteWindow from './DeleteWindow.vue'
               this.negativeNotification()
               this.$store.state.deleteDialog = false
           })
-            .then(
+            .then(*/
               this.$store.state.deleteDialog = true,
               this.neutralNotification()
-            )
+          //  )
       },
       //functio
       startExtraction(){
@@ -476,9 +477,14 @@ import DeleteWindow from './DeleteWindow.vue'
         var year = myDate.getFullYear();
         var formattedDate = year + '-' + month + '-' + date;
         for(var i=0; i<this.selected.length;i++){
+          if(this.selected[i].received){
           this.selected[i].concentration = ''
           this.selected[i].extractiondate = formattedDate
           this.selected[i].extractionvisum = 'User'
+          }else{
+            return alert("Probe noch nicht erhalten. Überprüfen Sie die Markierungen")
+          }
+
         }
         this.dialog=true
       },
@@ -503,7 +509,7 @@ import DeleteWindow from './DeleteWindow.vue'
       },
 //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
       editDataset(){
-          this.lockedId.id = this.selectedIsolat.id
+      /*    this.lockedId.id = this.selectedIsolat.id
           console.log(this.lockedId)
           this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
@@ -511,10 +517,10 @@ import DeleteWindow from './DeleteWindow.vue'
               this.negativeNotification()
               this.$store.state.formDialog = false
           })
-            .then(
+            .then(*/
               this.$store.state.formDialog = true,
               this.neutralNotification()
-            )
+          //  )
         
       }
     }

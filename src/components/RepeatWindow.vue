@@ -1,17 +1,19 @@
 <template>
     <v-layout row justify-center>
-        <v-dialog v-model="this.$store.state.deleteDialog" persistent max-width="1000px">
+        <v-dialog v-model="this.$store.state.repeatDialog" persistent max-width="1000px">
             <v-card>
               <v-card-title
-                class=" red lighten-1"
+                class=" orange lighten-1"
               >
               <div>
-               <div class="headline">Datenset löschen</div>
-                <span class="title">Soll folgendes Datenset tatsächlich gelöscht werden?</span>
+               <div class="headline">Datenset wiederholen</div>
+                <span v-if="this.isolat.processnr == 2" class="title">Soll folgendes Datenset tatsächlich neu extrahiert werden?</span>
+                <span v-if="this.isolat.processnr == 4" class="title">Soll folgendes Datenset tatsächlich neu sequenziert werden?</span>
               </div>
               </v-card-title>
-                <v-card-text class="red lighten-4"> 
-                  <v-layout>
+<!-----------------      THIS PART GETS SHOWN WHEN THE DATASET IS FROM EXTRACTED (PROCESSNR 2)          ----------------------------->
+                <v-card-text class="orange lighten-4" v-if="this.isolat.processnr == 2"> 
+                  <v-layout >
                     <v-flex
                         xs4
                         md4
@@ -64,46 +66,73 @@
                     </v-flex>
                 </v-layout>
             </v-card-text>
+<!-----------------      THIS PART GETS SHOWN WHEN THE DATASET IS FROM SEQUENCED (PROCESSNR 3)          ----------------------------->
+
+        <v-card-text v-if="this.isolat.processnr != 2" class="scroll">
+            <v-expansion-panel>
+                  <v-expansion-panel-content 
+                  class="orange lighten-2" 
+                  v-for="(item, index) in this.$store.state.export "
+                  :key="index"
+                  >
+                  <div slot="header">
+                    <span class="spacer"><b>NGS-Projekt:</b>{{item.ngsproject}}</span>
+                    <span class="spacer"><b> Run Nr.:</b> {{item.runnr}}</span>
+                    <span class="spacer"><b> NGS-Nr:</b> {{item.isorunnr}}</span>
+                    <span class="spacer"><b>Patientenname:</b> {{item.lastname}} {{item.firstname}} </span>
+
+                    </div>
+                     <v-card>
+                        <v-card-text class="orange lighten-4"> 
+                          <v-layout>
+                            <v-flex
+                            xs4
+                            md4
+                            >
+                            <p><b>Wiederholung:</b> {{item.repetition}}</p>
+                            <p><b>alternative ID:</b> {{item.altid}}</p>
+                            <p><b>Priorität:</b> {{item.priority}}</p>
+                            <p><b>Pathogen:</b> {{item.pathogen}}</p>
+                            <p><b>Eingangsdatum:</b> {{item.isoentrydate}}</p>
+                            <p><b>Abnahmedatum:</b> {{item.samplingdate}}</p>
+                            <p><b>Einsender:</b> {{item.sender}}</p>
+                            </v-flex>
+                            <v-flex
+                              xs4
+                              md4
+                            > 
+                              <p><b>Station:</b> {{item.department}}</p>
+                              <p><b>Bearbeitungsdatum: </b>{{item.processingdate}}</p>
+                              <p><b>Material:</b> {{item.material}}</p>
+                              <p><b>Bearbeitungsdatum:</b> {{item.processingdate}}</p>
+                              <p><b>Material:</b> {{item.material}}</p>
+                              <p><b>Datum DNA-Prep:</b> {{item.extractiondate}}</p>
+                              <p><b>DNA Konz. (ng/ul):</b> {{item.concentration}}</p>
+                            </v-flex>
+
+                            <v-flex
+                              xs4
+                              md4
+                            > 
+                              <p><b>Visum DNA:</b> {{item.extractionvisum}}</p>
+                              <p><b>Abnahmedatum:</b> {{item.samplingdate}}</p>
+                              <p><b>Library Typ:</b> {{item.librarytype}}</p>
+                              <p><b>Library Darum:</b> {{item.librarydate}}</p>
+                              <p><b>Library Visum:</b> {{item.libraryvisum}}</p>
+                              <p><b>Sequenzierungsdatum:</b> {{item.sequencingDate}}</p>
+                              <p><b>NGS-Gerät:</b> {{item.modality}}</p>
+                            </v-flex>
+                          </v-layout>
+                        </v-card-text>
+                      </v-card>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
               <v-btn @click="this.cancel" flat >Abbrechen</v-btn>
-                <v-dialog
-                  v-if="this.dialog==true"
-                  v-model="this.dialog"
-                  width="800" 
-                  persistent 
-                >
-                <v-card>
-                <v-card-title
-                  class="red"
-                  primary-title
-                >
-                <div>
-                <div class="display-2">Datenset löschen</div>
-                </div>
-                </v-card-title>
-                <v-card-text class="title text-xs-center" >
-                  DAS DATENSET WIRD ENDGÜLTIG UND UNWIEDERRUFLICH GELÖSCHT!
-                </v-card-text>
-                <v-divider></v-divider>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                <v-btn @click="this.cancel" color="primary">Abbrechen</v-btn>
-                  <v-btn
-                    color="red"
-                    @click="this.deletefinal"
-                  >
-                    Bestätigen
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-                <v-btn
-                  color="primary"
-                  @click="this.submit"
-                >
-                  Bestätigen
-                </v-btn>
+                <v-btn v-if="this.isolat.processnr == 2" color="primary" @click="this.submitExtracted">Bestätigen</v-btn>
+                <v-btn v-if="this.isolat.processnr != 2" color="primary" @click="this.submitSequenced">Bestätigen</v-btn>
               </v-card-actions>
             </v-card>
         </v-dialog>
@@ -161,9 +190,6 @@ export default {
         modality:"",
         id:""
       },
-      lockedId:{
-        id:0,
-      },
     }),
     computed:{
       ...mapState(['selectedIsolat']),
@@ -180,8 +206,6 @@ export default {
       if(this.isolat.extractiondate)this.isolat.extractiondate = this.dateFormatter(new Date(this.isolat.extractiondate))
       if(this.isolat.librarydate) this.isolat.librarydate = this.dateFormatter(new Date(this.isolat.librarydate))
       if(this.isolat.sequencingdate) this.isolat.sequencingdate = this.dateFormatter(new Date(this.isolat.sequencingdate))
-
-
     },
     methods:{
       dateFormatter(date){
@@ -195,21 +219,42 @@ export default {
         return [year, month, day].join('-')
       },
       //Method that submits the changes made to the isolat, submits it to the database and unlocks the isolatdataset again.
-      submit(){
-        this.dialog = true
-
-        },
-        //Method that deletes the isolatdataset
-        deletefinal(){
-        this.$store.dispatch('deleteNgs', this.selectedIsolat.id)
-     /*   this.$store.dispatch('requestUnlock', this.lockedId)
-        .catch((error) => {
-        if(error != ""){
+      submitExtracted(){
+        this.isolat.processnr = 1
+        delete this.isolat.concentration
+        delete this.isolat.extractiondate
+        delete this.isolat.extractionvisum
+        this.$store.dispatch('putNgs', this.isolat )
+          .catch((error) => {
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            })  
+        this.$store.state.repeatDialog = false
+        },
+      //Method that to repeat a ngs sequencing process. puts the wiederholen property to +1
+      submitSequenced(){
+          let list =this.$store.state.export
+        for(var i= 0; i<list.length; i++){
+            list[i].processnr = 2
+            var int = list[i].repetition
+            int++
+            list[i].repetition = int
+            delete list[i].runtype
+            delete list[i].librarytype
+            delete list[i].librarydate
+            delete list[i].libraryvisum
+            delete list[i].sequencingdate
+            delete list[i].runnr
+            delete list[i].isorunnr
+            delete list[i].modality
+            delete list[i].sequencingvisum
+            delete list[i].dataqualityvisum
+            delete list[i].id
+                this.$store.dispatch('putNgs', list[i] )
+          .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            })  
         }
-        })*/
-        this.dialog = false
-        this.$store.state.deleteDialog = false
+        this.$store.state.repeatDialog = false
         },
         //Method that closes the Popup Form to edit the current Isolat and unlocks it again.
         cancel(){
@@ -217,7 +262,7 @@ export default {
        // this.lockedId.id = this.selectedIsolat.id
         //this.$store.dispatch('requestUnlock', this.lockedId)
 
-            this.$store.state.deleteDialog = false
+            this.$store.state.repeatDialog = false
         },
     },
 }

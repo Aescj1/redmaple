@@ -44,6 +44,8 @@ export default new Vuex.Store({
     formDialog:'',
     selectedIsolat: [],
     deleteDialog:'',
+    repeatDialog:'',
+
 
   },
   actions: {
@@ -123,9 +125,9 @@ export default new Vuex.Store({
     },
 
     loadNgsById (context, id){
-      let filter = {where:{id: id}}
+      console.log("loadngsbyId ID: " + id)
       return axios
-       .get(REST_BASE_URL + 'ngs/findOne?access_token=' + this.state.accessToken, filter)
+       .get(REST_BASE_URL + 'ngs/' + id + '?access_token=' + this.state.accessToken)
        .then((response) => {
         context.commit('PUSH_NGS', response)
        }).catch((err) => {
@@ -175,9 +177,8 @@ export default new Vuex.Store({
     },
 
     loadPathogenById (context, id){
-      let filter = {where:{id: id}}
       return axios
-       .get(REST_BASE_URL + 'pathogens/findOne?access_token=' + this.state.accessToken, filter)
+       .get(REST_BASE_URL + 'pathogens/' + id + '?access_token=' + this.state.accessToken)
        .then((response) => {
         context.commit('PUSH_PATHOGEN', response)
        }).catch((err) => {
@@ -212,9 +213,9 @@ export default new Vuex.Store({
     // All the lock http methods
     //------------------------------------------------------
 
-    requestLock(context, id){
+    requestLock(context, idArray){
       return axios
-      .post(REST_BASE_URL + 'ngs/lockRequest?access_token=' + this.state.accessToken, id)
+      .post(REST_BASE_URL + 'ngs/lockRequest?access_token=' + this.state.accessToken, idArray)
       .then((response) => {
       }).catch((err) => {
         let error = parseError(err)
@@ -222,9 +223,9 @@ export default new Vuex.Store({
       })
     },
 
-    requestUnlock(context, id){
+    requestUnlock(context, idArray){
       return axios
-      .post(REST_BASE_URL + 'ngs/unlockRequest?access_token=' + this.state.accessToken, id)
+      .post(REST_BASE_URL + 'ngs/unlockRequest?access_token=' + this.state.accessToken, idArray)
       .then((response) => {
       }).catch((err) => {
         let error = parseError(err)
@@ -308,12 +309,17 @@ export default new Vuex.Store({
     },
 
     PUSH_NGS (state, response){
+      console.log(response.data)
       let oldObject = state.ngs.filter(obj  =>{
         return obj.id === response.data.id
       })
-      let index = state.ngs.indexOf(oldObject[0])
-      if(index > -1){
+      let index = null
+      if(oldObject){
+      index = state.ngs.indexOf(oldObject[0])
+      }
+      if(index > -1 && index){
         state.ngs.splice(index, 1)
+        console.log("Kolleeeg wieso splicisch du")
       }
       state.ngs.push(response.data)
       console.log("This is the new ngs array:")

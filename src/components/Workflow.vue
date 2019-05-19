@@ -203,12 +203,8 @@ import {mapState} from 'vuex'
         "Abbreviation": "test",
         "Name": "test pathogen",
         },
-        id:{
-          "id": "5cb064052cda6d5aa3e3c4bb",
-        },
-        id1:{
-          "id": "5cad9f822cda6d5aa3e3c485",
-        }
+        id:[]
+
     }),
     mounted(){
       this.$store.dispatch('loadNgs')
@@ -276,9 +272,10 @@ import {mapState} from 'vuex'
       },
       testLock(){
         console.log("LOCKER")
-        console.log(this.id)
-        console.log("LOCKER"+this.id)
-        this.$store.dispatch('requestLock', this.id)
+        var arr = "5ce140a62496a767d5de4162"
+        console.log(arr)
+        console.log("LOCKER"+arr)
+        this.$store.dispatch('requestLock', arr)
         .catch((error) => {
         console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
         })

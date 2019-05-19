@@ -23,8 +23,9 @@
               </v-list-tile>
             </v-list>
           </v-menu>
-            <v-spacer></v-spacer>
-            
+          <v-layout>
+          <v-btn style="margin-left:20px; margin-right:150px" color="primary" @click="resetSelected">Auswahl löschen</v-btn>
+          </v-layout>            
           <v-text-field
             hide-details
             prepend-inner-icon="search"
@@ -59,18 +60,24 @@
               :class="{'is-active': index == activeIndex}"
             >
             <v-list-tile-action>
-              <v-checkbox
-                v-model="filteredItems[index].selected"
-                @click.capture.stop="selectRun(filteredItems[index])"
+              <v-checkbox v-if="sorted.title != 'NGS Projekt' && sorted.title != 'Lauf Nummer' "
+                :value ="patient"
+                v-model="selected"
+                multiple
               ></v-checkbox>
+              <v-radio-group v-model="cheatSelected" :mandatory="false">
+              <v-radio v-if="sorted.title == 'Lauf Nummer' || sorted.title == 'NGS Projekt'"
+                :value ="patient"
+                @click.capture.stop="test(patient)"
+                
+              ></v-radio>
+              </v-radio-group>
             </v-list-tile-action> 
               <v-list-tile-content >
-                <v-list-tile-title v-if="sorted.title == 'Bact-Nr' ||sorted.title == 'Priority' ">{{patient.bactnr}}</v-list-tile-title>
-                <v-list-tile-title v-if="sorted.title == 'Pathogen'">{{patient.pathogen}}</v-list-tile-title>
-                <v-list-tile-title v-if="sorted.title == 'Einsender'">{{patient.sender}}</v-list-tile-title>
+                <v-list-tile-title v-if="sorted.title != 'NGS Projekt' && sorted.title != 'Lauf Nummer' ">{{patient.priority}} | {{patient.bactnr}}</v-list-tile-title>
+                <v-list-tile-sub-title  v-if="sorted.title != 'NGS Projekt' && sorted.title != 'Lauf Nummer' ">{{patient.pathogen}} | {{patient.sender}}</v-list-tile-sub-title>
                 <v-list-tile-title v-if="sorted.title == 'Lauf Nummer'">Run package: {{index}}</v-list-tile-title>
                 <v-list-tile-title v-if="sorted.title == 'NGS Projekt'">NGS Projekt: {{index}}</v-list-tile-title>
-                <v-list-tile-sub-title>{{patient.priority}}</v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
              <v-divider
@@ -176,12 +183,6 @@
                       @click="setCurrentInnerData(patient,index)"
                       :class="{'is-active': index == innerActiveIndex}"
                     >
-                    <v-list-tile-action>
-                      <v-checkbox
-                        v-model="orderedRunList[index].selected"
-                        @click.capture.stop="selectRun(orderedRunList[index])"
-                      ></v-checkbox>
-                    </v-list-tile-action>
                       <v-list-tile-content>
                         <v-list-tile-title v-if="innerSorted.title == 'Bact-Nr' ||innerSorted.title == 'Priority' ">{{patient.bactnr}}</v-list-tile-title>
                         <v-list-tile-title v-if="innerSorted.title == 'Pathogen'">{{patient.pathogen}}</v-list-tile-title>
@@ -304,16 +305,20 @@
           
           </v-card-text>
           <!-- div that contains the buttons to delete or repeate a sequencing (sets the data back to extrahiert (processNr 2))----------->
-            <div v-if="sorted.title == 'Lauf Nummer'" class="text-xs-right">
-            <v-btn @click="deleteSet">löschen</v-btn>
-              <v-btn
-              color="primary"
-              dark
-              @click.stop="startRepetition"
-              v-if="this.selected.length>0"
-              >
-                Sequenzierung wiederholen
-              </v-btn>
+            <div class="text-xs-right">
+              <v-btn v-if="currentDataset1.bactnr != ''" @click="this.editDataset">Bearbeiten</v-btn>
+              <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
+                <NgsFormular></NgsFormular>
+              </v-dialog>
+
+            <v-btn v-if="currentDataset1.bactnr != ''" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
+              <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
+                <DeleteWindow></DeleteWindow>
+              </v-dialog>
+              <v-btn v-if="this.selected.length>0" color="orange lighten-1" @click="this.repeat">Wiederholen</v-btn>
+              <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
+                <RepeatWindow></RepeatWindow>
+              </v-dialog> 
 
 <!----------- THIS is the popup for the additional data input to bring the data to the next processstepp    -->
               <v-dialog v-model="dialog" width="700"  scrollable>
@@ -397,7 +402,21 @@
                 </v-flex>
                 </v-item-group>
             </v-layout>
-
+            <v-snackbar
+              v-model="snackbar"
+              :color="snackColor"
+              multi-line
+              :timeout="4000"
+            >
+              {{ snackText }}
+              <v-btn
+                dark
+                flat
+                @click="snackbar = false"
+              >
+                Close
+              </v-btn>
+            </v-snackbar>
   </v-container>
 </template>
 
@@ -406,20 +425,30 @@
 /* eslint-disable */ 
 import _ from 'lodash';
 import {mapState} from 'vuex'
-
-
+import NgsFormular from './NgsFormular.vue'
+import DeleteWindow from './DeleteWindow.vue'
+import RepeatWindow from './RepeatWindow.vue'
 
   export default {
-
+    components: {
+      NgsFormular,
+      DeleteWindow,
+      RepeatWindow
+    },
     data: () => ({
+      snackColor:'',
+      snackbar:false,
+      snackText:'',
       activeIndex: null,
+      lastIndex: null,
       innerActiveIndex:null,
       isLoading:false,
       dialog:false,
       show:false,
       search:'',
       notifications: false,
-      selected:'',
+      selected:[],
+      cheatSelected:[],
       sorted: {
         title: 'NGS Projekt', value: 'ngsproject'
       },
@@ -454,6 +483,7 @@ import {mapState} from 'vuex'
 
       ],
       patientList:[],
+      lockedId:[],
       currentDataset1: {
         bactnr: "",
         processnr: 4,
@@ -498,6 +528,8 @@ import {mapState} from 'vuex'
     },
     computed: {
           ...mapState(['ngs']),
+          ...mapState(['locks']),
+          ...mapState(['selectedIsolat']),
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
@@ -539,7 +571,20 @@ import {mapState} from 'vuex'
           }
   }
     },
+    watch:{
+      locks(newValue, oldValue){
+        this.lockedList = newValue
+      },
+      selected(newValue, oldValue){
+        this.$store.state.export = newValue
+      }
+    },
     methods:{
+      test(patient){
+        this.selected = []
+        for(var i= 0; i<patient.length; i++)
+        this.selected.push(patient[i])
+      },
       //Method that changes the URL and allows to change between the different views. Sets the selected property of the checkbox to false.
       changeworkflow(item){
         for(var i=0; i<this.selected.length;i++){
@@ -567,6 +612,7 @@ import {mapState} from 'vuex'
         },
       //sets the currentPatient
       setCurrentData(patient,index){
+      this.lastIndex = this.activeIndex
       this.activeIndex = index
         this.runList = []
         var i=0
@@ -580,6 +626,8 @@ import {mapState} from 'vuex'
           }
         }
            this.setCurrentInnerData(patient)
+
+        
       },
 
       //Method that copied the data from the ngs information, creates a new object ad applies it to the currentDataset which then gets displayed in textfields.
@@ -587,6 +635,7 @@ import {mapState} from 'vuex'
       this.innerActiveIndex = index
       this.isLoading =!this.isLoading
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
+      this.$store.commit('SET_SELECTEDISOLAT', patient)
         if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
         if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
         if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
@@ -595,15 +644,60 @@ import {mapState} from 'vuex'
         if(this.currentDataset1.librarydate)this.currentDataset1.librarydate = this.dateformatter(this.currentDataset1.librarydate)
         if(this.currentDataset1.sequencingdate)this.currentDataset1.sequencingdate = this.dateformatter(this.currentDataset1.sequencingdate)
       },
+      //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
+      editDataset(){
+        /*  this.lockedId.push(this.selectedIsolat.id)
+          console.log(this.lockedId)
+          this.$store.dispatch('requestLock', this.lockedId)
+            .catch((error) => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification()
+              this.$store.state.formDialog = false
+          })
+            .then( */
+              this.$store.state.formDialog = true,
+              this.neutralNotification()
+            //)
+        
+      },
+      //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
 
-      //deletes a dataset
-      deleteSet(){
-        confirm('Sollen folgende Datensets endgültig gelöscht werden? Dies kann NICHT rückgängig gemacht werden! ') 
+       //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
+      deleteStep1(){
+       /*   this.lockedId.push(this.selectedIsolat.id)
+          console.log(this.lockedId)
+          this.$store.dispatch('requestLock', this.lockedId)
+            .catch((error) => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification()
+              this.$store.state.deleteDialog = false
+          })
+            .then( */
+              this.$store.state.deleteDialog = true,
+              this.neutralNotification()
+         //   )
       },
-      //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
-      startRepetition(){
-        this.dialog=true
+      repeat(){
+        this.$store.state.repeatDialog = true,
+        this.neutralNotification()
       },
+      //Methods that define the snackbars and notify the user
+          positiveNotification(){
+            this.snackColor="success"
+            this.snackText="Übertragung erfolgreich"
+            this.snackbar =true
+          },
+          negativeNotification(){
+            this.snackColor="error"
+            this.snackText="Der Datensatz wird bereits bearbeitet."
+            this.snackbar=true
+          },
+          neutralNotification(){
+              this.snackColor="warning"
+              this.snackText="Sie können den Datensatz nun bearbeiten"
+              this.snackbar=true
+          },
+
       //sends a dataset to extraced, to repeat the workflow incase of an error, and opens a popup 
       sendRun(){
   /*      DIESE METHODE IS TODO - REPEAT
@@ -619,16 +713,21 @@ import {mapState} from 'vuex'
       //to the next processstep. The if checks what the outersorting is, if it is ngs projekt it will check the checkboxes of the dataset inside a NGS Project on selection.
       selectRun(run){
         this.selected =run
-        this.$store.state.export = this.selected
         if(this.sorted.value =='ngsproject'){
           for(var i=0;i<run.length;i++){
            run[i].selected = run.selected
           }
         }
       },
+      //resets the selection from the Checkboxes
+      resetSelected(){
+        this.selected = []
+
+      },
       //Method that sets the filter for the Sorted Property (Card where the Lists (Lauf NR or NGS Project NR) gets displayed)
       setSorted(item){
         this.sorted = item
+        this.selected =[]
       },
       //Method that sets the filter for the innerSorted Property (Card where the Dataset gets displayed)
       setInnerSorted(item){
@@ -651,5 +750,8 @@ import {mapState} from 'vuex'
 }
 .is-active{
 background-color:rgba(21, 109, 224, 0.226);
+}
+.is-locked{
+background-color:rgba(224, 21, 21, 0.226);
 }
 </style>

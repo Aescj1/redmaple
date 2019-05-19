@@ -190,7 +190,6 @@
             </v-container>
           </v-card-text>
             <div v-if="sorted.title == 'Lauf Nummer'" class="text-xs-right">
-            <v-btn @click="deleteSet">löschen</v-btn>
               <v-btn
               color="primary"
               dark
@@ -203,7 +202,7 @@
 <!----------- THIS is the popup for the additional data input to bring the data to the next processstepp    -->
               <v-dialog
                 v-model="dialog"
-                width="700" 
+                width="800" 
                 scrollable
               >
               <v-card>
@@ -221,28 +220,28 @@
                 <v-subheader class="body-2">Enthaltene Datensets</v-subheader>
                 <v-divider></v-divider>
                 <v-form v-for="item in selected" :key="item.index">
+                  <v-divider></v-divider>
                   <v-layout>
-                    <v-flex
-                    xs6
-                    md6
-                    >
-                  <v-text-field v-text="item.bactnr">
-                  </v-text-field>
+                    <v-flex xs3 md3>
+                      <v-text-field v-text="item.bactnr"></v-text-field>
                     </v-flex>
-                    <v-flex
-                    xs6
-                    md6>
-                    <v-text-field
-                    v-text="item.priority"
-                    ></v-text-field>
+                    <v-flex xs3 md3>
+                      <v-text-field v-text="item.priority"></v-text-field>
+                    </v-flex>
+                    <v-flex xs3 md3>
+                      <v-text-field v-text="item.pathogen"></v-text-field>
+                    </v-flex>
+                    <v-flex xs3 md3>
+                      <v-text-field v-text="item.sender"></v-text-field>
                     </v-flex>
                     </v-layout>
+
                 </v-form>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions>
+                <v-spacer></v-spacer>
                 <v-btn
-                  color="error"
                   flat
                   @click="dialog=false"
                 >
@@ -288,7 +287,21 @@
                 </v-flex>
                 </v-item-group>
             </v-layout>
-
+            <v-snackbar
+              v-model="snackbar"
+              :color="snackColor"
+              multi-line
+              :timeout="4000"
+            >
+              {{ snackText }}
+              <v-btn
+                dark
+                flat
+                @click="snackbar = false"
+              >
+                Close
+              </v-btn>
+            </v-snackbar>
   </v-container>
 </template>
 
@@ -306,7 +319,9 @@ import {mapState} from 'vuex'
       dialog:false,
       show:false,
       search:'',
-      notifications: false,
+      snackColor:'',
+      snackbar:false,
+      snackText:'',
       selected:'',
       sorted: {
         title: 'Lauf Nummer', value: 'runnr'
@@ -410,10 +425,27 @@ import {mapState} from 'vuex'
     },
     watch:{
       ngs(newValue){
-        
+
       }
     },
     methods:{
+        //Methods that define the snackbars and notify the user
+      positiveNotification(){
+        this.snackColor="success"
+        this.snackText="Übertragung erfolgreich"
+        this.snackbar =true
+      },
+      negativeNotification(){
+        this.snackColor="error"
+        this.snackText="Der Datensatz wird bereits bearbeitet."
+        this.snackbar=true
+      },
+      neutralNotification(){
+          this.snackColor="warning"
+          this.snackText="Sie können den Datensatz nun bearbeiten"
+          this.snackbar=true
+      },
+      //Method that changes the view/ component
       changeworkflow(item){
         for(var i=0; i<this.selected.length;i++){
           this.selected[i].selected =false
@@ -483,6 +515,8 @@ import {mapState} from 'vuex'
         this.selected = []
         this.$store.state.export = this.selected
         this.dialog = false
+        this.positiveNotification()
+
       },
       setSorted(item){
         this.sorted = item
