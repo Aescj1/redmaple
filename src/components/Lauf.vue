@@ -49,7 +49,7 @@
     <v-layout row wrap>
       <!--  This part defines the DataList and displays all the bact-Nr and the Priority       -->
         <v-flex  xs2 sm2 md2 xl2 lg2 class="scroll">
-        <v-list  fill-height>
+        <v-list id="ngsList" fill-height>
           <template v-for="(patient, index) in filteredItems">
 
             <v-list-tile
@@ -299,7 +299,6 @@ import _ from 'lodash';
 import {mapState} from 'vuex'
 
 
-
   export default {
 
     data: () => ({
@@ -380,12 +379,11 @@ import {mapState} from 'vuex'
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
           var display;
-         //   store.NgsList = the list that gets transmitted from the DB to the store
+         //   this.NgsList = the list that gets transmitted from the DB to the store
           var method = this.ngs.filter(patient => {
                 //gets the list and parsed it for all Data with processNr = 1 (1= geplant, 2= extrahiert, 3=lauf,4=sequenziert)
                 if(patient.processnr == 3){
-                
-                                //the if just checks if the search is null, which happens when you clear the searchfield with the clearSearch() method
+                //the if just checks if the search is null, which happens when you clear the searchfield with the clearSearch() method
                 if(!this.search) return this.ngs;
                 //that block checks if any search input matches the data in the patientList. It loops trought the Patient and checks if a match results in true.
                 //ex. patient.bactNr is the same as this.search then it returns the patients --> this could be written in a loop..couldnt make it work
@@ -403,12 +401,17 @@ import {mapState} from 'vuex'
             }else{
             display =_.sortBy(method, this.sorted.value);
             }
-            return display
-            
+            return display         
         },
+
         orderedRunList: function () {
     return _.orderBy(this.runList, 'isorunnr')
   }
+    },
+    watch:{
+      ngs(newValue){
+        
+      }
     },
     methods:{
       changeworkflow(item){
@@ -484,7 +487,8 @@ import {mapState} from 'vuex'
       setSorted(item){
         this.sorted = item
       },
-    }
+    },
+
   }
 </script>
 <style>

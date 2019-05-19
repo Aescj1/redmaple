@@ -97,11 +97,11 @@ export default new Vuex.Store({
     },
 
     validateAccessToken(context){
-      console.log("validating access token..")
+      //console.log("validating access token..")
       return axios
         .get(REST_BASE_URL + 'AccessTokens/' + this.state.accessToken + '/exists?access_token=' + this.state.accessToken)
         .then((response) => {
-          console.log("The access token " + this.state.accessToken + " is valid")
+          //console.log("The access token " + this.state.accessToken + " is valid")
         }).catch((err) => {
           let error = parseError(err)
           throw error
@@ -135,6 +135,8 @@ export default new Vuex.Store({
     },
 
     putNgs(context, json){
+      console.log("Setting up put request for")
+      console.log(json)
       return axios
       .put(REST_BASE_URL + 'ngs?access_token=' + this.state.accessToken, json)
       .then((response) => {
@@ -306,6 +308,13 @@ export default new Vuex.Store({
     },
 
     PUSH_NGS (state, response){
+      let oldObject = state.ngs.filter(obj  =>{
+        return obj.id === response.data.id
+      })
+      let index = state.ngs.indexOf(oldObject[0])
+      if(index > -1){
+        state.ngs.splice(index, 1)
+      }
       state.ngs.push(response.data)
       console.log("This is the new ngs array:")
       console.log(state.ngs)

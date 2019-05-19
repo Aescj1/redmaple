@@ -41,7 +41,9 @@
                             <br>
                             <span class="headline">Priorität "B": {{getPriority("B",1)}}</span>
                             <br>
-                            <span class="headline">Priorität "C": {{getPriority("C",1)}}</span>                            
+                            <span class="headline">Priorität "C": {{getPriority("C",1)}}</span>
+                            <br>
+                            <span class="headline">Priorität "D": {{getPriority("D",1)}}</span>                            
                           </v-flex>
                         </v-layout>
                       </v-container>
@@ -73,7 +75,9 @@
                             <br>
                             <span class="headline">Priorität "B": {{getPriority("B",2)}}</span>
                             <br>
-                            <span class="headline">Priorität "C": {{getPriority("C",2)}}</span>                            
+                            <span class="headline">Priorität "C": {{getPriority("C",2)}}</span>
+                            <br>
+                            <span class="headline">Priorität "D": {{getPriority("D",2)}}</span>
                           </v-flex>
                         </v-layout>
                       </v-container>
@@ -105,7 +109,9 @@
                             <br>
                             <span class="headline">Priorität "B": {{getPriority("B",3)}}</span>
                             <br>
-                            <span class="headline">Priorität "C": {{getPriority("C",3)}}</span>                            
+                            <span class="headline">Priorität "C": {{getPriority("C",3)}}</span>
+                            <br>
+                            <span class="headline">Priorität "D": {{getPriority("D",3)}}</span>                            
                           </v-flex>
                         </v-layout>
                       </v-container>
@@ -138,7 +144,9 @@
                             <br>
                             <span class="headline">Priorität "B": {{getPriority("B",4)}}</span>
                             <br>
-                            <span class="headline">Priorität "C": {{getPriority("C",4)}}</span>                            
+                            <span class="headline">Priorität "C": {{getPriority("C",4)}}</span>
+                            <br>
+                            <span class="headline">Priorität "D": {{getPriority("D",4)}}</span>                            
                           </v-flex>
                         </v-layout>
                       </v-container>

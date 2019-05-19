@@ -23,9 +23,13 @@
               </v-list-tile>
             </v-list>
           </v-menu>
-            <v-spacer></v-spacer>
-            
-          <v-spacer></v-spacer>
+          <v-layout>
+              <v-text-field :value=this.lastIndex+1 type="number" style="max-width:80px; margin-left:80px" hide-details label="Start" solo width="30px"></v-text-field>
+              <p style="margin:15px"><b>bis</b></p>
+              <v-text-field :value=this.activeIndex+1 type="number" style="max-width:80px" hide-details label="Ende" solo></v-text-field>
+              <v-btn color="primary" @click="multiSelectIsolat">Auswählen</v-btn>
+          <v-btn style="margin-left:20px; margin-right:150px" color="primary" @click="resetSelected">Auswahl löschen</v-btn>
+          </v-layout>
           <v-text-field
             hide-details
             prepend-inner-icon="search"
@@ -57,19 +61,18 @@
               class="tile"
               :key="patient.index"
               @click="setCurrentData(patient,index)"
-              :class="{'is-active': index == activeIndex}"
+              :class="{'is-active': index == activeIndex, 'is-locked': displayLocked(patient)}"
             >
             <v-list-tile-action>
               <v-checkbox
-                v-model="filteredItems[index].selected"
-                @click.capture.stop="selectPatient(filteredItems[index])"
+                :value ="patient"
+                v-model="selected"
+                multiple
               ></v-checkbox>
             </v-list-tile-action> 
               <v-list-tile-content >
-                <v-list-tile-title v-if="sorted.title == 'Bact-Nr' ||sorted.title == 'Priority' ">{{patient.bactnr}}</v-list-tile-title>
-                <v-list-tile-title v-if="sorted.title == 'Pathogen'">{{patient.pathogen}}</v-list-tile-title>
-                <v-list-tile-title v-if="sorted.title == 'Einsender'">{{patient.sender}}</v-list-tile-title>
-                <v-list-tile-sub-title>{{patient.priority}}</v-list-tile-sub-title>
+                <v-list-tile-title >{{patient.priority}} | {{patient.bactnr}} </v-list-tile-title>
+                <v-list-tile-sub-title>{{patient.pathogen}} | {{patient.sender}} </v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
              <v-divider
@@ -87,42 +90,51 @@
                 <!--Defines the first red square that contains meta data  -->
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="cyan lighten-4">
-                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
-                  <v-text-field v-model="currentDataset1.priority" :mask="priorityMask" label="Priority*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.lastname" label="lastName*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.firstname" label="fistName*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.altid" label="alternative ID" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.priority" :mask="priorityMask" label="Priority" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.lastname" label="lastName" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.firstname" label="fistName" readonly></v-text-field>
             </v-card>
                 </v-flex>
                 <!--Defines the second red square that contains meta data  -->
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="cyan lighten-3">
-                  <v-text-field v-model="currentDataset1.birthdate" :mask="dateMask" label="Geburtsdatum*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.isoentrydate" :mask="dateMask" label="Eingang*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.birthdate" :mask="dateMask" label="Geburtsdatum" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.isoentrydate" :mask="dateMask" label="Eingang" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.samplingdate" :mask="dateMask" label="Abnahme"></v-text-field>
-                  <v-text-field v-model="currentDataset1.sender" label="Einsender*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.department" label="Station*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.processingdate" :mask="dateMask" label="Bearbeitungsdatum"></v-text-field>
-                  <v-text-field v-model="currentDataset1.material" label="Material*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.sender" label="Einsender" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.department" label="Station" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.processingdate" :mask="dateMask" label="Bearbeitungsdatum" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.material" label="Material" readonly></v-text-field>
             </v-card>
                 </v-flex>
 
               <!--Defines the third red square that contains meta data  -->
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="cyan lighten-2">
-                  <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
-                  <v-text-field v-model="currentDataset1.extractiondate" :mask="dateMask" label="Datum DNA-Prep"></v-text-field>
-                  <v-text-field v-model="currentDataset1.concentration" suffix="ng/µl" label="DNA Konzentration"></v-text-field>
-                  <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA"></v-text-field>
-                  <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
+                  <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.extractiondate" :mask="dateMask" label="Datum DNA-Prep" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.concentration" suffix="ng/µl" label="DNA Konzentration" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.comment" label="Kommentar" readonly></v-text-field>
             </v-card>
                 </v-flex>
               </v-layout>
             </v-container>
-            <div class="text-xs-right">
-            <v-btn @click="deleteSet">löschen</v-btn>
+            <!--Buttons for that are being used to edit the data -->
+           <div class="text-xs-right">
+            <v-btn v-if="currentDataset1.bactnr != ''" @click="this.editDataset">Bearbeiten</v-btn>
+              <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
+                <NgsFormular></NgsFormular>
+              </v-dialog>
+
+            <v-btn v-if="currentDataset1.bactnr != ''" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
+              <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
+                <DeleteWindow></DeleteWindow>
+              </v-dialog>            
               <v-btn
               color="primary"
               dark
@@ -133,16 +145,9 @@
               </v-btn>
 
 <!----------- THIS is the popup for the additional data input to bring the data to the next processstepp    -->
-              <v-dialog
-                v-model="dialog"
-                width="700" 
-                scrollable
-              >
+              <v-dialog v-model="dialog" width="700" scrollable persistent>
               <v-card>
-              <v-card-title
-                class="headline grey lighten-2"
-                primary-title
-              >
+              <v-card-title class="headline grey lighten-2" primary-title>
               <div>
                <div class="headline">Run für die Sequenzierung vorbereiten </div>
               </div>
@@ -153,15 +158,10 @@
                     <div slot="header"  grey>Sequenzierungslauf Einstellungen</div>
                       <v-card>
                         <v-card-text class="grey lighten-4"> <v-layout>
-                    <v-flex
-                    xs6
-                    md6
-                    >
+                    <v-flex xs6 md6>
                     <v-text-field v-text="'Run grösse auswählen: '"></v-text-field>
                     </v-flex>
-                  <v-flex
-                    xs6
-                    md6>
+                    <v-flex xs6 md6>
                     <v-select
                       :items="runSize"
                       label="Run size"
@@ -171,15 +171,10 @@
                 </v-layout>
 
                 <v-layout>
-                  <v-flex
-                    xs6
-                    md6
-                    >
+                    <v-flex xs6 md6>
                     <v-text-field v-text="'Librarytyp auswählen: '"></v-text-field>
                   </v-flex>
-                  <v-flex
-                    xs6
-                    md6>
+                    <v-flex xs6 md6>
                     <v-select
                       :items="libraryType"
                       label="Library Typ"
@@ -189,15 +184,10 @@
                 </v-layout>
 
                 <v-layout>
-                  <v-flex
-                    xs6
-                    md6
-                    >
+                    <v-flex xs6 md6>
                     <v-text-field v-text="'NGS-Gerät auswählen: '"></v-text-field>
                   </v-flex>
-                  <v-flex
-                    xs6
-                    md6>
+                    <v-flex xs6 md6>
                     <v-select
                       :items="ngsmodality"
                       label="NGS-Gerät"
@@ -207,15 +197,10 @@
                 </v-layout>
 
                 <v-layout>
-                  <v-flex
-                    xs6
-                    md6
-                    >
+                    <v-flex xs6 md6>
                     <v-text-field v-text="'NGS Run Nummer eingeben: '"></v-text-field>
                   </v-flex>
-                  <v-flex
-                    xs6
-                    md6>
+                    <v-flex xs6 md6>
                     <v-text-field
                       label="NGS Run Nr"
                       v-model="runNr"
@@ -267,25 +252,21 @@
                     ></v-text-field>
                     <v-date-picker v-model="sequencingDate" no-title scrollable actions @input="Seqmenu =false" locale="de">
                     </v-date-picker>
-                </v-menu></v-card-text>
-      </v-card>
-    </v-expansion-panel-content>
-  </v-expansion-panel>
+                  </v-menu>
+                </v-card-text>
+              </v-card>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
 
                 <v-subheader class="headline">Ausgewählte Datensets</v-subheader>
                 <v-divider></v-divider>
                 <v-form v-for="item in selected" :key="item.index">
                   <v-layout>
-                    <v-flex
-                    xs6
-                    md6
-                    >
+                    <v-flex xs6 md6>
                   <v-text-field v-text="item.bactnr">
                   </v-text-field>
                     </v-flex>
-                    <v-flex
-                    xs6
-                    md6>
+                    <v-flex xs6 md6>
                     <v-text-field
                     v-text="item.priority"
                     ></v-text-field>
@@ -295,21 +276,37 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions>
-                <v-btn
-                  color="primary"
-                  flat
-                  @click="dialog=false"
-                >
+                <v-spacer></v-spacer>
+                <v-btn color="primary" flat @click="dialog=false">
                   Abbrechen
                 </v-btn>
 
-                <v-btn
-                  color="primary"
-                  flat
-                  @click="sendRun"
-                >
+                <v-btn color="primary" @click="initRun">
                   Starten
                 </v-btn>
+                  <v-dialog
+                  v-if="this.runFillerDialog==true"
+                  v-model="this.runFillerDialog"
+                  width="800" 
+                  persistent 
+                >
+                <v-card>
+                <v-card-title class="cyan lighten-2" primary-title>
+                <div>
+                  <div class="headline">Sequenzierungslauf auffüllen</div>
+                </div>
+                </v-card-title>
+                <v-card-text class="subheading   text-xs-center" >
+                  Wollen Sie den Sequenzierungslauf mit Isolaten der Priorität "D" auffüllen?
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                <v-btn @click="this.closePopup" flat>Nein</v-btn>
+                  <v-btn color="primary" @click="fillRun">Ja</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -348,7 +345,6 @@
               :color="snackColor"
               multi-line
               :timeout="4000"
-
             >
               {{ snackText }}
               <v-btn
@@ -369,19 +365,27 @@
 /* eslint-disable */
 import _ from 'lodash';
 import {mapState} from 'vuex'
+import NgsFormular from './NgsFormular.vue'
+import DeleteWindow from './DeleteWindow.vue'
 
 
 
   export default {
-
+    components: {
+      NgsFormular,
+      DeleteWindow,
+    },
     data: () => ({
       dateMask:'##-##-####',
+      lockedList:[],
       priorityMask:'A',
       activeIndex: null,
+      lastIndex:null,
       snackText:'',
       snackColor:'',
       snackbar:false,
       dialog:false,
+      runFillerDialog:false,
       show:false,
       search:'',
       notifications: false,
@@ -409,6 +413,9 @@ import {mapState} from 'vuex'
         { title: 'Pathogen', value:'pathogen' }
       ],
       patientList:[],
+      lockedId:{
+          id:0,
+        },
       currentDataset1: {
         bactnr: "",
         processnr: 2,
@@ -444,9 +451,12 @@ import {mapState} from 'vuex'
     },
     computed: {
           ...mapState(['ngs']),
+          ...mapState(['locks']),
+          ...mapState(['selectedIsolat']),
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
+                this.lockedList = this.locks
          //   store.NgsList = the list that gets transmitted from the DB to the store
             return _.orderBy(
               this.ngs.filter(patient => {
@@ -477,6 +487,27 @@ import {mapState} from 'vuex'
         this.$router.push('/'+item)
 
       },
+  //Methods that define the snackbars and notify the user
+      positiveNotification(){
+        this.snackColor="success"
+        this.snackText="Übertragung erfolgreich"
+        this.snackbar =true
+      },
+      negativeNotification(){
+        this.snackColor="error"
+        this.snackText="Der Datensatz wird bereits bearbeitet."
+        this.snackbar=true
+      },
+      neutralNotification(){
+          this.snackColor="warning"
+          this.snackText="Sie können den Datensatz nun bearbeiten"
+          this.snackbar=true
+      },
+      //closes the window when cancel get pressed in lauf vorbereiten view
+      closePopup(){
+        this.dialog = false
+        this.runFillerDialog = false
+      },
       //clears the search and sets the value null
       clearSearch(){
         this.search='';
@@ -494,8 +525,10 @@ import {mapState} from 'vuex'
         },
       //sets the currentPatient
       setCurrentData(patient,index){
+      this.lastIndex = this.activeIndex
       this.activeIndex = index
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
+      this.$store.commit('SET_SELECTEDISOLAT', patient)
       if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
       if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
       if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
@@ -503,7 +536,9 @@ import {mapState} from 'vuex'
       if(this.currentDataset1.extractiondate)this.currentDataset1.extractiondate = this.dateformatter(this.currentDataset1.extractiondate)
 
       },
-      selectPatient(patient){
+      //This was the old Method that gets called when a Checkbox is clicked. Is the template for multiSelectIsolat. 
+      //Checks if Isolat is in list, if yes it removes otherwise selects it.
+      selectIsolat(patient){
         if (this.selected.includes(patient)) {
         // Removing the data
         this.selected.splice(this.selected.indexOf(patient), 1);
@@ -512,17 +547,78 @@ import {mapState} from 'vuex'
       }
       this.$store.state.export = this.selected
       },
-
-      //deletes a dataset
-      deleteSet(){
-        confirm('Sollen folgende Datensets wirklich gelöscht werden? ') 
+      //Method to select multiple IsolatDatasets
+      multiSelectIsolat(patient){
+        if(this.lastIndex<this.activeIndex && this.lastIndex !=null && this.activeIndex !=null){
+          var i = this.lastIndex
+          var o = this.activeIndex
+          while(i<=o){
+            if (this.selected.includes(this.filteredItems[i])) {
+              // Removing the data
+              this.selected.splice(this.selected.indexOf(i), 1);
+            } else {
+              this.selected.push(this.filteredItems[i]);
+            }
+            i++
+          }
+         this.$store.state.export = this.selected
+        }else{
+        alert("bitte gültige Auswahl treffen: 'kleinere Zahl' bis 'grössere Zahl'")
+        }
+      },
+      resetSelected(){
+        this.selected = []
+      },
+      //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
+      editDataset(){
+          this.lockedId.id = this.selectedIsolat.id
+          console.log(this.lockedId)
+          this.$store.dispatch('requestLock', this.lockedId)
+            .catch((error) => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification()
+              this.$store.state.formDialog = false
+          })
+            .then(
+              this.$store.state.formDialog = true,
+              this.neutralNotification()
+            )
+        
+      },
+       //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
+      deleteStep1(){
+          this.lockedId.id = this.selectedIsolat.id
+          console.log(this.lockedId)
+          this.$store.dispatch('requestLock', this.lockedId)
+            .catch((error) => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification()
+              this.$store.state.deleteDialog = false
+          })
+            .then(
+              this.$store.state.deleteDialog = true,
+              this.neutralNotification()
+            )
       },
       //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
       startRun(){
         this.dialog=true
       },
-      //sends a dataset to the next processstep (Lauf) and opens a popup 
- sendRun(){
+      //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
+      displayLocked(patient){  
+        if(this.lockedList.includes(patient.id)) return true  
+      },
+      //checks if the run is filled 
+      initRun(){
+          if(this.selected.length < this.chosenSize){
+            this.runFillerDialog = true
+          }
+          else{
+            this.sendRun()
+          }
+      },
+    //sends a dataset to the next processstep (Lauf) 
+      sendRun(){
           var myDate = new Date();
           var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
           var date = ('0' + myDate.getDate()).slice(-2);
@@ -552,10 +648,27 @@ import {mapState} from 'vuex'
         this.selected = []
         this.dialog = false
       },
+      //Method that fills up the run with Isolat datasets that have priority D
+      fillRun(){
+        var listD = this.filteredItems.filter(obj  =>{
+          return obj.priority == "D"
+        })
+        if(listD.length >0){
+          while(this.selected.length < this.chosenSize){
+            this.selected.push(listD.pop())
+            console.log(this.selected)
+         }
+          this.sendRun()
+        }else{
+          this.sendRun()
+        }
+        this.runFillerDialog = false
       },
+      //method for the sorting algorithm, sets the item.
       setSorted(item){
         this.sorted = item
       }
+      },
     }
 
 </script>

@@ -24,11 +24,11 @@
             </v-list>
           </v-menu>
           <v-layout>
-              <v-text-field :value=this.lastIndex type="number" style="max-width:80px; margin-left:80px" hide-details label="Start" solo width="30px"></v-text-field>
-              bis
-              <v-text-field :value=this.activeIndex type="number" style="max-width:80px" hide-details label="Ende" solo></v-text-field>
+              <v-text-field :value=this.lastIndex+1 type="number" style="max-width:80px; margin-left:80px" hide-details label="Start" solo width="30px"></v-text-field>
+              <p style="margin:15px"><b>bis</b></p>
+              <v-text-field :value=this.activeIndex+1 type="number" style="max-width:80px" hide-details label="Ende" solo></v-text-field>
               <v-btn color="primary" @click="multiSelectIsolat">Auswählen</v-btn>
-          <v-btn style="margin-left:40px; margin-right:150px" color="primary" @click="resetSelected">Auswahl löschen</v-btn>
+          <v-btn style="margin-left:20px; margin-right:150px" color="primary" @click="resetSelected">Auswahl löschen</v-btn>
           </v-layout>
           <v-text-field
             hide-details
@@ -58,7 +58,6 @@
 
             <v-list-tile
               class="tile"
-              id="listRow"
               :key="patient.index"
               @click="setCurrentData(patient,index)"
               :class="{'is-active': index == activeIndex, 'is-locked': displayLocked(patient)}"
@@ -134,7 +133,7 @@
                 </v-flex>
               </v-layout>
             </v-container>
-
+            <!--Buttons for that are being used to edit the data -->
             <div class="text-xs-right">
             <v-btn v-if="currentDataset1.bactnr != ''" @click="this.editDataset">Bearbeiten</v-btn>
               <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
@@ -332,10 +331,11 @@ import DeleteWindow from './DeleteWindow.vue'
           ...mapState(['ngs']),
           ...mapState(['locks']),
           ...mapState(['selectedIsolat']),
+          
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
-
+                this.lockedList = this.locks
          //   store.NgsList = the list that gets transmitted from the DB to the store
             return _.orderBy(
               this.ngs.filter(patient => {
@@ -372,6 +372,7 @@ import DeleteWindow from './DeleteWindow.vue'
         this.$router.push('/'+item)
 
       },
+  //Methods that define the snackbars and notify the user
       positiveNotification(){
         this.snackColor="success"
         this.snackText="Übertragung erfolgreich"
@@ -452,7 +453,7 @@ import DeleteWindow from './DeleteWindow.vue'
       displayLocked(patient){  
         if(this.lockedList.includes(patient.id)) return true  
       },
-      //deletes a dataset
+       //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
       deleteStep1(){
           this.lockedId.id = this.selectedIsolat.id
           console.log(this.lockedId)
@@ -467,12 +468,8 @@ import DeleteWindow from './DeleteWindow.vue'
               this.neutralNotification()
             )
       },
-      deleteStep2(){
-
-      },
       //functio
       startExtraction(){
-        console.log(this.selected)
         var myDate = new Date();
         var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
         var date = ('0' + myDate.getDate()).slice(-2);
@@ -489,18 +486,22 @@ import DeleteWindow from './DeleteWindow.vue'
  extrahieren(){
         for(var i=0; i<this.selected.length;i++){
           this.selected[i].processnr = 2
-          delete this.selected[i].selected
+          console.log(this.selected)
           this.$store.dispatch('putNgs', this.selected[i])
+          .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
         }
-
         this.selected = []
         this.$store.state.export = this.selected
         this.dialog = false
         this.positiveNotification()
+      
       },
       setSorted(item){
         this.sorted = item
       },
+//Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
       editDataset(){
           this.lockedId.id = this.selectedIsolat.id
           console.log(this.lockedId)
