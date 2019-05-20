@@ -69,7 +69,7 @@
             </v-list-tile>
           </v-list-group>
 
-          <v-list-tile>
+          <v-list-tile @click="testUnlockAll()">
           <v-list-tile-action>
             <v-icon>group</v-icon>
           </v-list-tile-action>
@@ -155,7 +155,13 @@ import {bus} from '../main.js'
       hideHeader(item){
         item.show = !item.show
         bus.$emit('hideHeader',item.index)
-      }
+      },
+      testUnlockAll(){
+        this.$store.dispatch('unlockAll')
+        .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      },
     }
   }
 </script>
