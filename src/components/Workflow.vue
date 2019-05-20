@@ -1,23 +1,6 @@
 <template>
   <v-container fill-height fluid >
     <v-layout row wrap grid-list-md>
-
-    <div>
-      <v-btn outline @click="testCreate()">Create Test Dataset</v-btn>
-      <v-btn outline @click="testDelete()">Delete Test Dataset</v-btn>
-    </div>
-
-    <div>
-      <v-btn outline @click="testCreatePathogen()">Create Test Pathogen</v-btn>
-      <v-btn outline @click="testDeletePathogen()">Delete Test Pathogen</v-btn>
-    </div>
-
-    <div>  
-      <v-btn outline @click="testLock()">Request Lock</v-btn>
-      <v-btn outline @click="testUnlock()">Request Unlock</v-btn>
-      <v-btn outline @click="testUnlockAll()">Unlock all</v-btn>
-    </div>
-
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
                   <v-hover>
                     <v-card color="blue"         
