@@ -457,8 +457,26 @@ import RepeatWindow from './RepeatWindow.vue'
         console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
       })
     },
+
+    created() {
+      if(this.ngs.length === 0){
+        this.$store.dispatch('loadNgs')
+        .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      }
+      if(this.pathogen.length === 0){
+        this.$store.dispatch('loadPathogen')
+        .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      }
+
+    },
+
     computed: {
           ...mapState(['ngs']),
+          ...mapState(['pathogen']),
           ...mapState(['locks']),
           ...mapState(['selectedIsolat']),
 

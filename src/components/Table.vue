@@ -119,6 +119,7 @@ import Papa from 'papaparse'
     }),
        computed: {
          ...mapState(['ngs']),
+         ...mapState(['pathogen']),
         pages () {
           if (this.pagination.rowsPerPage == null ||
             this.pagination.totalItems == null
@@ -126,17 +127,28 @@ import Papa from 'papaparse'
           return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
         } 
       }, 
-    mounted(){
-      this.$store.dispatch('loadNgs')
-      .catch((error) => {
-        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-      })
-    },
+
     created () {
       bus.$on('hideHeader', (data) =>{
       this.headerindex = data;
       this.headers[this.headerindex].show = !this.headers[this.headerindex].show
       });
+
+      if(this.ngs.length === 0){
+        this.$store.dispatch('loadNgs')
+        .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+       }
+
+      if(this.pathogen.length === 0){
+        this.$store.dispatch('loadPathogen')
+        .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      }
+
+
     },
     methods: {
       renderHeader(){

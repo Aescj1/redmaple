@@ -388,8 +388,26 @@ import {mapState} from 'vuex'
         console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
       })
     },
+
+    created() {
+      if(this.ngs.length === 0){
+        this.$store.dispatch('loadNgs')
+        .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      }
+      if(this.pathogen.length === 0){
+        this.$store.dispatch('loadPathogen')
+        .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      }
+
+    },
+
     computed: {
           ...mapState(['ngs']),
+          ...mapState(['pathogen']),
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {

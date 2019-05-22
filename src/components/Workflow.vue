@@ -1,5 +1,12 @@
 <template>
   <v-container fill-height fluid >
+    <!--
+     <div>  
+      <v-btn outline @click="testLock()">Request Lock</v-btn>
+      <v-btn outline @click="testUnlock()">Request Unlock</v-btn>
+      <v-btn outline @click="testUnlockAll()">Unlock all</v-btn>
+    </div>
+    -->
     <v-layout row wrap grid-list-md>
                 <v-flex d-flex xs3 sm3 md3 xl3 lg3>
                   <v-hover>
@@ -189,16 +196,21 @@ import {mapState} from 'vuex'
         id:[]
 
     }),
-    mounted(){
-      this.$store.dispatch('loadNgs')
-      .catch((error) => {
-        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-      }),
-      this.$store.dispatch('loadPathogen')
-      .catch((error) => {
-        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-      })
+    created() {
+      if(this.ngs.length === 0){
+        this.$store.dispatch('loadNgs')
+        .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      }
+      if(this.pathogen.length === 0){
+        this.$store.dispatch('loadPathogen')
+        .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
+      }
     },
+    
     computed:{
       ...mapState(['ngs']),
       ...mapState(['pathogen'])
@@ -255,17 +267,21 @@ import {mapState} from 'vuex'
       },
       testLock(){
         console.log("LOCKER")
-        var arr = "5ce140a62496a767d5de4162"
+        var arr = {
+          idArray: ['5ce140a62496a767d5de4162', 'absdc']
+          }
         console.log(arr)
         console.log("LOCKER"+arr)
         this.$store.dispatch('requestLock', arr)
         .catch((error) => {
         console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
         })
-                this.$store.dispatch('requestLock', this.id1)
+        /*
+        this.$store.dispatch('requestLock', this.id1)
         .catch((error) => {
         console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
         })
+        */
       },
       testUnlock(){
         this.$store.dispatch('requestUnlock', this.id)
