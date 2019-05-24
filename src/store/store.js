@@ -7,7 +7,7 @@ import {router} from './../main.js'
 import { resolve } from 'path';
 
 //Change to localhost for development
-const REST_BASE_URL = 'http://127.0.0.1:3000/api/'
+const REST_BASE_URL = 'http://147.87.118.201:3000/api/'
 //'http://147.87.118.201:3000/api/'
 //'http://127.0.0.1:3000/api/'
 
