@@ -523,6 +523,7 @@ import DeleteWindow from './DeleteWindow.vue'
       
       },
       setSorted(item){
+        this.selected =[]
         this.sorted = item
       },
 //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component

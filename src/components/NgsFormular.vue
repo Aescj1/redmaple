@@ -243,6 +243,7 @@ export default {
     },
     methods:{
       dateFormatter(date){
+        console.log(date)
           var month = '' + (date.getMonth() + 1)
           var day = '' + date.getDate()
           var  year = date.getFullYear()

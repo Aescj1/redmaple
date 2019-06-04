@@ -14,7 +14,7 @@
 
 <!-----------------      THIS PART GETS SHOWN WHEN THE DATASET IS FROM SEQUENCED (PROCESSNR 3)          ----------------------------->
 
-        <v-card-text v-if="this.isolat.length > 1" class="scroll">
+        <v-card-text v-if="this.isolat.length > 0" class="scroll">
             <v-expansion-panel>
                   <v-expansion-panel-content 
                   class="orange lighten-2" 
@@ -207,7 +207,6 @@ export default {
     },
     created(){
       this.isolat = JSON.parse(JSON.stringify(this.selectedIsolat)) //this method just places it as a json..
-
     },
     methods:{
       dateFormatter(date){

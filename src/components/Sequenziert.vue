@@ -311,7 +311,7 @@
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
-              <v-btn v-if="this.selected.length>0 && sorted.title != 'Lauf Nummer'" color="orange lighten-1" @click="repeat(selected)">Wiederholen</v-btn>
+              <v-btn v-if="currentDataset1.bactnr != '' && sorted.title != 'Lauf Nummer'" color="orange lighten-1" @click="repeat(currentDataset1)">Wiederholen</v-btn>
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog> 
@@ -641,6 +641,21 @@ import RepeatWindow from './RepeatWindow.vue'
           return newDate       }
           else return date
         },
+              dateFormatter2(date){
+        if(date){
+         var date = new Date(date)
+          var month = '' + (date.getMonth() + 1)
+          var day = '' + date.getDate()
+          var  year = date.getFullYear()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+          console.log([year, month, day].join('-'))
+
+        return [year, month, day].join('-')
+        }
+
+      },
       //sets the currentPatient
       setCurrentData(patient,index){
       this.lastIndex = this.activeIndex
@@ -663,13 +678,13 @@ import RepeatWindow from './RepeatWindow.vue'
       this.isLoading =!this.isLoading
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
      // this.$store.commit('SET_SELECTEDISOLAT', patient)
-        if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
-        if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
-        if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
-        if(this.currentDataset1.processingdate)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
-        if(this.currentDataset1.extractiondate)this.currentDataset1.extractiondate = this.dateformatter(this.currentDataset1.extractiondate)
-        if(this.currentDataset1.librarydate)this.currentDataset1.librarydate = this.dateformatter(this.currentDataset1.librarydate)
-        if(this.currentDataset1.sequencingdate)this.currentDataset1.sequencingdate = this.dateformatter(this.currentDataset1.sequencingdate)
+        this.currentDataset1.birthdate = this.dateFormatter2(this.currentDataset1.birthdate)
+        this.currentDataset1.samplingdate = this.dateFormatter2(this.currentDataset1.samplingdate)
+        this.currentDataset1.isoentrydate = this.dateFormatter2(this.currentDataset1.isoentrydate)
+        this.currentDataset1.processingdate = this.dateFormatter2(this.currentDataset1.processingdate)
+        this.currentDataset1.extractiondate = this.dateFormatter2(this.currentDataset1.extractiondate)
+        this.currentDataset1.librarydate = this.dateFormatter2(this.currentDataset1.librarydate)
+        this.currentDataset1.sequencingdate = this.dateFormatter2(this.currentDataset1.sequencingdate)
       },
       //this method is used when a user wants to reapeat a single Dataset inside the Run View.
       setSingleRunRepear(patient,index){
