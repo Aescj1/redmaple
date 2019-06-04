@@ -69,12 +69,12 @@
             </v-list-tile>
           </v-list-group>
 
-          <v-list-tile @click="testUnlockAll()">
+          <v-list-tile @click="userManagement">
           <v-list-tile-action>
             <v-icon>group</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>User management</v-list-tile-title>
+            <v-list-tile-title>Admin Dashboard</v-list-tile-title>
           </v-list-tile-content>
           </v-list-tile>
 
@@ -133,6 +133,9 @@ import {bus} from '../main.js'
       }
     ),
     methods:{
+      userManagement(){
+        this.$router.push('/admin')
+      },
       logout(){
         this.$store.dispatch('logout')
         bus.$emit('drawerReset',false)

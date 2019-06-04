@@ -307,11 +307,11 @@
                 <NgsFormular></NgsFormular>
               </v-dialog>
 
-            <v-btn v-if="this.selected.length>0" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
+            <v-btn v-if="this.selected.length>0 && sorted.title != 'Lauf Nummer'" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
-              <v-btn v-if="this.selected.length>0" color="orange lighten-1" @click="repeat(selected)">Wiederholen</v-btn>
+              <v-btn v-if="this.selected.length>0 && sorted.title != 'Lauf Nummer'" color="orange lighten-1" @click="repeat(selected)">Wiederholen</v-btn>
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog> 
@@ -413,11 +413,11 @@
             </v-snackbar>
                       <!-- div that contains the buttons to delete or repeate a sequencing (sets the data back to extrahiert (processNr 2))----------->
             <div class="text-xs-right">
-            <v-btn v-if="this.selected.length>0 && sorted.title == 'NGS Projekt'" color="red lighten-1" @click="this.deleteStep1">Alle löschen</v-btn>
+            <v-btn v-if="this.selected.length>0" color="red lighten-1" @click="this.deleteStep1">Alle löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
-              <v-btn v-if="this.selected.length>0 && sorted.title == 'NGS Projekt'" color="orange lighten-1" @click="repeat(selected)">Alle Wiederholen</v-btn>
+              <v-btn v-if="this.selected.length>0" color="orange lighten-1" @click="repeat(selected)">Alle Wiederholen</v-btn>
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog>   

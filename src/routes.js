@@ -6,6 +6,7 @@ import NgsFormular from './components/NgsFormular.vue'
 import Lauf from './components/Lauf.vue'
 import Extrahiert from './components/Extrahiert.vue'
 import Sequenziert from './components/Sequenziert.vue'
+import Admin from'./components/Admin.vue'
 
 
 
@@ -19,5 +20,7 @@ export const routes = [
  { path: '/lauf', component: Lauf},
  { path: '/extrahiert', component: Extrahiert},
  { path: '/sequenziert', component: Sequenziert},
- { path: '/formular', component: NgsFormular}
+ { path: '/formular', component: NgsFormular},
+ { path: '/admin', component: Admin}
+
 ];
