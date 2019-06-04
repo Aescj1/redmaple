@@ -196,6 +196,14 @@ import {mapState} from 'vuex'
         id:[]
 
     }),
+    
+    mounted(){
+      this.$store.dispatch('getCurrentUser')
+      .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+      })
+    },
+
     created() {
       if(this.ngs.length === 0){
         this.$store.dispatch('loadNgs')

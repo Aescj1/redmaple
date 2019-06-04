@@ -320,7 +320,7 @@ import DeleteWindow from './DeleteWindow.vue'
       },
     }),
     mounted(){
-      this.$store.dispatch('validateAccessToken')
+      this.$store.dispatch('getCurrentUser')
       .catch((error) => {
         console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
       })

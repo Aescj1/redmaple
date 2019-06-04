@@ -383,7 +383,7 @@ import {mapState} from 'vuex'
       testset:{},
     }),
     mounted(){
-      this.$store.dispatch('validateAccessToken')
+      this.$store.dispatch('getCurrentUser')
       .catch((error) => {
         console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
       })

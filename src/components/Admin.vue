@@ -9,9 +9,9 @@
                 <v-flex shrink class="formHolder elevation-4" >
                 <form>
                   <div class="text-xs-center">
-                    <v-text-field class="textfield" v-model="name" label="Username" required></v-text-field>
-                    <v-text-field class="textfield" v-model="email" :rules="emailRules" label="E-mail" required></v-text-field>
-                    <v-text-field class="textfield" v-model="password"  :type="show1 ? 'text' : 'password'" label="Passwort" required></v-text-field>
+                    <v-text-field class="textfield" v-model="credentials.username" label="Username" required></v-text-field>
+                    <v-text-field class="textfield" v-model="credentials.email" :rules="emailRules" label="E-mail" required></v-text-field>
+                    <v-text-field class="textfield" v-model="credentials.password"  :type="show1 ? 'text' : 'password'" label="Passwort" required></v-text-field>
                     <v-text-field 
                       class="textfield"
                       v-model="passwordCheck"
@@ -20,7 +20,7 @@
                       required
                       :error-messages='passwordCheckError()'
                     ></v-text-field>
-                    <v-select class="textfield" v-model="selectedRole" :items="rolle" label="Rolle" required></v-select>
+                    <v-select class="textfield" v-model="selectedRole" :items="role" label="role" required></v-select>
                     </div>
                     <div class="text-xs-right">
                     <v-btn color="primary" @click="submit">Account anlegen</v-btn>
@@ -38,7 +38,6 @@
                 <template slot="items" slot-scope="props">
                   <td>{{ props.item.username }}</td>
                   <td>{{ props.item.email }}</td>
-                  <td>{{ props.item.role }}</td>
                 </template>
               </v-data-table>
             </v-flex>
@@ -49,32 +48,27 @@
     </v-container>
 </template>
 <script>
+/* eslint-disable */
 import {mapState} from 'vuex'
 
   export default {
     data: () => ({
       counter:0,
       show1:false,
-      name: '',
-      email: '',
-      password:'',
+      credentials: {
+        username: '',
+        email: '',
+        password:'',
+      },
       passwordCheck:'',
       selectedRole:'',
-      rolle: [
-        'Admin',
-        'User',
-      ],
-      users:[
-        {
-          username:'Jan',
-          email:'jan.aeschimann@bfh.ch',
-          role:'admin'
-        }
+      role: [
+        'admin',
+        'user',
       ],
       headers:[
         {text: 'username', value:'username'},
-        {text: 'email',value:'email'},
-        {text: 'role', value:'role'},
+        {text: 'email',value:'email'}
       ],
       emailRules: [
         v => !!v || 'E-mail is required',
@@ -84,6 +78,8 @@ import {mapState} from 'vuex'
     }),
 
     computed: {
+      ...mapState(['users']),
+
       selectErrors () {
         const errors = []
         if (!this.$v.select.$dirty) return errors
@@ -92,41 +88,52 @@ import {mapState} from 'vuex'
       },
       nameErrors () {
         const errors = []
-        if (!this.$v.name.$dirty) return errors
-        !this.$v.name.maxLength && errors.push('Name must be at most 10 characters long')
-        !this.$v.name.required && errors.push('Name is required.')
+        if (!this.$v.credentials.username.$dirty) return errors
+        !this.$v.credentials.username.maxLength && errors.push('Name must be at most 10 characters long')
+        !this.$v.credentials.username.required && errors.push('Name is required.')
         return errors
       },
       emailErrors () {
         const errors = []
-        if (!this.$v.email.$dirty) return errors
-        !this.$v.email.email && errors.push('Must be valid e-mail')
-        !this.$v.email.required && errors.push('E-mail is required')
+        if (!this.$v.credentials.email.$dirty) return errors
+        !this.$v.credentials.email.email && errors.push('Must be valid e-mail')
+        !this.$v.credentials.email.required && errors.push('E-mail is required')
         return errors
+      }
+    },
+
+      created() {
+      if(this.users.length === 0){
+        this.$store.dispatch('loadUsers')
+        .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
       }
     },
 
     methods: {
       passwordCheckError () { 
-        return (this.passwordCheck === this.password) ? '' : 'Die Passwörter stimmen nicht überein.'
+        return (this.passwordCheck === this.credentials.password) ? '' : 'Die Passwörter stimmen nicht überein.'
       },
       submit () {
-        if(this.passwordCheck === this.password){
-          alert("WOHOOO")
+        if(this.passwordCheck === this.credentials.password){
+        this.$store.dispatch('createNewUser', this.credentials)
+        .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
         }
       },
       clear () {
         this.passwordCheck=''
-        this.password =''
-        this.name = ''
-        this.email = ''
+        this.credentials.password =''
+        this.credentials.name = ''
+        this.credentials.email = ''
         this.select = null
       },
       testUnlockAll(){
         this.$store.dispatch('unlockAll')
         .catch((error) => {
         console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-        this.counter++
         })
       },
     }

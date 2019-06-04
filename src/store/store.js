@@ -39,16 +39,17 @@ function parseError(err){
 
 export default new Vuex.Store({
   state:{
+    currentUser:'',
     ngs: [],
     pathogen: [],
     locks: [],
     accessToken: null,
+    users: [],
     formDialog:'',
     selectedIsolat: [],
     deleteDialog:'',
     repeatDialog:'',
-
-
+    export: []
   },
   actions: {
     //------------------------------------------------------
@@ -100,6 +101,8 @@ export default new Vuex.Store({
         })
     },
 
+    //This method is deprecated as it the validation is part of the getCurrentUser() method which is used
+    //instead if the method validateAccessToken()
     validateAccessToken(context){
       //console.log("validating access token..")
       return axios
@@ -111,6 +114,25 @@ export default new Vuex.Store({
           throw error
         })
     },
+
+    getCurrentUser(context){
+      return axios
+        .get(REST_BASE_URL + 'AccessTokens/' + this.state.accessToken + '?access_token=' + this.state.accessToken)
+        .then((response) => {
+          return axios
+            .get(REST_BASE_URL + 'Users/' + response.data.userId + '?access_token=' + this.state.accessToken)
+            .then((response) => {
+              context.commit('SET_CURRENT_USER', response.data.username)
+            }).catch((err) => {
+              let error = parseError(err)
+              throw error
+            })
+        }).catch((err) => {
+          let error = parseError(err)
+          throw error
+        })
+    },
+
     //------------------------------------------------------
     // All the ngs http methods
     //------------------------------------------------------
@@ -167,7 +189,6 @@ export default new Vuex.Store({
     // All the pathogen http methods
     //------------------------------------------------------
     loadPathogen (context){
-      console.log(REST_BASE_URL + 'pathogens?access_token=' + this.state.accessToken)
       return axios
         .get(REST_BASE_URL + 'pathogens?access_token=' + this.state.accessToken)
         .then((response) => {
@@ -210,6 +231,32 @@ export default new Vuex.Store({
       })
       
     },
+
+    //------------------------------------------------------
+    // All the user http methods
+    //------------------------------------------------------
+    loadUsers (context){
+      return axios
+        .get(REST_BASE_URL + 'Users?access_token=' + this.state.accessToken)
+        .then((response) => {
+            context.commit('SET_USERS', response.data)
+        }).catch((err) => {
+          let error = parseError(err)
+          throw error
+        })
+    },
+
+    createNewUser (context, credentials){
+      return axios
+       .post(REST_BASE_URL + 'Users/?access_token=' + this.state.accessToken, credentials)
+       .then((response) => {
+         console.log(response)
+       }).catch((err) => {
+        let error = parseError(err)
+        throw error
+      })
+    },
+
 
     //------------------------------------------------------
     // All the lock http methods
@@ -256,7 +303,6 @@ export default new Vuex.Store({
     //------------------------------------------------------
     socket_clientLocks(context, clientLocks){
       context.commit('SET_LOCKS', clientLocks)
-
     },
 
     socket_updateNotify(context, id){
@@ -323,7 +369,6 @@ export default new Vuex.Store({
       }
       if(index > -1 && index){
         state.ngs.splice(index, 1)
-        console.log("Kolleeeg wieso splicisch du")
       }
       state.ngs.push(response.data)
       console.log("This is the new ngs array:")
@@ -359,7 +404,18 @@ export default new Vuex.Store({
     },
 
     SET_SELECTEDISOLAT(state, selectedIsolates){
-      state.selectedIsolat =selectedIsolates
+      state.selectedIsolat = selectedIsolates
+    },
+
+    SET_CURRENT_USER(state, currentUser){
+      state.currentUser = currentUser
+      console.log(state.currentUser)
+    },
+
+    SET_USERS(state, users){
+      state.users = users
+      console.log("These are all users")
+      console.log(state.users)
     }
   }
 }) 
