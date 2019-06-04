@@ -62,7 +62,7 @@
                 <v-list-tile-title v-if="sorted.title == 'Bact-Nr' ||sorted.title == 'Priority' ">{{patient.bactnr}}</v-list-tile-title>
                 <v-list-tile-title v-if="sorted.title == 'Pathogen'">{{patient.pathogen}}</v-list-tile-title>
                 <v-list-tile-title v-if="sorted.title == 'Einsender'">{{patient.sender}}</v-list-tile-title>
-                <v-list-tile-title v-if="sorted.title == 'Lauf Nummer'">Run package: {{index}}</v-list-tile-title>
+                <v-list-tile-title v-if="sorted.title == 'Lauf Nummer'">Lauf Nummer: {{patient[0].runnr}}</v-list-tile-title>
                 <v-list-tile-sub-title>{{patient.priority}}</v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
@@ -430,7 +430,17 @@ import {mapState} from 'vuex'
                 //this.sorted calls the sorted method, which then defines what the filter (sortieren nach) is.
             )}})
             if(this.sorted.value == 'runnr' ){
-            display = _.groupBy(method, this.sorted.value);
+              var newDisplayList=[];
+            display = _.groupBy(method, this.sorted.value)
+            var keys =  Object.keys(display)
+            // Sort the keys in descending order
+            keys.sort( function ( a, b ) { return b - a; } );
+
+            // Iterate through the array of keys and access the corresponding object properties
+            for ( var i = 0; i < keys.length; i++ ) {
+              newDisplayList.push(( keys[i], display[ keys[i] ] ))
+            }
+            display = newDisplayList
             }else{
             display =_.sortBy(method, this.sorted.value);
             }

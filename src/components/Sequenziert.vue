@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid grid-list-md>
+  <v-container class="view-container" fluid grid-list-md>
     <v-layout  row wrap>
       <!--Defines the length of the toolbar (md12 = use all 12 grid columns on medium devices). the toolbar contains a search(row 29) and a sort button (row 8)  -->
       <v-flex d-flex xs11 sm11 md11 xl11 lg11>
@@ -65,18 +65,11 @@
                 v-model="selected"
                 multiple
               ></v-checkbox>
-              <v-radio-group v-model="cheatSelected" :mandatory="false">
-              <v-radio v-if="sorted.title == 'Lauf Nummer' || sorted.title == 'NGS Projekt'"
-                :value ="patient"
-                @click.capture.stop="test(patient)"
-                
-              ></v-radio>
-              </v-radio-group>
             </v-list-tile-action> 
               <v-list-tile-content >
                 <v-list-tile-title v-if="sorted.title != 'NGS Projekt' && sorted.title != 'Lauf Nummer' ">{{patient.priority}} | {{patient.bactnr}}</v-list-tile-title>
                 <v-list-tile-sub-title  v-if="sorted.title != 'NGS Projekt' && sorted.title != 'Lauf Nummer' ">{{patient.pathogen}} | {{patient.sender}}</v-list-tile-sub-title>
-                <v-list-tile-title v-if="sorted.title == 'Lauf Nummer'">Run package: {{index}}</v-list-tile-title>
+                <v-list-tile-title v-if="sorted.title == 'Lauf Nummer'">Lauf Nummer: {{patient[0].runnr}}</v-list-tile-title>
                 <v-list-tile-title v-if="sorted.title == 'NGS Projekt'">NGS Projekt: {{index}}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
@@ -89,13 +82,14 @@
     </v-flex>
         <v-flex d-flex xs9 sm9 md9 xl9 lg9>
           <v-card>
-            <!-------          This Parte defines the V-Card that gets displayed when the Filter is set to Run Nummer     ----------------------------------->
+            <!-------          This Part defines the V-Card that gets displayed when the Filter is set to Run Nummer     ----------------------------------->
           <v-card-text v-if="this.sorted.value =='runnr'" class="scroll">
             <v-expansion-panel>
                   <v-expansion-panel-content 
                   class="green lighten-2" 
                   v-for="(item, index) in orderedRunList "
                   :key="index"
+                  @click.native="setCurrentInnerData(item)"
                   >
                   <div slot="header">
                     <span class="spacer"><b>NGS-Projekt:</b>{{item.ngsproject}}</span>
@@ -145,12 +139,16 @@
                               <p><b>NGS-Gerät:</b> {{item.modality}}</p>
                             </v-flex>
                           </v-layout>
+                          <div class="text-xs-right">
+                            <v-btn @click="editDataset(item)">Bearbeiten</v-btn>
+                            <v-btn color="orange lighten-1" @click="repeat(item)">Wiederholen</v-btn>
+                          </div>
                         </v-card-text>
                       </v-card>
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-card-text>
-          <!---------          This Parte defines the V-Card that gets displayed when the Filter is set to NGS Nummer     ----------------------------------->
+          <!---------          This Part defines the V-Card that gets displayed when the Filter is set to NGS Project     ----------------------------------->
           <v-card-text v-else-if="this.sorted.value =='ngsproject'" class="scroll">
               <!-- defines the Sortingbutton that is displayed when filter is set to NGS Nummer - contains Bact. Nr and so on ------------------>
             <v-layout style="max-height: -webkit-fill-available">
@@ -184,10 +182,8 @@
                       :class="{'is-active': index == innerActiveIndex}"
                     >
                       <v-list-tile-content>
-                        <v-list-tile-title v-if="innerSorted.title == 'Bact-Nr' ||innerSorted.title == 'Priority' ">{{patient.bactnr}}</v-list-tile-title>
-                        <v-list-tile-title v-if="innerSorted.title == 'Pathogen'">{{patient.pathogen}}</v-list-tile-title>
-                        <v-list-tile-title v-if="innerSorted.title == 'Einsender'">{{patient.sender}}</v-list-tile-title>
-                        <v-list-tile-sub-title>{{patient.priority}}</v-list-tile-sub-title>
+                        <v-list-tile-title>{{patient.priority}} | {{patient.bactnr}}</v-list-tile-title>
+                        <v-list-tile-sub-title>{{patient.pathogen}} | {{patient.sender}}</v-list-tile-sub-title>
                       </v-list-tile-content>
                     </v-list-tile>
                     <v-divider
@@ -247,7 +243,7 @@
               </v-flex>
             </v-layout>
           </v-card-text>
-          <!---------          This Parte defines the V-Card that gets displayed when the Filter is NOT set to Run Nummer OR NGS Project     ---------------->
+          <!---------          This Part defines the V-Card that gets displayed when the Filter is NOT set to Run Nummer OR NGS Project     ---------------->
           <v-card-text v-else>
             <v-container grid-list-md>
               <v-layout wrap>
@@ -306,20 +302,19 @@
           </v-card-text>
           <!-- div that contains the buttons to delete or repeate a sequencing (sets the data back to extrahiert (processNr 2))----------->
             <div class="text-xs-right">
-              <v-btn v-if="currentDataset1.bactnr != ''" @click="this.editDataset">Bearbeiten</v-btn>
+              <v-btn v-if="currentDataset1.bactnr != '' && sorted.title != 'Lauf Nummer'" @click="editDataset(currentDataset1)">Bearbeiten</v-btn>
               <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
                 <NgsFormular></NgsFormular>
               </v-dialog>
 
-            <v-btn v-if="currentDataset1.bactnr != ''" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
+            <v-btn v-if="this.selected.length>0" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
-              <v-btn v-if="this.selected.length>0" color="orange lighten-1" @click="this.repeat">Wiederholen</v-btn>
+              <v-btn v-if="this.selected.length>0" color="orange lighten-1" @click="repeat(selected)">Wiederholen</v-btn>
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog> 
-
 <!----------- THIS is the popup for the additional data input to bring the data to the next processstepp    -->
               <v-dialog v-model="dialog" width="700"  scrollable>
               <v-card>
@@ -376,7 +371,6 @@
           </div>
         </v-card>
 
-
 <!------------------------   THOSE ARE THE BUTTONS ON THE RIGHT SIDE TO NAVIGATE THE WORKPROCESS     -------------------->
        </v-flex>
              <v-item-group class="item-group">
@@ -417,6 +411,17 @@
                 Close
               </v-btn>
             </v-snackbar>
+                      <!-- div that contains the buttons to delete or repeate a sequencing (sets the data back to extrahiert (processNr 2))----------->
+            <div class="text-xs-right">
+            <v-btn v-if="this.selected.length>0 && sorted.title == 'NGS Projekt'" color="red lighten-1" @click="this.deleteStep1">Alle löschen</v-btn>
+              <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
+                <DeleteWindow></DeleteWindow>
+              </v-dialog>
+              <v-btn v-if="this.selected.length>0 && sorted.title == 'NGS Projekt'" color="orange lighten-1" @click="repeat(selected)">Alle Wiederholen</v-btn>
+              <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
+                <RepeatWindow></RepeatWindow>
+              </v-dialog>   
+            </div>
   </v-container>
 </template>
 
@@ -448,9 +453,8 @@ import RepeatWindow from './RepeatWindow.vue'
       search:'',
       notifications: false,
       selected:[],
-      cheatSelected:[],
       sorted: {
-        title: 'NGS Projekt', value: 'ngsproject'
+        title: 'Lauf Nummer', value: 'runnr'
       },
       runList:[],
 
@@ -571,7 +575,17 @@ import RepeatWindow from './RepeatWindow.vue'
                 //this.sorted calls the sorted method, which then defines what the filter (sortieren nach) is.
             )}})
             if(this.sorted.value == 'runnr' ){
-            display = _.groupBy(method, this.sorted.value);
+            var newDisplayList=[];
+            display = _.groupBy(method, this.sorted.value)
+            var keys =  Object.keys(display)
+            // Sort the keys in descending order
+            keys.sort( function ( a, b ) { return b - a; } );
+
+            // Iterate through the array of keys and access the corresponding object properties
+            for ( var i = 0; i < keys.length; i++ ) {
+              newDisplayList.push(( keys[i], display[ keys[i] ] ))
+            }
+            display = newDisplayList
             }else if(this.sorted.value == 'ngsproject'){
             display =_.groupBy(method, this.sorted.value);
             }else{
@@ -598,10 +612,9 @@ import RepeatWindow from './RepeatWindow.vue'
       }
     },
     methods:{
-      test(patient){
-        this.selected = []
-        for(var i= 0; i<patient.length; i++)
-        this.selected.push(patient[i])
+      //TEST METHOD
+      tested(){
+        console.log("WHHOP")
       },
       //Method that changes the URL and allows to change between the different views. Sets the selected property of the checkbox to false.
       changeworkflow(item){
@@ -634,18 +647,14 @@ import RepeatWindow from './RepeatWindow.vue'
       this.activeIndex = index
         this.runList = []
         var i=0
-        if(this.sorted.title == 'Lauf Nummer'){
-          for(i=0; i<patient.length;i++){
+        if(this.sorted.title == 'Lauf Nummer' || this.sorted.value == 'ngsproject'){
+          this.selected = []
+          for(i=0; i<patient.length;i++){ 
             this.runList.push(patient[i])
-          }
-        }else if(this.sorted.value == 'ngsproject'){
-          for(i=0; i<patient.length;i++){
-            this.runList.push(patient[i])
+            this.selected = this.runList
           }
         }
            this.setCurrentInnerData(patient)
-
-        
       },
 
       //Method that copied the data from the ngs information, creates a new object ad applies it to the currentDataset which then gets displayed in textfields.
@@ -653,7 +662,7 @@ import RepeatWindow from './RepeatWindow.vue'
       this.innerActiveIndex = index
       this.isLoading =!this.isLoading
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
-      this.$store.commit('SET_SELECTEDISOLAT', patient)
+     // this.$store.commit('SET_SELECTEDISOLAT', patient)
         if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
         if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
         if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
@@ -662,8 +671,14 @@ import RepeatWindow from './RepeatWindow.vue'
         if(this.currentDataset1.librarydate)this.currentDataset1.librarydate = this.dateformatter(this.currentDataset1.librarydate)
         if(this.currentDataset1.sequencingdate)this.currentDataset1.sequencingdate = this.dateformatter(this.currentDataset1.sequencingdate)
       },
+      //this method is used when a user wants to reapeat a single Dataset inside the Run View.
+      setSingleRunRepear(patient,index){
+        this.selected=[]
+        this.selected.push(patient)
+      },
       //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
-      editDataset(){
+      editDataset(isolat){
+       this.$store.commit('SET_SELECTEDISOLAT', isolat)
         /*  this.lockedId.push(this.selectedIsolat.id)
           console.log(this.lockedId)
           this.$store.dispatch('requestLock', this.lockedId)
@@ -695,7 +710,8 @@ import RepeatWindow from './RepeatWindow.vue'
               this.neutralNotification()
          //   )
       },
-      repeat(){
+      repeat(isolat){
+        this.$store.commit('SET_SELECTEDISOLAT', isolat)
         this.$store.state.repeatDialog = true,
         this.neutralNotification()
       },
@@ -739,6 +755,7 @@ import RepeatWindow from './RepeatWindow.vue'
       },
       //resets the selection from the Checkboxes
       resetSelected(){
+        console.log(this.selected)
         this.selected = []
 
       },
@@ -771,5 +788,8 @@ background-color:rgba(21, 109, 224, 0.226);
 }
 .is-locked{
 background-color:rgba(224, 21, 21, 0.226);
+}
+.view-container{
+  padding:0px
 }
 </style>

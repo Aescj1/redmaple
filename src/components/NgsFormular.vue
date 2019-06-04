@@ -5,7 +5,7 @@
           <v-card-text>
             <v-container grid-list-md>
               <v-layout wrap>
-                <v-flex xs2 md2 > 
+                <v-flex xs3 md3 > 
                 <v-card row wrap flat color="green lighten-4">
                 <v-text-field v-model="isolat.bactnr" label="Bact Nummer" ></v-text-field>
                 <v-text-field v-model="isolat.repetition" label="Wiederholung"></v-text-field>
@@ -48,7 +48,7 @@
                 </v-menu>                 
                 </v-card>
               </v-flex>
-              <v-flex xs2 md2> 
+              <v-flex xs3 md3> 
                 <v-card row wrap flat color="green lighten-3">
                 <v-text-field v-model="isolat.sender" label="Einsender"></v-text-field>
                 <v-text-field v-model="isolat.department" label="Station"></v-text-field>
@@ -82,12 +82,12 @@
                   max-width="290px"
                   min-width="290px"
                   >
-                    <v-text-field v-if="isolat.processnr==2" slot="activator" label="Datum DNA-extraktion" v-model="isolat.extractiondate" readonly></v-text-field>
+                    <v-text-field v-if="isolat.processnr>=2" slot="activator" label="Datum DNA-extraktion" v-model="isolat.extractiondate" readonly></v-text-field>
                     <v-date-picker v-model="isolat.extractiondate" no-title scrollable actions @input="Seqmenu =false" locale="de">
                   </v-date-picker>
                 </v-menu>
-                <v-text-field v-if="isolat.processnr==2" v-model="isolat.concentration" label="DNA Konz. (ng/ul)"></v-text-field>
-                <v-text-field v-if="isolat.processnr==2" v-model="isolat.extractionvisum" label="Visum DNA"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=2" v-model="isolat.concentration" label="DNA Konz. (ng/ul)"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=2" v-model="isolat.extractionvisum" label="Visum DNA"></v-text-field>
                 <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Abnahme)  -->
                 <v-menu 
                   lazy
@@ -106,12 +106,12 @@
                 </v-menu>
                 </v-card>         
               </v-flex>
-              <v-flex xs2 md2> 
+              <v-flex xs3 md3> 
                 <v-card row wrap flat color="green lighten-2">
-                <v-text-field v-if="isolat.processnr==3" v-model="isolat.runtype" label="Runtype"></v-text-field>
-                <v-text-field v-if="isolat.processnr==3" v-model="isolat.runnr" label="NGS Run Nummer"></v-text-field>
-                <v-text-field v-if="isolat.processnr==3" v-model="isolat.isorunnr" label="Isolat Run Nummer"></v-text-field>
-                <v-text-field v-if="isolat.processnr==3" v-model="isolat.librarytype" label="Library Typ"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.runtype" label="Runtype"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.runnr" label="NGS Run Nummer"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.isorunnr" label="Isolat Run Nummer"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.librarytype" label="Library Typ"></v-text-field>
                 <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Datum Library)  -->
                 <v-menu 
                   lazy
@@ -124,11 +124,11 @@
                   max-width="290px"
                   min-width="290px"
                   >
-                    <v-text-field v-if="isolat.processnr==3" slot="activator" label="Datum Library" v-model="isolat.librarydate" readonly></v-text-field>
+                    <v-text-field v-if="isolat.processnr>=3" slot="activator" label="Datum Library" v-model="isolat.librarydate" readonly></v-text-field>
                     <v-date-picker v-model="isolat.librarydate" no-title scrollable actions @input="Seqmenu =false" locale="de">
                   </v-date-picker>
                 </v-menu>
-                <v-text-field v-if="isolat.processnr==3" v-model="isolat.libraryvisum" label="Visum Library"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.libraryvisum" label="Visum Library"></v-text-field>
                 <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Datum Sequenzierung)  -->
                 <v-menu 
                   lazy
@@ -141,18 +141,18 @@
                   max-width="290px"
                   min-width="290px"
                   >
-                    <v-text-field v-if="isolat.processnr==3" slot="activator" label="Datum Sequenzierung" v-model="isolat.sequencingdate" readonly></v-text-field>
+                    <v-text-field v-if="isolat.processnr>=3" slot="activator" label="Datum Sequenzierung" v-model="isolat.sequencingdate" readonly></v-text-field>
                     <v-date-picker v-model="isolat.sequencingdate" no-title scrollable actions @input="Seqmenu =false" locale="de">
                   </v-date-picker>
                 </v-menu>
-                <v-text-field v-if="isolat.processnr==3" v-model="isolat.modality" label="NGS-Gerät"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.modality" label="NGS-Gerät"></v-text-field>
                 <v-text-field v-model="isolat.comment" label="Kommentar"></v-text-field>  
                 </v-card>
               </v-flex>
-              <v-flex xs2 md2> 
+              <v-flex xs3 md3> 
                 <v-card row wrap flat color="green lighten-1">
-                <v-text-field v-if="isolat.processnr==4" v-model="isolat.sequencingvisum" label="Sequenzierungs Visum"></v-text-field>
-                <v-text-field v-if="isolat.processnr==4" v-model="isolat.dataqualityvisum" label="Datenqualität Visum"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=4" v-model="isolat.sequencingvisum" label="Sequenzierungs Visum"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=4" v-model="isolat.dataqualityvisum" label="Datenqualität Visum"></v-text-field>
                 <v-text-field v-model="isolat.publicid" label="Public ID"></v-text-field>
                 <v-text-field v-model="isolat.billing" label="Abrechnung"></v-text-field>
 

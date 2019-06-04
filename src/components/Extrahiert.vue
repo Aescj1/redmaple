@@ -135,7 +135,7 @@
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog> 
-            <v-btn v-if="currentDataset1.bactnr != ''" color="orange lighten-1" @click="this.repeat">Wiederholen</v-btn>
+            <v-btn v-if="currentDataset1.bactnr != ''" color="orange lighten-1" @click="this.repeat">Verschieben nach Geplant</v-btn>
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog> 
@@ -157,7 +157,7 @@
               </div>
               </v-card-title>
               <v-card-text>
-                <v-expansion-panel expand>
+                <v-expansion-panel v-model="expansionPanel" expand>
                   <v-expansion-panel-content class="grey lighten-2">
                     <div slot="header"  grey>Sequenzierungslauf Einstellungen</div>
                       <v-card>
@@ -261,8 +261,8 @@
               </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
-
-                <v-subheader class="headline">Ausgewählte Datensets</v-subheader>
+                <v-subheader class="title">Run-Grösse:  <b>{{ this.selected.length}}</b></v-subheader>
+                <v-subheader class="headline">Ausgewählte Datensets: </v-subheader>
                 <v-divider></v-divider>
                 <v-form v-for="item in selected" :key="item.index">
                   <v-layout>
@@ -384,6 +384,7 @@ import RepeatWindow from './RepeatWindow.vue'
       RepeatWindow
     },
     data: () => ({
+      expansionPanel: [true],
       dateMask:'##-##-####',
       lockedList:[],
       priorityMask:'A',
