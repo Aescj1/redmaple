@@ -126,7 +126,15 @@ import Papa from 'papaparse'
           ) return 0
           return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
         } 
-      }, 
+      },
+      
+    mounted(){
+      this.$store.dispatch('getCurrentUser')
+      .catch((error) => {
+        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+      })
+    },
+ 
 
     created () {
       bus.$on('hideHeader', (data) =>{
