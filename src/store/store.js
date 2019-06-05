@@ -49,7 +49,10 @@ export default new Vuex.Store({
     selectedIsolat: [],
     deleteDialog:'',
     repeatDialog:'',
-    export: []
+    export: [],
+    lockedId:{
+      idArray:[]
+    },
   },
   actions: {
     //------------------------------------------------------
@@ -275,9 +278,11 @@ export default new Vuex.Store({
     },
 
     requestUnlock(context, idArray){
+      console.log("unlock Requested")
       return axios
       .post(REST_BASE_URL + 'ngs/unlockRequest?access_token=' + this.state.accessToken, idArray)
       .then((response) => {
+        context.commit('SET_LOCKEDID', [])
       }).catch((err) => {
         let error = parseError(err)
         throw error
@@ -341,6 +346,7 @@ export default new Vuex.Store({
       if(localStorage.getItem('accessToken') != null) {
         this.state.accessToken = localStorage.getItem('accessToken')
         console.log("The initialized access token is: " + state.accessToken)
+        Vue.set(this.$store.state, ngs, [])
       }else{
       console.log("There is no access token saved")
       }
@@ -394,6 +400,18 @@ export default new Vuex.Store({
       state.locks = clientLocks
       console.log("These are the currently locked datasets:")
       console.log(state.locks)
+    },
+
+    SET_LOCKEDID(state, lockedId){
+      state.lockedId.idArray = lockedId
+      console.log("THIS IS SHOULD BE 0")
+      console.log(state.lockedId.idArray)
+    },
+
+    PUSH_LOCKEDID(state, lockedId){
+      state.lockedId.idArray.push(lockedId)
+      console.log("THIS IS THE LOCK")
+      console.log(state.lockedId.idArray)
     },
 
     KICK(){

@@ -219,12 +219,10 @@ export default {
         modality:"",
         id:""
       },
-      lockedId:{
-        id:0,
-      },
     }),
     computed:{
       ...mapState(['selectedIsolat']),
+      ...mapState(['lockedId']),
     
     },
     created(){
@@ -243,7 +241,6 @@ export default {
     },
     methods:{
       dateFormatter(date){
-        console.log(date)
           var month = '' + (date.getMonth() + 1)
           var day = '' + date.getDate()
           var  year = date.getFullYear()
@@ -256,7 +253,7 @@ export default {
       //Method that submits the changes made to the isolat, submits it to the database and unlocks the isolatdataset again.
       submit(){
         this.$store.dispatch('putNgs', this.isolat)
-        this.lockedId.id = this.selectedIsolat.id
+        this.lockedId.idArray.push(this.selectedIsolat.id)
         this.$store.state.formDialog = false
         this.$store.dispatch('requestUnlock', this.lockedId)
         .catch((error) => {
@@ -267,9 +264,7 @@ export default {
         },
         //Method that closes the Popup Form to edit the current Isolat and unlocks it again.
         cancel(){
-        this.lockedId.id = this.selectedIsolat.id
-        this.$store.dispatch('requestUnlock', this.lockedId)
-
+          this.$store.dispatch('requestUnlock', this.lockedId)
             this.$store.state.formDialog = false
         },
     },

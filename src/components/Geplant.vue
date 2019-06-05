@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid grid-list-md>
+  <v-container fluid grid-list-md class="view-container">
     <v-layout  row wrap>
       <!--Defines the length of the toolbar (md12 = use all 12 grid columns on medium devices). the toolbar contains a search(row 29) and a sort button (row 8)  -->
       <v-flex d-flex xs11 sm11 md11 xl11 lg11>
@@ -67,6 +67,7 @@
                 :value ="patient"
                 v-model="selected"
                 multiple
+                :ripple="false"
               ></v-checkbox>
             </v-list-tile-action> 
               <v-list-tile-content >
@@ -144,15 +145,6 @@
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
-
-              <v-btn
-              color="primary"
-              dark
-              @click.stop="startExtraction"
-              v-if="this.selected.length>0"
-              >
-                Extrahieren
-              </v-btn>
               <v-dialog
                 v-if="this.dialog==true"
                 v-model="this.dialog"
@@ -237,6 +229,16 @@
                 </v-flex>
                 </v-item-group>
             </v-layout>
+            <div class="text-xs-right">
+              <v-btn
+              color="primary"
+              dark
+              @click.stop="startExtraction"
+              v-if="this.selected.length>0"
+              >
+                Extrahieren
+              </v-btn>
+            </div>
             <v-snackbar
               v-model="snackbar"
               :color="snackColor"
@@ -262,7 +264,6 @@ import _ from 'lodash';
 import {mapState} from 'vuex'
 import NgsFormular from './NgsFormular.vue'
 import DeleteWindow from './DeleteWindow.vue'
-
 
 
   export default {
@@ -294,7 +295,6 @@ import DeleteWindow from './DeleteWindow.vue'
         { title: 'Pathogen', value:'pathogen' }
       ],
       patientList:[],
-      lockedId:[],
       currentDataset1: {
         bactnr: "",
         processnr: 1,
@@ -320,7 +320,7 @@ import DeleteWindow from './DeleteWindow.vue'
       },
     }),
     mounted(){
-      this.$store.dispatch('getCurrentUser')
+      this.$store.dispatch('validateAccessToken')
       .catch((error) => {
         console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
       })
@@ -347,11 +347,14 @@ import DeleteWindow from './DeleteWindow.vue'
           ...mapState(['pathogen']),
           ...mapState(['locks']),
           ...mapState(['selectedIsolat']),
+          ...mapState(['currentUser']),
+          ...mapState(['lockedId']),
+
           
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
-               // this.lockedList = this.locks
+             this.lockedList = this.locks
          //   store.NgsList = the list that gets transmitted from the DB to the store
             return _.orderBy(
               this.ngs.filter(patient => {
@@ -409,6 +412,7 @@ import DeleteWindow from './DeleteWindow.vue'
       },
       closePopup(){
         this.dialog = false
+        this.$store.dispatch('requestUnlock', this.lockedId)
       },
       //clears the search and sets the value null
       clearSearch(){
@@ -470,45 +474,62 @@ import DeleteWindow from './DeleteWindow.vue'
       },
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
       displayLocked(patient){  
-     //   if(this.lockedList.includes(patient.id)) return true  
+       if(this.lockedList.includes(patient.id)) return true  
       },
        //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
       deleteStep1(){
-      /*    this.lockedId = this.selectedIsolat.id
-          console.log(this.lockedId)
-          this.$store.dispatch('requestLock', this.lockedId)
+         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
+        this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
               console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
               this.negativeNotification()
               this.$store.state.deleteDialog = false
           })
-            .then(*/
+            .then(
               this.$store.state.deleteDialog = true,
               this.neutralNotification()
-          //  )
+            )
       },
       //functio
       startExtraction(){
+        for(var i=0; i<this.selected.length;i++){
+         this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
+        }
+      /*    .catch((error) => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            this.negativeNotification()
+          })
+            .then(
+              this.neutralNotification()
+            )*/
+        for(var i=0; i<this.selected.length;i++){
+          if(!this.selected[i].received){
+            return alert("Probe noch nicht erhalten. Überprüfen Sie die Markierungen")
+          }
+          }
+        this.$store.dispatch('requestLock', this.lockedId)
+                    .catch((error) => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification()
+              this.dialog = false
+          })
+            .then(
+              this.dialog = true,
+              this.neutralNotification()
+            )
+        
+      },
+      //sends a dataset to the next processstep (extrahiert) and opens a popup 
+ extrahieren(){
         var myDate = new Date();
         var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
         var date = ('0' + myDate.getDate()).slice(-2);
         var year = myDate.getFullYear();
         var formattedDate = year + '-' + month + '-' + date;
         for(var i=0; i<this.selected.length;i++){
-          if(this.selected[i].received){
           this.selected[i].concentration = ''
           this.selected[i].extractiondate = formattedDate
-          this.selected[i].extractionvisum = 'User'
-          }else{
-            return alert("Probe noch nicht erhalten. Überprüfen Sie die Markierungen")
-          }
-
-        }
-        this.dialog=true
-      },
-      //sends a dataset to the next processstep (extrahiert) and opens a popup 
- extrahieren(){
-        for(var i=0; i<this.selected.length;i++){
+          this.selected[i].extractionvisum = this.currentUser
           this.selected[i].processnr = 2
           console.log(this.selected)
           this.$store.dispatch('putNgs', this.selected[i])
@@ -516,30 +537,31 @@ import DeleteWindow from './DeleteWindow.vue'
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
         })
         }
+        this.$store.dispatch('requestUnlock', this.lockedId.idArray)
         this.selected = []
+        this.$store.commit('SET_LOCKEDID', [])
         this.$store.state.export = this.selected
         this.dialog = false
         this.positiveNotification()
       
       },
       setSorted(item){
-        this.selected =[]
         this.sorted = item
+        this.currentDataset1 = {}
       },
 //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
       editDataset(){
-      /*    this.lockedId.id = this.selectedIsolat.id
-          console.log(this.lockedId)
-          this.$store.dispatch('requestLock', this.lockedId)
+        this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
+        this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
               console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
               this.negativeNotification()
               this.$store.state.formDialog = false
           })
-            .then(*/
+            .then(
               this.$store.state.formDialog = true,
               this.neutralNotification()
-          //  )
+            )
         
       }
     }
@@ -560,5 +582,8 @@ background-color:rgba(21, 109, 224, 0.226);
 }
 .is-locked{
 background-color:rgba(224, 21, 21, 0.226);
+}
+.view-container{
+  padding:0px
 }
 </style>

@@ -26,6 +26,7 @@ debug: true,
 Vue.use(VueRouter);
 
 export const router = new VueRouter({
+    store,
     routes,
     mode:'history',
 

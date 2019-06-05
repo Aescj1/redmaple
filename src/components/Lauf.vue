@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid grid-list-md>
+  <v-container fluid grid-list-md class="view-container">
     <v-layout  row wrap>
       <!--Defines the length of the toolbar (md12 = use all 12 grid columns on medium devices). the toolbar contains a search(row 29) and a sort button (row 8)  -->
       <v-flex d-flex xs11 sm11 md11 xl11 lg11>
@@ -408,6 +408,7 @@ import {mapState} from 'vuex'
     computed: {
           ...mapState(['ngs']),
           ...mapState(['pathogen']),
+          ...mapState(['currentUser']),
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
@@ -535,7 +536,7 @@ import {mapState} from 'vuex'
  sendRun(){
         for(var i=0; i<this.selected.length;i++){
           this.selected[i].processnr = 4
-          this.selected[i].sequencingvisum ="User"
+          this.selected[i].sequencingvisum = this.currentUser
           this.selected[i].dataqualityvisum="User"
 
           this.$store.dispatch('putNgs', this.selected[i])
@@ -565,5 +566,8 @@ import {mapState} from 'vuex'
 }
 .spacer{
   margin-left: 10%;
+}
+.view-container{
+  padding:0px
 }
 </style>

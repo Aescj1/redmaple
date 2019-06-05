@@ -641,7 +641,7 @@ import RepeatWindow from './RepeatWindow.vue'
           return newDate       }
           else return date
         },
-              dateFormatter2(date){
+        dateFormatter2(date){
         if(date){
          var date = new Date(date)
           var month = '' + (date.getMonth() + 1)
@@ -650,8 +650,6 @@ import RepeatWindow from './RepeatWindow.vue'
 
         if (month.length < 2) month = '0' + month
         if (day.length < 2) day = '0' + day
-          console.log([year, month, day].join('-'))
-
         return [year, month, day].join('-')
         }
 
@@ -778,10 +776,12 @@ import RepeatWindow from './RepeatWindow.vue'
       setSorted(item){
         this.sorted = item
         this.selected =[]
+        this.currentDataset1 = {}
       },
       //Method that sets the filter for the innerSorted Property (Card where the Dataset gets displayed)
       setInnerSorted(item){
         this.innerSorted = item
+        this.currentDataset1 = {}
       }
     }
   }

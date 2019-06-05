@@ -161,13 +161,11 @@ export default {
         modality:"",
         id:""
       },
-      lockedId:{
-        id:0,
-      },
     }),
     computed:{
       ...mapState(['selectedIsolat']),
-    
+      ...mapState(['lockedId']),
+
     },
     created(){
       this.isolat = JSON.parse(JSON.stringify(this.selectedIsolat)) //this method just places it as a json..
@@ -202,22 +200,21 @@ export default {
         //Method that deletes the isolatdataset
         deletefinal(){
         this.$store.dispatch('deleteNgs', this.selectedIsolat.id)
-     /*   this.$store.dispatch('requestUnlock', this.lockedId)
+        this.$store.dispatch('requestUnlock', this.lockedId)
         .catch((error) => {
         if(error != ""){
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
         }
-        })*/
+        })
         this.dialog = false
         this.$store.state.deleteDialog = false
         },
         //Method that closes the Popup Form to edit the current Isolat and unlocks it again.
         cancel(){
+        this.$store.dispatch('requestUnlock', this.lockedId)
         this.dialog = false
-       // this.lockedId.id = this.selectedIsolat.id
-        //this.$store.dispatch('requestUnlock', this.lockedId)
 
-            this.$store.state.deleteDialog = false
+        this.$store.state.deleteDialog = false
         },
     },
 }

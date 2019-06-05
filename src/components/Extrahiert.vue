@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid grid-list-md>
+  <v-container fluid grid-list-md class="view-container"> 
     <v-layout  row wrap>
       <!--Defines the length of the toolbar (md12 = use all 12 grid columns on medium devices). the toolbar contains a search(row 29) and a sort button (row 8)  -->
       <v-flex d-flex xs11 sm11 md11 xl11 lg11>
@@ -281,7 +281,7 @@
               <v-divider></v-divider>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" flat @click="dialog=false">
+                <v-btn color="primary" flat @click="closePopup()">
                   Abbrechen
                 </v-btn>
 
@@ -306,9 +306,9 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn @click="this.closePopup" flat>Abbrechen</v-btn>
-                <v-btn @click="this.sendRun" flat>Nein</v-btn>
-                  <v-btn color="primary" @click="fillRun">Ja</v-btn>
+                  <v-btn @click="closeRunFillerDialog('Abbrechen')" flat>Abbrechen</v-btn>
+                <v-btn @click="closeRunFillerDialog('Nein')" flat>Nein</v-btn>
+                  <v-btn color="primary" @click="fillRun()">Ja</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -373,6 +373,8 @@ import {mapState} from 'vuex'
 import NgsFormular from './NgsFormular.vue'
 import DeleteWindow from './DeleteWindow.vue'
 import RepeatWindow from './RepeatWindow.vue'
+import Papa from 'papaparse'
+
 
 
 
@@ -384,6 +386,7 @@ import RepeatWindow from './RepeatWindow.vue'
       RepeatWindow
     },
     data: () => ({
+      runFilled: false,
       expansionPanel: [true],
       dateMask:'##-##-####',
       lockedList:[],
@@ -480,6 +483,7 @@ import RepeatWindow from './RepeatWindow.vue'
           ...mapState(['pathogen']),
           ...mapState(['locks']),
           ...mapState(['selectedIsolat']),
+          ...mapState(['currentUser']),
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
@@ -544,7 +548,7 @@ import RepeatWindow from './RepeatWindow.vue'
       //closes the window when cancel get pressed in lauf vorbereiten view
       closePopup(){
         this.dialog = false
-        this.runFillerDialog = false
+        this.runFilled = false
       },
       //clears the search and sets the value null
       clearSearch(){
@@ -653,14 +657,20 @@ import RepeatWindow from './RepeatWindow.vue'
       //checks if the run is filled 
       initRun(){
           if(this.selected.length < this.chosenSize){
+            if(this.runFilled){
+              this.sendRun()
+            }else{
             this.runFillerDialog = true
-          }
-          else{
+            }
+          }else if(this.selected.length == this.chosenSize){
             this.sendRun()
+          }else if(this.chosenSize < this.selected.length){
+            alert("Die Rungrösse ist zu klein!")
           }
       },
     //sends a dataset to the next processstep (Lauf) 
       sendRun(){
+          this.downloadCSV()
           var myDate = new Date();
           var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
           var date = ('0' + myDate.getDate()).slice(-2);
@@ -674,7 +684,7 @@ import RepeatWindow from './RepeatWindow.vue'
           this.selected[i].isorunnr = this.isorunnr
           this.selected[i].librarytype = this.chosenLibrary
           this.selected[i].librarydate = this.libraryDate
-          this.selected[i].libraryvisum = 'User'
+          this.selected[i].libraryvisum = this.currentUser
           this.selected[i].sequencingdate = this.sequencingDate
           this.selected[i].modality = this.chosenModality
           this.isorunnr++
@@ -690,26 +700,68 @@ import RepeatWindow from './RepeatWindow.vue'
         this.selected = []
         this.closePopup()
       },
+      //Method that closes the runFiller Dialog Window when user decides to either cancel or press "No". 
+      closeRunFillerDialog(decision){
+        if(decision === "Nein"){
+          this.runFillerDialog = false
+          this.runFilled = true
+        }else{
+          this.runFillerDialog = false
+        }
+      },
       //Method that fills up the run with Isolat datasets that have priority D
       fillRun(){
         var listD = this.filteredItems.filter(obj  =>{
           return obj.priority == "D"
         })
+         console.log(listD)
         if(listD.length >0){
-          while(this.selected.length < this.chosenSize){
-            this.selected.push(listD.pop())
-            console.log(this.selected)
+          while((this.selected.length < this.chosenSize) && listD.length != 0){
+            var isolatD = listD.pop()
+            if(this.selected.includes(isolatD)){
+              console.log("throw it")
+            }else{
+              this.selected.push(isolatD)
+            }
          }
-          this.sendRun()
+          this.runFillerDialog = false
         }else{
-          this.sendRun()
-        }
-        this.runFillerDialog = false
+          this.runFillerDialog = false
+        } 
       },
       //method for the sorting algorithm, sets the item.
       setSorted(item){
         this.sorted = item
+        this.currentDataset1 = {}
       },
+      downloadCSV(){
+        var konzList = this.selected.map(element => ({BactNummer: element.bactnr, Konzentration: element.concentration}))
+        var csv = Papa.unparse(konzList, {
+          quotes: false, //or array of booleans
+          quoteChar: ' ',
+          escapeChar: ' ',
+          delimiter: ';', //sets the delimiter, each delimiter gets read as new column
+          header: true,
+          skipEmptyLines: false, //or 'greedy', greedy will grab all the information and not skip
+          columns: '' //or array of strings
+        });
+
+        var csvData = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+        var csvURL =  null;
+        if (navigator.msSaveBlob)
+        {
+            csvURL = navigator.msSaveBlob(csvData, 'KonzentrationsListe_LaufNR'+this.runNr+'.csv');
+        }
+        else
+        {
+            csvURL = window.URL.createObjectURL(csvData);
+        }
+
+        var tempLink = document.createElement('a');
+        tempLink.href = csvURL;
+        tempLink.setAttribute('download', 'KonzentrationsListe_LaufNR'+this.runNr+'.csv');
+        tempLink.click();
+    }
       },
     }
 
@@ -729,5 +781,8 @@ background-color:rgba(21, 109, 224, 0.226);
 }
 .is-locked{
 background-color:rgba(224, 21, 21, 0.226);
+}
+.view-container{
+  padding:0px
 }
 </style>
