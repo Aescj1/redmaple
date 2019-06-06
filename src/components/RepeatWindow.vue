@@ -163,8 +163,6 @@ export default {
       menuLibrary:false,
       menuSequencing:false,
 
-      dialog:false,
-
       isolat: {
         bactnr: "",
         processnr: 4,
@@ -203,6 +201,7 @@ export default {
     }),
     computed:{
       ...mapState(['selectedIsolat']),
+      ...mapState(['lockedId']),
     
     },
     created(){
@@ -233,6 +232,7 @@ export default {
           .catch((error) => {
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
             })  
+        this.$store.dispatch('requestUnlock', this.lockedId)
         this.$store.state.repeatDialog = false
         },
       //Method that to repeat a ngs sequencing process. puts the wiederholen property to +1
@@ -259,15 +259,13 @@ export default {
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
             })  
         }
+        this.$store.dispatch('requestUnlock', this.lockedId)
         this.$store.state.repeatDialog = false
         },
         //Method that closes the Popup Form to edit the current Isolat and unlocks it again.
         cancel(){
-        this.dialog = false
-       // this.lockedId.id = this.selectedIsolat.id
-        //this.$store.dispatch('requestUnlock', this.lockedId)
-
-            this.$store.state.repeatDialog = false
+        this.$store.dispatch('requestUnlock', this.lockedId)
+        this.$store.state.repeatDialog = false
         },
     },
 }

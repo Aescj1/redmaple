@@ -145,6 +145,8 @@ export default new Vuex.Store({
         .get(REST_BASE_URL + 'ngs?access_token=' + this.state.accessToken)
         .then((response) => {
             context.commit('SET_NGS', response)
+            Vue.set(this.$store.state, ngs, [])
+
         }).catch((err) => {
           let error = parseError(err)
           throw error
@@ -346,7 +348,7 @@ export default new Vuex.Store({
       if(localStorage.getItem('accessToken') != null) {
         this.state.accessToken = localStorage.getItem('accessToken')
         console.log("The initialized access token is: " + state.accessToken)
-        Vue.set(this.$store.state, ngs, [])
+
       }else{
       console.log("There is no access token saved")
       }

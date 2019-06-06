@@ -537,9 +537,8 @@ import DeleteWindow from './DeleteWindow.vue'
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
         })
         }
-        this.$store.dispatch('requestUnlock', this.lockedId.idArray)
+        this.$store.dispatch('requestUnlock', this.lockedId)
         this.selected = []
-        this.$store.commit('SET_LOCKEDID', [])
         this.$store.state.export = this.selected
         this.dialog = false
         this.positiveNotification()

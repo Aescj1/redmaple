@@ -139,14 +139,6 @@
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog> 
-              <v-btn
-              color="primary"
-              dark
-              @click.stop="startRun"
-              v-if="this.selected.length>0"
-              >
-                Run konfigurieren
-              </v-btn>
 
 <!----------- THIS is the popup for the additional data input to bring the data to the next processstepp    -->
               <v-dialog v-model="dialog" width="700" scrollable persistent>
@@ -361,7 +353,16 @@
               </v-btn>
             </v-snackbar>
             </v-layout>
-
+            <div class="text-xs-right">
+              <v-btn
+                color="primary"
+                dark
+                @click.stop="startRun"
+                v-if="this.selected.length>0"
+              >
+                Run konfigurieren
+              </v-btn>
+            </div>
   </v-container>
 </template>
 
@@ -425,9 +426,6 @@ import Papa from 'papaparse'
         { title: 'Pathogen', value:'pathogen' }
       ],
       patientList:[],
-      lockedId:{
-          id:0,
-        },
       currentDataset1: {
         bactnr: "",
         processnr: 2,
@@ -484,12 +482,13 @@ import Papa from 'papaparse'
           ...mapState(['locks']),
           ...mapState(['selectedIsolat']),
           ...mapState(['currentUser']),
+          ...mapState(['lockedId']),
+
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
                 this.lockedList = this.locks
 
-         //   store.NgsList = the list that gets transmitted from the DB to the store
             return _.orderBy(
               this.ngs.filter(patient => {
                 //gets the list and parsed it for all Data with processNr = 1 (1= geplant, 2= extrahiert, 3=lauf,4=sequenziert)
@@ -512,8 +511,6 @@ import Papa from 'papaparse'
     watch:{
       locks(newValue, oldValue){
         this.lockedList = newValue
-      },
-      ngs(newValue, oldValue){
       },
       selected(newValue, oldValue){
         this.$store.state.export = newValue
@@ -547,6 +544,7 @@ import Papa from 'papaparse'
       },
       //closes the window when cancel get pressed in lauf vorbereiten view
       closePopup(){
+        this.$store.dispatch('requestUnlock', this.lockedId)
         this.dialog = false
         this.runFilled = false
       },
@@ -589,7 +587,7 @@ import Papa from 'papaparse'
       }
       this.$store.state.export = this.selected
       },
-      //Method to select multiple IsolatDatasets
+      //Method to select multiple IsolatDatasets. Is the function inside the toolbar. Chose from activeIndex to lastIndex
       multiSelectIsolat(patient){
         if(this.lastIndex<this.activeIndex && this.lastIndex !=null && this.activeIndex !=null){
           var i = this.lastIndex
@@ -611,48 +609,60 @@ import Papa from 'papaparse'
       resetSelected(){
         this.selected = []
       },
-      //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
+//Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
       editDataset(){
-       /*   this.lockedId.id = this.selectedIsolat.id
-          console.log(this.lockedId)
-          this.$store.dispatch('requestLock', this.lockedId)
+        this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
+        this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
               console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
               this.negativeNotification()
               this.$store.state.formDialog = false
           })
-            .then(*/
+            .then(
               this.$store.state.formDialog = true,
               this.neutralNotification()
-        //    )
+            )
         
       },
-       //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
+      //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
       deleteStep1(){
-        /*  this.lockedId.id = this.selectedIsolat.id
-          console.log(this.lockedId)
-          this.$store.dispatch('requestLock', this.lockedId)
+         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
+        this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
               console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
               this.negativeNotification()
               this.$store.state.deleteDialog = false
-          }) 
-            .then( */
+          })
+            .then(
               this.$store.state.deleteDialog = true,
               this.neutralNotification()
-         //   )
+            )
       },
+      //Method to put a selected dataset back to an earlier processstepp. opens the dialog window
       repeat(){
-        this.$store.state.repeatDialog = true,
-        this.neutralNotification()
+               this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
+        this.$store.dispatch('requestLock', this.lockedId)
+            .catch((error) => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification()
+              this.$store.state.repeatDialog = false
+          })
+            .then(
+              this.$store.state.repeatDialog = true,
+              this.neutralNotification()
+            )
       },
       //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
       startRun(){
+        for(var i=0; i<this.selected.length;i++){
+          this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
+        }
+        this.$store.dispatch('requestLock', this.lockedId)
         this.dialog=true
       },
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
       displayLocked(patient){  
-   //     if(this.lockedList.includes(patient.id)) return true  
+       if(this.lockedList.includes(patient.id)) return true  
       },
       //checks if the run is filled 
       initRun(){
@@ -690,6 +700,8 @@ import Papa from 'papaparse'
           this.isorunnr++
           delete this.selected[i].selected
           this.$store.dispatch('putNgs', this.selected[i])
+          this.$store.dispatch('requestUnlock', this.lockedId)
+
         }
         this.snackColor="success"
         this.snackText="Übertragung erfolgreich"
@@ -721,7 +733,13 @@ import Papa from 'papaparse'
             if(this.selected.includes(isolatD)){
               console.log("throw it")
             }else{
+              var lockArray={
+                idArray: [isolatD.id]
+              }
               this.selected.push(isolatD)
+              this.$store.commit('PUSH_LOCKEDID', isolatD.id)
+              this.$store.dispatch('requestLock', lockArray)
+
             }
          }
           this.runFillerDialog = false
