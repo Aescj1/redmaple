@@ -56,14 +56,12 @@
               class="tile"
               :key="patient.index"
               @click="setCurrentData(patient,index)"
-              :class="{'is-active': index == activeIndex}"
+              :class="{'is-active': index == activeIndex, 'is-locked': displayLocked(patient)}"
             >
               <v-list-tile-content >
-                <v-list-tile-title v-if="sorted.title == 'Bact-Nr' ||sorted.title == 'Priority' ">{{patient.bactnr}}</v-list-tile-title>
-                <v-list-tile-title v-if="sorted.title == 'Pathogen'">{{patient.pathogen}}</v-list-tile-title>
-                <v-list-tile-title v-if="sorted.title == 'Einsender'">{{patient.sender}}</v-list-tile-title>
+                <v-list-tile-title v-if="sorted.title != 'NGS Projekt' && sorted.title != 'Lauf Nummer' ">{{patient.priority}} | {{patient.bactnr}}</v-list-tile-title>
+                <v-list-tile-sub-title  v-if="sorted.title != 'NGS Projekt' && sorted.title != 'Lauf Nummer' ">{{patient.pathogen}} | {{patient.sender}}</v-list-tile-sub-title>
                 <v-list-tile-title v-if="sorted.title == 'Lauf Nummer'">Lauf Nummer: {{patient[0].runnr}}</v-list-tile-title>
-                <v-list-tile-sub-title>{{patient.priority}}</v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
              <v-divider
@@ -141,64 +139,54 @@
                 <!--Defines the first red square that contains meta data  -->
                 <v-flex d-flex xs3 sm3 md3>
             <v-card row wrap flat color="teal  lighten-4">
-                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.altid" label="alternative ID"></v-text-field>
-                  <v-text-field v-model="currentDataset1.priority" label="Priority*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.lastname" label="lastName*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.firstname" label="fistName*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer*" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.repetition" label="Wiederholung*" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.altid" label="alternative ID" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.priority" label="Priority*" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)*" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.lastname" label="lastName*" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.firstname" label="fistName*" readonly></v-text-field>
             </v-card>
                 </v-flex>
                 <!--Defines the second red square that contains meta data  -->
                 <v-flex d-flex xs3 sm3 md3>
             <v-card row wrap flat color="teal  lighten-3">
-                  <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme"></v-text-field>
-                  <v-text-field v-model="currentDataset1.sender" label="Einsender*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.department" label="Station*" required></v-text-field>
-                  <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum"></v-text-field>
-                  <v-text-field v-model="currentDataset1.material" label="Material*" required></v-text-field>
+                  <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum*" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang*" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.sender" label="Einsender*" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.department" label="Station*" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.material" label="Material*" readonly></v-text-field>
             </v-card>
                 </v-flex>
 
               <!--Defines the third red square that contains meta data  -->
                 <v-flex d-flex xs3 sm3 md3>
             <v-card row wrap flat color="teal  lighten-2">
-                  <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt"></v-text-field>
-                  <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-Prep"></v-text-field>
-                  <v-text-field v-model="currentDataset1.concentration" label="DNA Konz. (ng/ul)"></v-text-field>
-                  <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA"></v-text-field>
-                  <v-text-field v-model="currentDataset1.runtype" label="runtype"></v-text-field>
-                  <v-text-field v-model="currentDataset1.runnr" label="NGS Run Nummer"></v-text-field>
-                  <v-text-field v-model="currentDataset1.isorunnr" label="Isolat Run Nummer"></v-text-field>
+                  <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-Prep" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.concentration" label="DNA Konz. (ng/ul)" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.runtype" label="runtype" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.runnr" label="NGS Run Nummer" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.isorunnr" label="Isolat Run Nummer" readonly></v-text-field>
             </v-card>
                 </v-flex>
             <!--Defines the fourth red square that contains meta data  -->
             <v-flex d-flex xs3 sm3 md3>
             <v-card row wrap flat color="teal  lighten-2">
-                  <v-text-field v-model="currentDataset1.librarytype" label="Library Typ"></v-text-field>
-                  <v-text-field v-model="currentDataset1.librarydate" label="Datum Library"></v-text-field>
-                  <v-text-field v-model="currentDataset1.libraryvisum" label="Visum Library"></v-text-field>
-                  <v-text-field v-model="currentDataset1.sequencingdate" label="Datum Sequenzierung"></v-text-field>
-                  <v-text-field v-model="currentDataset1.modality" label="NGS-Gerät"></v-text-field>
-                  <v-text-field v-model="currentDataset1.comment" label="Kommentar"></v-text-field>
+                  <v-text-field v-model="currentDataset1.librarytype" label="Library Typ" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.librarydate" label="Datum Library" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.libraryvisum" label="Visum Library" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.sequencingdate" label="Datum Sequenzierung" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.modality" label="NGS-Gerät" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.comment" label="Kommentar" readonly></v-text-field>
             </v-card>
                 </v-flex>
               </v-layout>
             </v-container>
           </v-card-text>
-            <div v-if="sorted.title == 'Lauf Nummer'" class="text-xs-right">
-              <v-btn
-              color="primary"
-              dark
-              @click.stop="startRun()"
-              v-if="this.selected.length>0"
-              >
-              Run abschliessen
-              </v-btn>
-
 <!----------- THIS is the popup for the additional data input to bring the data to the next processstepp    -->
               <v-dialog
                 v-model="dialog"
@@ -243,7 +231,7 @@
                 <v-spacer></v-spacer>
                 <v-btn
                   flat
-                  @click="dialog=false"
+                  @click="closePopup()"
                 >
                   Abbrechen
                 </v-btn>
@@ -302,6 +290,16 @@
                 Close
               </v-btn>
             </v-snackbar>
+            <div v-if="sorted.title == 'Lauf Nummer'" class="text-xs-right">
+              <v-btn
+              color="primary"
+              dark
+              @click.stop="startRun()"
+              v-if="this.selected.length>0"
+              >
+              Run abschliessen
+              </v-btn>
+            </div>
   </v-container>
 </template>
 
@@ -313,9 +311,9 @@ import {mapState} from 'vuex'
 
 
   export default {
-
     data: () => ({
       activeIndex: null,
+      lockedList:[],
       dialog:false,
       show:false,
       search:'',
@@ -409,9 +407,14 @@ import {mapState} from 'vuex'
           ...mapState(['ngs']),
           ...mapState(['pathogen']),
           ...mapState(['currentUser']),
+          ...mapState(['lockedId']),
+          ...mapState(['locks']),
+
+
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
+          this.lockedList = this.locks
           var display;
          //   this.NgsList = the list that gets transmitted from the DB to the store
           var method = this.ngs.filter(patient => {
@@ -454,8 +457,10 @@ import {mapState} from 'vuex'
     },
     watch:{
       ngs(newValue){
-
-      }
+      },
+      locks(newValue, oldValue){
+        this.lockedList = newValue
+      },
     },
     methods:{
         //Methods that define the snackbars and notify the user
@@ -523,12 +528,21 @@ import {mapState} from 'vuex'
       if(this.currentDataset1.sequencingdate)this.currentDataset1.sequencingdate = this.dateformatter(this.currentDataset1.sequencingdate)
       },
 
-      //deletes a dataset
-      deleteSet(){
-        confirm('Sollen folgende Datensets endgültig gelöscht werden? Dies kann NICHT rückgängig gemacht werden! ') 
-      },
       //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
       startRun(){
+        for(var i=0; i<this.selected.length;i++){
+         this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
+        }
+        this.$store.dispatch('requestLock', this.lockedId)
+          .catch((error) => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            this.negativeNotification()
+            this.dialog = false
+          })
+          .then(
+            this.dialog = true,
+            this.neutralNotification()
+          )
         this.dialog=true
         this.currentDataset1.runnr = this.selected[0].runnr
       },
@@ -538,9 +552,9 @@ import {mapState} from 'vuex'
           this.selected[i].processnr = 4
           this.selected[i].sequencingvisum = this.currentUser
           this.selected[i].dataqualityvisum="User"
-
           this.$store.dispatch('putNgs', this.selected[i])
         }
+        this.$store.dispatch('requestUnlock', this.lockedId)
         this.selected = []
         this.$store.state.export = this.selected
         this.dialog = false
@@ -549,6 +563,18 @@ import {mapState} from 'vuex'
       },
       setSorted(item){
         this.sorted = item
+      },
+       //closes the window when cancel get pressed in lauf vorbereiten view
+      closePopup(){
+        this.$store.dispatch('requestUnlock', this.lockedId)
+        this.dialog = false
+        this.runFilled = false
+      },
+      //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
+      displayLocked(patient){  
+        if(this.sorted.value == 'runnr'){
+          if(this.lockedList.includes(patient[0].id)) return true  
+        }else if(this.lockedList.includes(patient.id)) return true  
       },
     },
 

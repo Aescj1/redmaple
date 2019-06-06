@@ -57,7 +57,7 @@
               class="tile"
               :key="patient.index"
               @click="setCurrentData(patient,index)"
-              :class="{'is-active': index == activeIndex}"
+              :class="{'is-active': index == activeIndex, 'is-locked': displayLocked(patient)}"
             >
             <v-list-tile-action>
               <v-checkbox v-if="sorted.title != 'NGS Projekt' && sorted.title != 'Lauf Nummer' "
@@ -179,7 +179,7 @@
                     <v-list-tile
                       :key="patient.index"
                       @click="setCurrentInnerData(patient,index)"
-                      :class="{'is-active': index == innerActiveIndex}"
+                      :class="{'is-active': index == innerActiveIndex, 'is-locked': displayLocked(patient)}"
                     >
                       <v-list-tile-content>
                         <v-list-tile-title>{{patient.priority}} | {{patient.bactnr}}</v-list-tile-title>
@@ -300,7 +300,7 @@
             </v-container>
           
           </v-card-text>
-          <!-- div that contains the buttons to delete or repeate a sequencing (sets the data back to extrahiert (processNr 2))----------->
+          <!-- div that contains the buttons to delete or repeate a sequencing (sets the data back to extrahiert (processNr 2),  gets display when the filter is NOT set to runNr)----------->
             <div class="text-xs-right">
               <v-btn v-if="currentDataset1.bactnr != '' && sorted.title != 'Lauf Nummer'" @click="editDataset(currentDataset1)">Bearbeiten</v-btn>
               <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
@@ -315,59 +315,6 @@
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog> 
-<!----------- THIS is the popup for the additional data input to bring the data to the next processstepp    -->
-              <v-dialog v-model="dialog" width="700"  scrollable>
-              <v-card>
-              <v-card-title
-                class="headline grey lighten-2"
-                primary-title
-              >
-              <div>
-               <div class="headline">Wollen Sie folgendes Datenset wiederholen? </div>
-              </div>
-              </v-card-title>
-                <v-card-text>
-                <v-subheader class="body-2">Enthaltene Datensets</v-subheader>
-                <v-divider></v-divider>
-                <v-form v-for="item in selected" :key="item.index">
-                  <v-layout>
-                    <v-flex
-                    xs6
-                    md6
-                    >
-                  <v-text-field v-text="item.bactnr">
-                  </v-text-field>
-                    </v-flex>
-                    <v-flex
-                    xs6
-                    md6>
-                    <v-text-field
-                    v-text="item.priority"
-                    ></v-text-field>
-                    </v-flex>
-                    </v-layout>
-                </v-form>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions>
-                <v-btn
-                  color="error"
-                  flat
-                  @click="dialog=false"
-                >
-                  Abbrechen
-                </v-btn>
-
-                <v-btn
-                  color="primary"
-                  
-                  @click="sendRun"
-                >
-                  Bestätigen
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
           </div>
         </v-card>
 
@@ -424,9 +371,8 @@
             </div>
   </v-container>
 </template>
-
-
 <script>
+
 /* eslint-disable */ 
 import _ from 'lodash';
 import {mapState} from 'vuex'
@@ -487,7 +433,6 @@ import RepeatWindow from './RepeatWindow.vue'
 
       ],
       patientList:[],
-      lockedId:[],
       currentDataset1: {
         bactnr: "",
         processnr: 4,
@@ -522,7 +467,6 @@ import RepeatWindow from './RepeatWindow.vue'
         sequencingdate:"",
         modality:"",
       },
-      testset:{},
     }),
     mounted(){
       this.$store.dispatch('getCurrentUser')
@@ -551,10 +495,12 @@ import RepeatWindow from './RepeatWindow.vue'
           ...mapState(['ngs']),
           ...mapState(['pathogen']),
           ...mapState(['locks']),
+          ...mapState(['lockedId']),
           ...mapState(['selectedIsolat']),
 
       //This Method filters the PatientList and builds the V-List that is displayed. 
         filteredItems() {
+          this.lockedList = this.locks
           var display;
          //   store.NgsList = the list that gets transmitted from the DB to the store
           var method = this.ngs.filter(patient => {
@@ -691,20 +637,20 @@ import RepeatWindow from './RepeatWindow.vue'
       },
       //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
       editDataset(isolat){
-       this.$store.commit('SET_SELECTEDISOLAT', isolat)
-        /*  this.lockedId.push(this.selectedIsolat.id)
-          console.log(this.lockedId)
-          this.$store.dispatch('requestLock', this.lockedId)
-            .catch((error) => {
-              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              this.negativeNotification()
-              this.$store.state.formDialog = false
+              for(var i=0; i<this.selected.length;i++){
+         this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
+        }
+        this.$store.dispatch('requestLock', this.lockedId)
+          .catch((error) => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            this.negativeNotification()
+            this.$store.state.formDialog = false
           })
-            .then( */
-              this.$store.state.formDialog = true,
-              this.neutralNotification()
-            //)
-        
+          .then(
+            this.$store.commit('SET_SELECTEDISOLAT', isolat),
+            this.neutralNotification(),
+            this.$store.state.formDialog = true,
+          )
       },
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
 
@@ -745,17 +691,6 @@ import RepeatWindow from './RepeatWindow.vue'
               this.snackbar=true
           },
 
-      //sends a dataset to extraced, to repeat the workflow incase of an error, and opens a popup 
-      sendRun(){
-  /*      DIESE METHODE IS TODO - REPEAT
-        for(var i=0; i<this.selected.length;i++){
-
-          this.$store.dispatch('putNgs', this.selected[i])
-        }*/
-        this.selected = []
-        this.$store.state.export = this.selected
-        this.dialog = false
-      },
       //Method that is being used for the checkboxes. It adds or removes the datasets to a list, which is used for handling the data that need to be send 
       //to the next processstep. The if checks what the outersorting is, if it is ngs projekt it will check the checkboxes of the dataset inside a NGS Project on selection.
       selectRun(run){
@@ -782,7 +717,13 @@ import RepeatWindow from './RepeatWindow.vue'
       setInnerSorted(item){
         this.innerSorted = item
         this.currentDataset1 = {}
-      }
+      },
+      //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
+      displayLocked(patient){  
+        if(this.sorted.value == 'runnr'){
+          if(this.lockedList.includes(patient[0].id)) return true  
+        }else if(this.lockedList.includes(patient.id)) return true  
+      },
     }
   }
 </script>

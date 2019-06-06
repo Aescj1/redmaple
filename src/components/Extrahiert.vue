@@ -700,9 +700,8 @@ import Papa from 'papaparse'
           this.isorunnr++
           delete this.selected[i].selected
           this.$store.dispatch('putNgs', this.selected[i])
-          this.$store.dispatch('requestUnlock', this.lockedId)
-
         }
+        this.$store.dispatch('requestUnlock', this.lockedId)
         this.snackColor="success"
         this.snackText="Übertragung erfolgreich"
         this.selected = []
