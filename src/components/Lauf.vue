@@ -98,8 +98,8 @@
                             <p><b>alternative ID:</b> {{item.altid}}</p>
                             <p><b>Priorität:</b> {{item.priority}}</p>
                             <p><b>Pathogen:</b> {{item.pathogen}}</p>
-                            <p><b>Eingangsdatum:</b> {{dateformatter(item.isoentrydate)}}</p>
-                            <p><b>Abnahmedatum:</b> {{dateformatter(item.samplingdate)}}</p>
+                            <p><b>Eingangsdatum:</b> {{dateformatter2(item.isoentrydate)}}</p>
+                            <p><b>Abnahmedatum:</b> {{dateformatter2(item.samplingdate)}}</p>
                             <p><b>Einsender:</b> {{item.sender}}</p>
                             </v-flex>
                             <v-flex
@@ -107,11 +107,11 @@
                               md4
                             > 
                               <p><b>Station:</b> {{item.department}}</p>
-                              <p><b>Bearbeitungsdatum: </b>{{dateformatter(item.processingdate)}}</p>
+                              <p><b>Bearbeitungsdatum: </b>{{dateformatter2(item.processingdate)}}</p>
                               <p><b>Material:</b> {{item.material}}</p>
-                              <p><b>Bearbeitungsdatum:</b> {{dateformatter(item.processingdate)}}</p>
+                              <p><b>Bearbeitungsdatum:</b> {{dateformatter2(item.processingdate)}}</p>
                               <p><b>Material:</b> {{item.material}}</p>
-                              <p><b>Datum DNA-Prep:</b> {{dateformatter(item.extractiondate)}}</p>
+                              <p><b>Datum DNA-Prep:</b> {{dateformatter2(item.extractiondate)}}</p>
                               <p><b>DNA Konz. (ng/ul):</b> {{item.concentration}}</p>
                             </v-flex>
 
@@ -120,9 +120,9 @@
                               md4
                             > 
                               <p><b>Visum DNA:</b> {{item.extractionvisum}}</p>
-                              <p><b>Abnahmedatum:</b> {{dateformatter(item.samplingdate)}}</p>
+                              <p><b>Abnahmedatum:</b> {{dateformatter2(item.samplingdate)}}</p>
                               <p><b>Library Typ:</b> {{item.librarytype}}</p>
-                              <p><b>Library Darum:</b> {{dateformatter(item.librarydate)}}</p>
+                              <p><b>Library Darum:</b> {{dateformatter2(item.librarydate)}}</p>
                               <p><b>Library Visum:</b> {{item.libraryvisum}}</p>
                               <p><b>Sequenzierungsdatum:</b> {{item.sequencingDate}}</p>
                               <p><b>NGS-Gerät:</b> {{item.modality}}</p>
@@ -493,16 +493,19 @@ import {mapState} from 'vuex'
         this.search='';
         },
 
-        dateformatter(date){  
-          var str = date
-          if( date != null && str.length >12){
-          var day = str.substring(8, 10);
-          var month = str.substring(5, 7);
-          var year = str.substring(0, 4);
-          var newDate = day+"-"+month+"-"+year
-          return newDate       }
-          else return date
+        dateformatter2(date){
+          if(date){
+          var date = new Date(date)
+            var month = '' + (date.getMonth() + 1)
+            var day = '' + date.getDate()
+            var  year = date.getFullYear()
+
+          if (month.length < 2) month = '0' + month
+          if (day.length < 2) day = '0' + day
+          return [year, month, day].join('-')
+          }
         },
+
       //sets the currentPatient
       setCurrentData(patient,index){
       this.activeIndex = index
@@ -518,13 +521,13 @@ import {mapState} from 'vuex'
 
         }
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
-      if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
-      if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
-      if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
-      if(this.currentDataset1.processingdate)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
-      if(this.currentDataset1.extractiondate)this.currentDataset1.extractiondate = this.dateformatter(this.currentDataset1.extractiondate)
-      if(this.currentDataset1.librarydate)this.currentDataset1.librarydate = this.dateformatter(this.currentDataset1.librarydate)
-      if(this.currentDataset1.sequencingdate)this.currentDataset1.sequencingdate = this.dateformatter(this.currentDataset1.sequencingdate)
+      this.currentDataset1.birthdate = this.dateformatter2(this.currentDataset1.birthdate)
+      this.currentDataset1.samplingdate = this.dateformatter2(this.currentDataset1.samplingdate)
+      this.currentDataset1.isoentrydate = this.dateformatter2(this.currentDataset1.isoentrydate)
+      this.currentDataset1.processingdate = this.dateformatter2(this.currentDataset1.processingdate)
+      this.currentDataset1.extractiondate = this.dateformatter2(this.currentDataset1.extractiondate)
+      this.currentDataset1.librarydate = this.dateformatter2(this.currentDataset1.librarydate)
+      this.currentDataset1.sequencingdate = this.dateformatter2(this.currentDataset1.sequencingdate)
       },
 
       //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
@@ -562,6 +565,7 @@ import {mapState} from 'vuex'
       },
       setSorted(item){
         this.sorted = item
+        this.setCurrentData([])
       },
        //closes the window when cancel get pressed in lauf vorbereiten view
       closePopup(){

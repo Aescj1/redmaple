@@ -109,8 +109,8 @@
                             <p><b>alternative ID:</b> {{item.altid}}</p>
                             <p><b>Priorität:</b> {{item.priority}}</p>
                             <p><b>Pathogen:</b> {{item.pathogen}}</p>
-                            <p><b>Eingangsdatum:</b> {{dateformatter(item.isoentrydate)}}</p>
-                            <p><b>Abnahmedatum:</b> {{dateformatter(item.samplingdate)}}</p>
+                            <p><b>Eingangsdatum:</b> {{dateFormatter2(item.isoentrydate)}}</p>
+                            <p><b>Abnahmedatum:</b> {{dateFormatter2(item.samplingdate)}}</p>
                             <p><b>Einsender:</b> {{item.sender}}</p>
                             </v-flex>
                             <v-flex
@@ -118,11 +118,11 @@
                               md4
                             > 
                               <p><b>Station:</b> {{item.department}}</p>
-                              <p><b>Bearbeitungsdatum: </b>{{dateformatter(item.processingdate)}}</p>
+                              <p><b>Bearbeitungsdatum: </b>{{dateFormatter2(item.processingdate)}}</p>
                               <p><b>Material:</b> {{item.material}}</p>
-                              <p><b>Bearbeitungsdatum:</b> {{dateformatter(item.processingdate)}}</p>
+                              <p><b>Bearbeitungsdatum:</b> {{dateFormatter2(item.processingdate)}}</p>
                               <p><b>Material:</b> {{item.material}}</p>
-                              <p><b>Datum DNA-Prep:</b> {{dateformatter(item.extractiondate)}}</p>
+                              <p><b>Datum DNA-Prep:</b> {{dateFormatter2(item.extractiondate)}}</p>
                               <p><b>DNA Konz. (ng/ul):</b> {{item.concentration}}</p>
                             </v-flex>
 
@@ -131,9 +131,9 @@
                               md4
                             > 
                               <p><b>Visum DNA:</b> {{item.extractionvisum}}</p>
-                              <p><b>Abnahmedatum:</b> {{dateformatter(item.samplingdate)}}</p>
+                              <p><b>Abnahmedatum:</b> {{dateFormatter2(item.samplingdate)}}</p>
                               <p><b>Library Typ:</b> {{item.librarytype}}</p>
-                              <p><b>Library Darum:</b> {{dateformatter(item.librarydate)}}</p>
+                              <p><b>Library Darum:</b> {{dateFormatter2(item.librarydate)}}</p>
                               <p><b>Library Visum:</b> {{item.libraryvisum}}</p>
                               <p><b>Sequenzierungsdatum:</b> {{item.sequencingDate}}</p>
                               <p><b>NGS-Gerät:</b> {{item.modality}}</p>

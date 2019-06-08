@@ -108,7 +108,7 @@
                   <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.repetition" label="Wiederholung" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.altid" label="alternative ID" readonly></v-text-field>
-                  <v-text-field v-model="currentDataset1.priority" :mask="priorityMask" label="Priority" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.priority" label="Priority" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.lastname" label="Nachname" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.firstname" label="Vorname" readonly></v-text-field>
@@ -116,12 +116,12 @@
                 </v-flex>
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="light-blue lighten-3">
-                  <v-text-field v-model="currentDataset1.birthdate" :mask="dateMask" label="Geburtsdatum" readonly></v-text-field>
-                  <v-text-field v-model="currentDataset1.isoentrydate" :mask="dateMask" label="Eingang" readonly></v-text-field>
-                  <v-text-field v-model="currentDataset1.samplingdate" :mask="dateMask" label="Abnahme" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.sender" label="Einsender" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.department" label="Station" readonly></v-text-field>
-                  <v-text-field v-model="currentDataset1.processingdate" :mask="dateMask" label="Bearbeitungsdatum" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.material" label="Material" readonly></v-text-field>
             </v-card>
                 </v-flex>
@@ -272,9 +272,7 @@ import DeleteWindow from './DeleteWindow.vue'
       DeleteWindow,
     },
     data: () => ({
-      dateMask:'##-##-####',
       lockedList:[],
-      priorityMask:'A',
       activeIndex: null,
       lastIndex:null,
       snackText:'',
@@ -420,26 +418,28 @@ import DeleteWindow from './DeleteWindow.vue'
         this.search='';
         },
       //Method to format the date into DD-MM-YYYY instead of the default JSON date
-      dateformatter(date){  
-          var str = date
-           if( date != null && str.length >12){
-          var day = str.substring(8, 10);
-          var month = str.substring(5, 7);
-          var year = str.substring(0, 4);
-          var newDate = day+"-"+month+"-"+year
-          return newDate       }
-          else return date
+        dateformatter2(date){
+          if(date){
+          var date = new Date(date)
+            var month = '' + (date.getMonth() + 1)
+            var day = '' + date.getDate()
+            var  year = date.getFullYear()
+
+          if (month.length < 2) month = '0' + month
+          if (day.length < 2) day = '0' + day
+          return [year, month, day].join('-')
+          }
         },
       //sets the currentPatient. Does a copy of the JS.Object which allows to change information without changing the source object. (needed for the date property)
       setCurrentData(patient,index){
       this.lastIndex = this.activeIndex
       this.activeIndex = index
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
-      this.$store.commit('SET_SELECTEDISOLAT', patient)
-      if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
-      if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
-      if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
-      if(this.currentDataset1.processingdate)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
+     // this.$store.commit('SET_SELECTEDISOLAT', patient)
+      this.currentDataset1.birthdate = this.dateformatter2(this.currentDataset1.birthdate)
+      this.currentDataset1.samplingdate = this.dateformatter2(this.currentDataset1.samplingdate)
+      this.currentDataset1.isoentrydate = this.dateformatter2(this.currentDataset1.isoentrydate)
+      this.currentDataset1.processingdate = this.dateformatter2(this.currentDataset1.processingdate)
       },
       selectIsolat(patient){
         if (this.selected.includes(patient)) {
@@ -479,7 +479,8 @@ import DeleteWindow from './DeleteWindow.vue'
       },
        //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
       deleteStep1(){
-         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
+        this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
+        this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
         this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
               console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
@@ -548,10 +549,11 @@ import DeleteWindow from './DeleteWindow.vue'
       setSorted(item){
         this.sorted = item
         this.currentDataset1 = {}
-        setCurrentData([])
+        this.setCurrentData([])
       },
 //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
       editDataset(){
+        this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
         this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {

@@ -93,7 +93,7 @@
                   <v-text-field v-model="currentDataset1.bactnr" label="Bact Nummer" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.repetition" label="Wiederholung" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.altid" label="alternative ID" readonly></v-text-field>
-                  <v-text-field v-model="currentDataset1.priority" :mask="priorityMask" label="Priority" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.priority" label="Priority" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.pathogen" label="Pathogen (g)" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.lastname" label="lastName" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.firstname" label="fistName" readonly></v-text-field>
@@ -102,12 +102,12 @@
                 <!--Defines the second red square that contains meta data  -->
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="cyan lighten-3">
-                  <v-text-field v-model="currentDataset1.birthdate" :mask="dateMask" label="Geburtsdatum" readonly></v-text-field>
-                  <v-text-field v-model="currentDataset1.isoentrydate" :mask="dateMask" label="Eingang" readonly></v-text-field>
-                  <v-text-field v-model="currentDataset1.samplingdate" :mask="dateMask" label="Abnahme"></v-text-field>
+                  <v-text-field v-model="currentDataset1.birthdate" label="Geburtsdatum" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.isoentrydate" label="Eingang" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.samplingdate" label="Abnahme"></v-text-field>
                   <v-text-field v-model="currentDataset1.sender" label="Einsender" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.department" label="Station" readonly></v-text-field>
-                  <v-text-field v-model="currentDataset1.processingdate" :mask="dateMask" label="Bearbeitungsdatum" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.processingdate" label="Bearbeitungsdatum" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.material" label="Material" readonly></v-text-field>
             </v-card>
                 </v-flex>
@@ -116,7 +116,7 @@
                 <v-flex d-flex xs4 sm4 md4>
             <v-card row wrap flat color="cyan lighten-2">
                   <v-text-field v-model="currentDataset1.ngsproject" label="NGS - Projekt" readonly></v-text-field>
-                  <v-text-field v-model="currentDataset1.extractiondate" :mask="dateMask" label="Datum DNA-Prep" readonly></v-text-field>
+                  <v-text-field v-model="currentDataset1.extractiondate" label="Datum DNA-Prep" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.concentration" suffix="ng/µl" label="DNA Konzentration" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.extractionvisum" label="Visum DNA" readonly></v-text-field>
                   <v-text-field v-model="currentDataset1.comment" label="Kommentar" readonly></v-text-field>
@@ -377,9 +377,6 @@ import RepeatWindow from './RepeatWindow.vue'
 import Papa from 'papaparse'
 
 
-
-
-
   export default {
     components: {
       NgsFormular,
@@ -389,9 +386,7 @@ import Papa from 'papaparse'
     data: () => ({
       runFilled: false,
       expansionPanel: [true],
-      dateMask:'##-##-####',
       lockedList:[],
-      priorityMask:'A',
       activeIndex: null,
       lastIndex:null,
       snackText:'',
@@ -554,27 +549,30 @@ import Papa from 'papaparse'
         this.search='';
         },
 
-        dateformatter(date){  
-          var str = date
-          if( date != null && str.length >12){
-          var day = str.substring(8, 10);
-          var month = str.substring(5, 7);
-          var year = str.substring(0, 4);
-          var newDate = day+"-"+month+"-"+year
-          return newDate       }
-          else return date
-        },
+      //This method formats the date
+      dateformatter2(date){
+        if(date){
+        var date = new Date(date)
+          var month = '' + (date.getMonth() + 1)
+          var day = '' + date.getDate()
+          var  year = date.getFullYear()
+
+        if (month.length < 2) month = '0' + month
+        if (day.length < 2) day = '0' + day
+        return [year, month, day].join('-')
+        }
+      },
+
       //sets the currentPatient
       setCurrentData(patient,index){
       this.lastIndex = this.activeIndex
       this.activeIndex = index
       this.currentDataset1 = JSON.parse(JSON.stringify(patient))
-      this.$store.commit('SET_SELECTEDISOLAT', patient)
-      if(this.currentDataset1.birthdate)this.currentDataset1.birthdate = this.dateformatter(this.currentDataset1.birthdate)
-      if(this.currentDataset1.samplingdate)this.currentDataset1.samplingdate = this.dateformatter(this.currentDataset1.samplingdate)
-      if(this.currentDataset1.isoentrydate)this.currentDataset1.isoentrydate = this.dateformatter(this.currentDataset1.isoentrydate)
-      if(this.currentDataset1.processingdate)this.currentDataset1.processingdate = this.dateformatter(this.currentDataset1.processingdate)
-      if(this.currentDataset1.extractiondate)this.currentDataset1.extractiondate = this.dateformatter(this.currentDataset1.extractiondate)
+      this.currentDataset1.birthdate = this.dateformatter2(this.currentDataset1.birthdate)
+      this.currentDataset1.samplingdate = this.dateformatter2(this.currentDataset1.samplingdate)
+      this.currentDataset1.isoentrydate = this.dateformatter2(this.currentDataset1.isoentrydate)
+      this.currentDataset1.processingdate = this.dateformatter2(this.currentDataset1.processingdate)
+      this.currentDataset1.extractiondate = this.dateformatter2(this.currentDataset1.extractiondate)
 
       },
       //This was the old Method that gets called when a Checkbox is clicked. Is the template for multiSelectIsolat. 
@@ -612,6 +610,7 @@ import Papa from 'papaparse'
       },
 //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
       editDataset(){
+        this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
         this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
@@ -627,7 +626,8 @@ import Papa from 'papaparse'
       },
       //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
       deleteStep1(){
-         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
+        this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
+        this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
         this.$store.dispatch('requestLock', this.lockedId)
             .catch((error) => {
               console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
@@ -641,17 +641,18 @@ import Papa from 'papaparse'
       },
       //Method to put a selected dataset back to an earlier processstepp. opens the dialog window
       repeat(){
-               this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
+        this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
+        this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
         this.$store.dispatch('requestLock', this.lockedId)
-            .catch((error) => {
-              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              this.negativeNotification()
-              this.$store.state.repeatDialog = false
-          })
-            .then(
-              this.$store.state.repeatDialog = true,
-              this.neutralNotification()
-            )
+        .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          this.negativeNotification()
+          this.$store.state.repeatDialog = false
+      })
+        .then(
+          this.$store.state.repeatDialog = true,
+          this.neutralNotification()
+        )
       },
       //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
       startRun(){
@@ -753,6 +754,7 @@ import Papa from 'papaparse'
       setSorted(item){
         this.sorted = item
         this.currentDataset1 = {}
+        this.setCurrentData([])
       },
       downloadCSV(){
         var konzList = this.selected.map(element => ({BactNummer: element.bactnr, Konzentration: element.concentration}))
