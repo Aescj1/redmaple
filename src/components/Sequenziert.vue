@@ -41,7 +41,7 @@
         </v-flex>
         <v-flex d-flex xs1 sm1 md1 xl1 lg1>
           <v-btn outline color="blue-grey darken-3" large @click="changeworkflow('workflow')">
-            <v-icon light>work</v-icon>
+            <v-icon light>home</v-icon>
           </v-btn>
         </v-flex>
       </v-layout>
@@ -102,41 +102,52 @@
                         <v-card-text class="green lighten-4"> 
                           <v-layout>
                             <v-flex
-                            xs4
-                            md4
+                                xs4
+                                md4
                             >
-                            <p><b>Wiederholung:</b> {{item.repetition}}</p>
-                            <p><b>alternative ID:</b> {{item.altid}}</p>
-                            <p><b>Priorität:</b> {{item.priority}}</p>
-                            <p><b>Pathogen:</b> {{item.pathogen}}</p>
-                            <p><b>Eingangsdatum:</b> {{dateFormatter2(item.isoentrydate)}}</p>
-                            <p><b>Abnahmedatum:</b> {{dateFormatter2(item.samplingdate)}}</p>
-                            <p><b>Einsender:</b> {{item.sender}}</p>
+                                <p><b>Bact. Nr:</b> {{item.bactnr}}</p>
+                                <p><b>Vorname</b> {{item.firstname}}</p>
+                                <p><b>Nachname</b> {{item.lastname}}</p>
+                                <p><b>Geburtsdatum</b> {{dateFormatter2(item.birthdate)}}</p>
+                                <p><b>Prozessschritt</b> {{item.processnr}}</p>
+                                <p><b>Wiederholung:</b> {{item.repetition}}</p>
+                                <p><b>alternative ID:</b> {{item.altid}}</p>
+                                <p><b>Priorität:</b> {{item.priority}}</p>
+                                <p><b>Pathogen:</b> {{item.pathogen}}</p>
+                                <p><b>Eingangsdatum Isolat:</b> {{dateFormatter2(item.isoentrydate)}}</p>
+                                <p><b>Abnahmedatum:</b> {{dateFormatter2(item.samplingdate)}}</p>
+
                             </v-flex>
                             <v-flex
-                              xs4
-                              md4
+                                xs4
+                                md4
                             > 
-                              <p><b>Station:</b> {{item.department}}</p>
-                              <p><b>Bearbeitungsdatum: </b>{{dateFormatter2(item.processingdate)}}</p>
-                              <p><b>Material:</b> {{item.material}}</p>
-                              <p><b>Bearbeitungsdatum:</b> {{dateFormatter2(item.processingdate)}}</p>
-                              <p><b>Material:</b> {{item.material}}</p>
-                              <p><b>Datum DNA-Prep:</b> {{dateFormatter2(item.extractiondate)}}</p>
-                              <p><b>DNA Konz. (ng/ul):</b> {{item.concentration}}</p>
+                                <p><b>Einsender:</b> {{item.sender}}</p>
+                                <p><b>Kommentar:</b> {{item.comment}}</p>
+                                <p><b>Eingangdatum Auftrag</b> {{dateFormatter2(item.entrydate)}}</p>
+                                <p><b>NGS-Projekt:</b> {{item.ngsproject}}</p>
+                                <p><b>Public ID:</b> {{item.publicid}}</p>
+                                <p><b>Abrechnung:</b> {{item.billing}}</p>
+                                <p><b>Station:</b> {{item.department}}</p>
+                                <p><b>Bearbeitungsdatum: </b>{{dateFormatter2(item.processingdate)}}</p>
+                                <p><b>Material:</b> {{item.material}}</p>
+                                <p><b>Datum DNA-Prep:</b> {{dateFormatter2(item.extractiondate)}}</p>
+                                <p><b>DNA Konz. (ng/ul):</b> {{item.concentration}}</p>
                             </v-flex>
 
                             <v-flex
-                              xs4
-                              md4
+                                xs4
+                                md4
                             > 
-                              <p><b>Visum DNA:</b> {{item.extractionvisum}}</p>
-                              <p><b>Abnahmedatum:</b> {{dateFormatter2(item.samplingdate)}}</p>
-                              <p><b>Library Typ:</b> {{item.librarytype}}</p>
-                              <p><b>Library Darum:</b> {{dateFormatter2(item.librarydate)}}</p>
-                              <p><b>Library Visum:</b> {{item.libraryvisum}}</p>
-                              <p><b>Sequenzierungsdatum:</b> {{item.sequencingDate}}</p>
-                              <p><b>NGS-Gerät:</b> {{item.modality}}</p>
+                                <p><b>Visum DNA:</b> {{item.extractionvisum}}</p>
+                                <p><b>Abnahmedatum:</b> {{dateFormatter2(item.samplingdate)}}</p>
+                                <p><b>Library Typ:</b> {{item.librarytype}}</p>
+                                <p><b>Library Darum:</b> {{dateFormatter2(item.librarydate)}}</p>
+                                <p><b>Library Visum:</b> {{item.libraryvisum}}</p>
+                                <p><b>NGS Run Nummer:</b> {{item.runnr}}</p>
+                                <p><b>Isolat Run Nummer:</b> {{item.isorunnr}}</p>
+                                <p><b>Sequenzierungsdatum:</b> {{dateFormatter2(item.sequencingDate)}}</p>
+                                <p><b>NGS-Gerät:</b> {{item.modality}}</p>
                             </v-flex>
                           </v-layout>
                           <div class="text-xs-right">
@@ -569,6 +580,7 @@ import RepeatWindow from './RepeatWindow.vue'
         }
         this.selected = []
         this.$store.state.export = this.selected
+        this.$store.commit('SET_SELECTEDISOLAT', [])
         this.$router.push('/'+item)
 
       },
@@ -587,6 +599,7 @@ import RepeatWindow from './RepeatWindow.vue'
           return newDate       }
           else return date
         },
+
         dateFormatter2(date){
         if(date){
          var date = new Date(date)
@@ -598,8 +611,8 @@ import RepeatWindow from './RepeatWindow.vue'
         if (day.length < 2) day = '0' + day
         return [year, month, day].join('-')
         }
-
       },
+
       //sets the currentPatient
       setCurrentData(patient,index){
       this.lastIndex = this.activeIndex

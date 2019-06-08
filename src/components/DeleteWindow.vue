@@ -112,6 +112,7 @@
 
 <script>
 import {mapState} from 'vuex'
+import {bus} from '../main.js';
 
 export default {
       data:() =>({
@@ -200,12 +201,14 @@ export default {
         //Method that deletes the isolatdataset
         deletefinal(){
         this.$store.dispatch('deleteNgs', this.selectedIsolat.id)
-        this.$store.dispatch('requestUnlock', this.lockedId)
-        .catch((error) => {
-        if(error != ""){
+        .then(response => {
+          bus.$emit('positiveNotification', true)
+        }, error => {
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-        }
-        })
+          bus.$emit('negativeNotification', error)
+          })
+        
+        this.$store.commit('SET_LOCKEDID', [])
         this.dialog = false
         this.$store.state.deleteDialog = false
         },
@@ -215,7 +218,7 @@ export default {
         this.dialog = false
 
         this.$store.state.deleteDialog = false
-        },
+        }
     },
 }
 </script>

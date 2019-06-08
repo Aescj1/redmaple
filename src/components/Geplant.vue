@@ -45,7 +45,7 @@
         </v-flex>
         <v-flex d-flex xs1 sm1 md1 xl1 lg1>
           <v-btn outline color="blue-grey darken-3" large @click="changeworkflow('workflow')">
-            <v-icon light>work</v-icon>
+            <v-icon light>home</v-icon>
           </v-btn>
         </v-flex>
               </v-layout>
@@ -75,19 +75,19 @@
                 <v-list-tile-sub-title>{{patient.pathogen}} | {{patient.sender}} </v-list-tile-sub-title>
               </v-list-tile-content>
               <v-btn fab flat  small color="transparent" 
-              @click.stop="filteredItems[index].received = !filteredItems[index].received"
+              @click.stop="isolatReceived(patient)"
               >
                   <v-icon
-                  v-if="filteredItems[index].received"
-                  color="yellow darken-2"
+                  v-if="patient.received"
+                  color="success"
                 >
-                  star
+                  how_to_reg
                 </v-icon>
                 <v-icon
                   v-else
                   color="grey lighten-1"
                 >
-                  star_border
+                  how_to_reg
                 </v-icon>
               </v-btn>
             </v-list-tile>
@@ -396,12 +396,12 @@ import DeleteWindow from './DeleteWindow.vue'
   //Methods that define the snackbars and notify the user
       positiveNotification(){
         this.snackColor="success"
-        this.snackText="Übertragung erfolgreich"
+        this.snackText="Aktion erfolgreich"
         this.snackbar =true
       },
-      negativeNotification(){
+      negativeNotification(error){
         this.snackColor="error"
-        this.snackText="Der Datensatz wird bereits bearbeitet."
+        this.snackText= error.statusCode + ": " + error.statusMessage
         this.snackbar=true
       },
       neutralNotification(){
@@ -412,6 +412,11 @@ import DeleteWindow from './DeleteWindow.vue'
       closePopup(){
         this.dialog = false
         this.$store.dispatch('requestUnlock', this.lockedId)
+        .then(response => {
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification(error)
+        })   
       },
       //clears the search and sets the value null
       clearSearch(){
@@ -477,20 +482,31 @@ import DeleteWindow from './DeleteWindow.vue'
       displayLocked(patient){  
        if(this.lockedList.includes(patient.id)) return true  
       },
+      isolatReceived(patient){
+        patient.received = !patient.received
+        console.log(patient.received)
+        this.$store.dispatch('putNgs', patient)
+        .then(response => {
+            this.positiveNotification()
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          this.negativeNotification(error)
+          })
+        },
        //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
       deleteStep1(){
         this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
         this.$store.dispatch('requestLock', this.lockedId)
-            .catch((error) => {
-              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              this.negativeNotification()
+          .then(response => {
+          this.$store.state.deleteDialog = true
+          this.neutralNotification()
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification(error)
               this.$store.state.deleteDialog = false
-          })
-            .then(
-              this.$store.state.deleteDialog = true,
-              this.neutralNotification()
-            )
+              this.$store.commit('SET_LOCKEDID', [])
+        })   
       },
       //functio
       startExtraction(){
@@ -510,15 +526,15 @@ import DeleteWindow from './DeleteWindow.vue'
           }
           }
         this.$store.dispatch('requestLock', this.lockedId)
-                    .catch((error) => {
-              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              this.negativeNotification()
+          .then(response => {
+          this.dialog = true
+          this.neutralNotification()
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification(error)
               this.dialog = false
-          })
-            .then(
-              this.dialog = true,
-              this.neutralNotification()
-            )
+              this.$store.commit('SET_LOCKEDID', [])
+        })   
         
       },
       //sends a dataset to the next processstep (extrahiert) and opens a popup 
@@ -533,17 +549,24 @@ import DeleteWindow from './DeleteWindow.vue'
           this.selected[i].extractiondate = formattedDate
           this.selected[i].extractionvisum = this.currentUser
           this.selected[i].processnr = 2
-          console.log(this.selected)
           this.$store.dispatch('putNgs', this.selected[i])
-          .catch((error) => {
+          .then(response => {
+            this.positiveNotification()
+        }, error => {
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-        })
+          this.negativeNotification(error)
+          })
         }
         this.$store.dispatch('requestUnlock', this.lockedId)
+        .then(response => {
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification(error)
+        })   
+        this.$store.commit('SET_LOCKEDID', [])
         this.selected = []
         this.$store.state.export = this.selected
         this.dialog = false
-        this.positiveNotification()
       
       },
       setSorted(item){
@@ -556,16 +579,15 @@ import DeleteWindow from './DeleteWindow.vue'
         this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
         this.$store.dispatch('requestLock', this.lockedId)
-            .catch((error) => {
-              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              this.negativeNotification()
+        .then(response => {
+          this.$store.state.formDialog = true
+          this.neutralNotification()
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification(error)
               this.$store.state.formDialog = false
-          })
-            .then(
-              this.$store.state.formDialog = true,
-              this.neutralNotification()
-            )
-        
+              this.$store.commit('SET_LOCKEDID', [])
+        })       
       }
     }
   }

@@ -53,17 +53,17 @@
             <v-list-tile-title>Actions</v-list-tile-title>
           </v-list-tile>
             <v-list-tile 
-            v-for="item in headers"
-            :key="item.value"
-            @click="hideHeader(item)" 
-            v-model="item.show"
+            v-for="header in headers"
+            :key="header.value"
+            @click="hideHeader(header)" 
+            v-model="header.show"
             >
             <v-list-tile-action>
               <v-switch
                 readonly
-                v-model="item.show"
+                v-model="header.show"
                 color= red
-                :label="item.text"
+                :label="header.text"
               ></v-switch>
             </v-list-tile-action>
             </v-list-tile>
@@ -98,36 +98,36 @@ import {bus} from '../main.js'
 
     data: ()=>({
       /**This is the Information for the Toggle Buttons */
-      headers:[
-        {  index:0, text: 'Bact Nr-', show:true},
-        {  index:1, text: 'Alternative ID', show:false },
-        {  index:2, text: 'Prozessschritt', show:true},
-        {  index:3, text: 'Priority', show:true},
-        {  index:4, text: 'Pathogen', show:true},
-        {  index:5, text: 'Vorname', show:true},
-        {  index:6, text: 'Nachname', show:true},
-        {  index:7, text: 'Geburtsdatum', show:true},
-        {  index:8, text: 'Eingang', show:true},
-        {  index:9, text: 'Abnahme', show:false},
-        {  index:10, text: 'Einsender', show:true},
-        {  index:11, text: 'Station', show:false},
-        {  index:12, text: 'Bearbeitung', show:false},
-        {  index:13, text: 'Material', show:true},
-        {  index:14, text: 'NGS-Projekt', show:true},
-        {  index:15, text: 'Datum DNA-Prep', show:false},
-        {  index:16, text: 'DNA-Konz (ng/ul)', show:false},
-        {  index:17, text: 'Visum DNA', show:false},
-        {  index:18, text: 'NGS Nummer', show:false},
-        {  index:19, text: 'Isolat Run Nummer', show:false},
-        {  index:20, text: 'Library Typ', show:true},
-        {  index:21, text: 'Datum Library', show:false},
-        {  index:22, text: 'Visum Library', show:false},
-        {  index:23, text: 'Datum Sequenzierung', show:false},
-        {  index:24, text: 'NGS Gerät', show:true},
-        {  index:25, text: 'Visum Sequenzierung', show:false},
-        {  index:26, text: 'Visum Datenqualität', show:false},
-        {  index:27, text: 'Information alte Liste', show:false},
-        {  index:28, text: 'Public identifier', show:false},
+      headers: [
+        { index: 0, class:'dataSet', text: 'Bact Nr', sortable: true, value: 'bactnr', show: true},
+        { index: 1, text: 'Alternative ID', value: 'altid', show: false },
+        { index: 2, text: 'Prozessschritt', value: 'processnr', show: true },
+        { index: 3, text: 'priority', value: 'priority' , show: true},
+        { index: 4, text: 'Pathogen', value: 'pathogen' , show: true},
+        { index: 5, class:'dataSet',text: 'Vorname', value: 'firstname' , show: true},
+        { index: 6, class:'dataSet',text: 'Nachname', value: 'lastname' , show: true},
+        { index: 7, text: 'Geburtsdatum', value: 'birthdate', show: true },
+        { index: 8, text: 'Eingang', value: 'entrydate', sortable: false, show: true },
+        { index: 9, text: 'Abnahme', value: 'samplingdate', show: false },
+        { index: 10, text: 'Einsender', value: 'sender', show: true },
+        { index: 11, text: 'Station', value: 'department', show: false },
+        { index: 12, text: 'Bearbeitungsdatum', value: 'processingdate', show: false },
+        { index: 13, text: 'Material', value: 'material', show: true },
+        { index: 14, text: 'NGS-Projekt', value: 'ngsproject', show: true },
+        { index: 15, text: 'Datum DNA-Extraktion', value: 'extractiondate', show: false },
+        { index: 16, text: 'DNA-Konz (ng/ul)', value: 'concentration', show: false },
+        { index: 17, text: 'Visum DNA', value: 'extractionvisum', show: false },
+        { index: 18, text: 'NGS Nummer', value: 'runnr', show: false },
+        { index: 19, text: 'Isolat Run Nummer', value: 'isorunnr', show: false },
+        { index: 20, text: 'Library Typ', value: 'librarytype', show: true },
+        { index: 21, text: 'Datum Library', value: 'librarydate', show: false },
+        { index: 22, text: 'Visum Library', value: 'libraryvisum', show: false },
+        { index: 23, text: 'Datum Sequenzierung', value: 'sequencingdate', show: false },
+        { index: 24, text: 'NGS Gerät', value: 'modality' , show: true},
+        { index: 25, text: 'Visum Sequenzierung', value: 'sequencingvisum' , show: false},
+        { index: 26, text: 'Visum Datenqualität', value: 'dataqualityvisum' , show: false},
+        { index: 27, text: 'Information alte Liste', value: 'oldinformation' , show: false},
+        { index: 28, text: 'Public identifier', value: 'id' , show: false}
       ],
       dark:true,
       }
@@ -155,9 +155,12 @@ import {bus} from '../main.js'
       },
 
       /** Function that sends the information of the toggle button to the Table View and deactivates the chosen column */
-      hideHeader(item){
-        item.show = !item.show
-        bus.$emit('hideHeader',item.index)
+      hideHeader(header){
+        let index = this.headers.indexOf(header)
+        this.headers[index].show = !header.show
+        console.log(this.headers[index])
+       this.$store.commit('SET_HEADERS', this.headers)
+        //bus.$emit('hideHeader',item.index)
       },
       testUnlockAll(){
         this.$store.dispatch('unlockAll')

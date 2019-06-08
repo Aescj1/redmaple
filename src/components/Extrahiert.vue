@@ -45,7 +45,7 @@
         </v-flex>
         <v-flex d-flex xs1 sm1 md1 xl1 lg1>
           <v-btn outline color="blue-grey darken-3" large @click="changeworkflow('workflow')">
-            <v-icon light>work</v-icon>
+            <v-icon light>home</v-icon>
           </v-btn>
         </v-flex>
               </v-layout>
@@ -525,7 +525,7 @@ import Papa from 'papaparse'
   //Methods that define the snackbars and notify the user
       positiveNotification(){
         this.snackColor="success"
-        this.snackText="Übertragung erfolgreich"
+        this.snackText="Aktion erfolgreich"
         this.snackbar =true
       },
       negativeNotification(){
@@ -541,6 +541,11 @@ import Papa from 'papaparse'
       //closes the window when cancel get pressed in lauf vorbereiten view
       closePopup(){
         this.$store.dispatch('requestUnlock', this.lockedId)
+        .then(response => {
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification(error)
+        }) 
         this.dialog = false
         this.runFilled = false
       },
@@ -613,15 +618,15 @@ import Papa from 'papaparse'
         this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
         this.$store.dispatch('requestLock', this.lockedId)
-            .catch((error) => {
-              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              this.negativeNotification()
+          .then(response => {
+          this.$store.state.formDialog = true
+          this.neutralNotification()
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification(error)
               this.$store.state.formDialog = false
-          })
-            .then(
-              this.$store.state.formDialog = true,
-              this.neutralNotification()
-            )
+              this.$store.commit('SET_LOCKEDID', [])
+        })     
         
       },
       //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
@@ -629,30 +634,30 @@ import Papa from 'papaparse'
         this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
         this.$store.dispatch('requestLock', this.lockedId)
-            .catch((error) => {
-              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              this.negativeNotification()
+          .then(response => {
+          this.$store.state.deleteDialog = true
+          this.neutralNotification()
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification(error)
               this.$store.state.deleteDialog = false
-          })
-            .then(
-              this.$store.state.deleteDialog = true,
-              this.neutralNotification()
-            )
+              this.$store.commit('SET_LOCKEDID', [])
+        }) 
       },
       //Method to put a selected dataset back to an earlier processstepp. opens the dialog window
       repeat(){
         this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
         this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
         this.$store.dispatch('requestLock', this.lockedId)
-        .catch((error) => {
-          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-          this.negativeNotification()
-          this.$store.state.repeatDialog = false
-      })
-        .then(
-          this.$store.state.repeatDialog = true,
-          this.neutralNotification()
-        )
+          .then(response => {
+            this.$store.state.repeatDialog = true
+            this.neutralNotification()
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+                this.negativeNotification(error)
+                this.$store.state.repeatDialog = false
+                this.$store.commit('SET_LOCKEDID', [])
+          }) 
       },
       //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
       startRun(){
@@ -660,7 +665,15 @@ import Papa from 'papaparse'
           this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
         }
         this.$store.dispatch('requestLock', this.lockedId)
-        this.dialog=true
+            .then(response => {
+            this.dialog = true
+            this.neutralNotification()
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+                this.negativeNotification(error)
+                this.dialog = false
+                this.$store.commit('SET_LOCKEDID', [])
+          }) 
       },
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
       displayLocked(patient){  
@@ -702,16 +715,23 @@ import Papa from 'papaparse'
           this.isorunnr++
           delete this.selected[i].selected
           this.$store.dispatch('putNgs', this.selected[i])
-          .catch((error) => {
+          .then(response => {
+            this.positiveNotification()
+        }, error => {
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-        })
+          this.negativeNotification(error)
+          })
         }
-        this.snackColor="success"
-        this.snackText="Übertragung erfolgreich"
+        this.$store.dispatch('requestUnlock', this.lockedId)
+        .then(response => {
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              this.negativeNotification(error)
+        })
+        this.$store.commit('SET_LOCKEDID', [])
         this.selected = []
         this.$store.state.export = this.selected
         this.dialog = false
-        this.snackbar =true
         this.selected = []
         this.closePopup()
       },
@@ -742,6 +762,11 @@ import Papa from 'papaparse'
               this.selected.push(isolatD)
               this.$store.commit('PUSH_LOCKEDID', isolatD.id)
               this.$store.dispatch('requestLock', lockArray)
+              .then(response => {
+              }, error => {
+                console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+                  this.negativeNotification(error)
+              }) 
             }
          }
           this.runFillerDialog = false

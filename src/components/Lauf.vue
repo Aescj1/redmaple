@@ -40,7 +40,7 @@
         </v-flex>
         <v-flex d-flex xs1 sm1 md1 xl1 lg1>
           <v-btn outline color="blue-grey darken-3" large @click="changeworkflow('workflow')">
-            <v-icon light>work</v-icon>
+            <v-icon light>home</v-icon>
           </v-btn>
         </v-flex>
               </v-layout>
@@ -485,6 +485,7 @@ import {mapState} from 'vuex'
         }
         this.selected = []
         this.$store.state.export = this.selected;
+        this.$store.commit('SET_SELECTEDISOLAT', [])
         this.$router.push('/'+item)
 
       },

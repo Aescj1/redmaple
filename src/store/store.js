@@ -45,6 +45,37 @@ export default new Vuex.Store({
     locks: [],
     accessToken: null,
     users: [],
+    headers: [
+      { index: 0, class:'dataSet', text: 'Bact Nr', sortable: true, value: 'bactnr', show: true},
+      { index: 1, text: 'Alternative ID', value: 'altid', show: false },
+      { index: 2, text: 'Prozessschritt', value: 'processnr', show: true },
+      { index: 3, text: 'priority', value: 'priority' , show: true},
+      { index: 4, text: 'Pathogen', value: 'pathogen' , show: true},
+      { index: 5, class:'dataSet',text: 'Vorname', value: 'firstname' , show: true},
+      { index: 6, class:'dataSet',text: 'Nachname', value: 'lastname' , show: true},
+      { index: 7, text: 'Geburtsdatum', value: 'birthdate', show: true },
+      { index: 8, text: 'Eingang', value: 'entrydate', sortable: false, show: true },
+      { index: 9, text: 'Abnahme', value: 'samplingdate', show: false },
+      { index: 10, text: 'Einsender', value: 'sender', show: true },
+      { index: 11, text: 'Station', value: 'department', show: false },
+      { index: 12, text: 'Bearbeitungsdatum', value: 'processingdate', show: false },
+      { index: 13, text: 'Material', value: 'material', show: true },
+      { index: 14, text: 'NGS-Projekt', value: 'ngsproject', show: true },
+      { index: 15, text: 'Datum DNA-Extraktion', value: 'extractiondate', show: false },
+      { index: 16, text: 'DNA-Konz (ng/ul)', value: 'concentration', show: false },
+      { index: 17, text: 'Visum DNA', value: 'extractionvisum', show: false },
+      { index: 18, text: 'NGS Nummer', value: 'runnr', show: false },
+      { index: 19, text: 'Isolat Run Nummer', value: 'isorunnr', show: false },
+      { index: 20, text: 'Library Typ', value: 'librarytype', show: true },
+      { index: 21, text: 'Datum Library', value: 'librarydate', show: false },
+      { index: 22, text: 'Visum Library', value: 'libraryvisum', show: false },
+      { index: 23, text: 'Datum Sequenzierung', value: 'sequencingdate', show: false },
+      { index: 24, text: 'NGS Gerät', value: 'modality' , show: true},
+      { index: 25, text: 'Visum Sequenzierung', value: 'sequencingvisum' , show: false},
+      { index: 26, text: 'Visum Datenqualität', value: 'dataqualityvisum' , show: false},
+      { index: 27, text: 'Information alte Liste', value: 'oldinformation' , show: false},
+      { index: 28, text: 'Public identifier', value: 'id' , show: false}
+    ],
     formDialog:'',
     selectedIsolat: [],
     deleteDialog:'',
@@ -435,6 +466,10 @@ export default new Vuex.Store({
       state.users = users
       console.log("These are all users")
       console.log(state.users)
+    },
+
+    SET_HEADERS(state, headers){
+      state.headers = headers
     }
   }
 }) 

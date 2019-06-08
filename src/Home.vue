@@ -70,6 +70,21 @@
       <v-container fluid>
         <router-view :key="$route.fullPath"></router-view>
       </v-container>
+              <v-snackbar
+              v-model="snackbar"
+              :color="snackColor"
+              multi-line
+              :timeout="4000"
+            >
+              {{ snackText }}
+              <v-btn
+                dark
+                flat
+                @click="snackbar = false"
+              >
+                Close
+              </v-btn>
+            </v-snackbar>
     </v-content> 
     <v-footer app fixed>
       <span>&copy; 2018 - Universitätsspital Basel NGS Webportal </span>
@@ -88,6 +103,24 @@ import store from './store/store.js'
 
   export default {
   methods:{
+
+          //Methods that define the snackbars and notify the user
+      positiveNotification(){
+        this.snackColor="success"
+        this.snackText="Aktion erfolgreich"
+        this.snackbar =true
+      },
+      negativeNotification(){
+        this.snackColor="error"
+        this.snackText="Der Datensatz wird bereits bearbeitet."
+        this.snackbar=true
+      },
+      neutralNotification(){
+          this.snackColor="warning"
+          this.snackText="Sie können den Datensatz nun bearbeiten"
+          this.snackbar=true
+      },
+
       //var csv is the CSV file with headers
     fileSelection(csv){
       var file = csv.target.files[0];
@@ -98,7 +131,7 @@ import store from './store/store.js'
             this.ngsList = results.data
             this.dialog = true
           }
-      });
+      })
     },
     importDataset(){
       for(var i=0; i<this.ngsList.length;i++){
@@ -164,6 +197,9 @@ import store from './store/store.js'
       isDark:false,
       drawer: false,
       state: 0,
+      snackText:'',
+      snackColor:'',
+      snackbar:false,
     }),
     props: {
       source: String
@@ -193,11 +229,20 @@ import store from './store/store.js'
        
       bus.$on('drawerReset', (data) =>{
         this.drawer = data;
-      });
+      })
 
       bus.$on('changeTheme', (data) =>{
         this.isDark = data;
-      });
+      })
+
+      bus.$on('positiveNotification', (data) =>{
+        console.log("home view")
+        this.positiveNotification()
+      })
+
+      bus.$on('negativeNotification', (error) =>{
+        this.negativeNotification()
+      })
     }
   }
 </script>
