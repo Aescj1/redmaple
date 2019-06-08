@@ -237,27 +237,54 @@ export default {
         },
       //Method that to repeat a ngs sequencing process. puts the wiederholen property to +1
       submitSequenced(){
+        console.log("sequenced")
+        if(this.isolat.length > 0){
+          console.log("list")
           let list =this.isolat
-        for(var i= 0; i<list.length; i++){
-            list[i].processnr = 2
-            var int = list[i].repetition
-            int++
-            list[i].repetition = int
-            delete list[i].runtype
-            delete list[i].librarytype
-            delete list[i].librarydate
-            delete list[i].libraryvisum
-            delete list[i].sequencingdate
-            delete list[i].runnr
-            delete list[i].isorunnr
-            delete list[i].modality
-            delete list[i].sequencingvisum
-            delete list[i].dataqualityvisum
-                this.$store.dispatch('putNgs', list[i] )
-          .catch((error) => {
-          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-            })  
+          for(var i= 0; i<list.length; i++){
+              list[i].processnr = 2
+              var nr = list[i].repetition
+              nr++
+              list[i].repetition = nr
+              delete list[i].runtype
+              delete list[i].librarytype
+              delete list[i].librarydate
+              delete list[i].libraryvisum
+              delete list[i].sequencingdate
+              delete list[i].runnr
+              delete list[i].isorunnr
+              delete list[i].modality
+              delete list[i].sequencingvisum
+              delete list[i].dataqualityvisum
+              this.$store.dispatch('putNgs', list[i] )
+              .catch((error) => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              })  
+          }
+
+        }else{
+          console.log("object")
+          let obj = this.isolat
+          obj.processnr = 2
+          var nr = obj.repetition
+          nr++
+          obj.repetition = nr
+          delete obj.runtype
+          delete obj.librarytype
+          delete obj.librarydate
+          delete obj.libraryvisum
+          delete obj.sequencingdate
+          delete obj.runnr
+          delete obj.isorunnr
+          delete obj.modality
+          delete obj.sequencingvisum
+          delete obj.dataqualityvisum
+          this.$store.dispatch('putNgs', obj )
+              .catch((error) => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          }) 
         }
+      
         this.$store.dispatch('requestUnlock', this.lockedId)
         this.$store.state.repeatDialog = false
         },

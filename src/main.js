@@ -10,7 +10,7 @@ import SocketIO from 'socket.io-client';
 import VueSocketIO from 'vue-socket.io'
 
 Vue.use(new VueSocketIO({
-debug: true,
+debug: false,
     connection: SocketIO('http://147.87.118.201:3000'), //Change to localhost for development
     //'http://147.87.118.201:3000'
     //'http://127.0.0.1:3000'

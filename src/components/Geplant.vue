@@ -136,12 +136,12 @@
             </v-container>
             <!--Buttons for that are being used to edit the data -->
             <div class="text-xs-right">
-            <v-btn v-if="currentDataset1.bactnr != ''" @click="this.editDataset">Bearbeiten</v-btn>
+            <v-btn v-if="currentDataset1.bactnr != null" @click="this.editDataset">Bearbeiten</v-btn>
               <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
                 <NgsFormular></NgsFormular>
               </v-dialog>
 
-            <v-btn v-if="currentDataset1.bactnr != ''" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
+            <v-btn v-if="currentDataset1.bactnr != null" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
@@ -296,7 +296,7 @@ import DeleteWindow from './DeleteWindow.vue'
       ],
       patientList:[],
       currentDataset1: {
-        bactnr: "",
+        bactnr: null,
         processnr: 1,
         received: true,
         firstname: "",
@@ -320,7 +320,7 @@ import DeleteWindow from './DeleteWindow.vue'
       },
     }),
     mounted(){
-      this.$store.dispatch('validateAccessToken')
+      this.$store.dispatch('getCurrentUser')
       .catch((error) => {
         console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
       })
@@ -391,6 +391,7 @@ import DeleteWindow from './DeleteWindow.vue'
         }
         this.selected = []
         this.$store.state.export = this.selected;   // HIER überprüfen
+        this.$store.commit('SET_SELECTEDISOLAT', [])
         this.$router.push('/'+item)
 
       },
@@ -523,9 +524,9 @@ import DeleteWindow from './DeleteWindow.vue'
  extrahieren(){
         var myDate = new Date();
         var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
-        var date = ('0' + myDate.getDate()).slice(-2);
+        var day = ('0' + myDate.getDate()).slice(-2);
         var year = myDate.getFullYear();
-        var formattedDate = year + '-' + month + '-' + date;
+        var formattedDate = year + '-' + month + '-' + day;
         for(var i=0; i<this.selected.length;i++){
           this.selected[i].concentration = ''
           this.selected[i].extractiondate = formattedDate
@@ -547,6 +548,7 @@ import DeleteWindow from './DeleteWindow.vue'
       setSorted(item){
         this.sorted = item
         this.currentDataset1 = {}
+        setCurrentData([])
       },
 //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
       editDataset(){

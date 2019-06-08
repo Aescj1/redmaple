@@ -145,7 +145,7 @@ export default new Vuex.Store({
         .get(REST_BASE_URL + 'ngs?access_token=' + this.state.accessToken)
         .then((response) => {
             context.commit('SET_NGS', response)
-            Vue.set(this.$store.state, ngs, [])
+            //Vue.set(this.$store.state, ngs, [])
 
         }).catch((err) => {
           let error = parseError(err)
@@ -280,7 +280,6 @@ export default new Vuex.Store({
     },
 
     requestUnlock(context, idArray){
-      console.log("unlock Requested")
       return axios
       .post(REST_BASE_URL + 'ngs/unlockRequest?access_token=' + this.state.accessToken, idArray)
       .then((response) => {

@@ -302,7 +302,7 @@
           </v-card-text>
           <!-- div that contains the buttons to delete or repeate a sequencing (sets the data back to extrahiert (processNr 2),  gets display when the filter is NOT set to runNr)----------->
             <div class="text-xs-right">
-              <v-btn v-if="currentDataset1.bactnr != '' && sorted.title != 'Lauf Nummer'" @click="editDataset(currentDataset1)">Bearbeiten</v-btn>
+              <v-btn v-if="currentDataset1.bactnr != null && sorted.title != 'Lauf Nummer'" @click="editDataset(currentDataset1)">Bearbeiten</v-btn>
               <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
                 <NgsFormular></NgsFormular>
               </v-dialog>
@@ -311,7 +311,7 @@
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
-              <v-btn v-if="currentDataset1.bactnr != '' && sorted.title != 'Lauf Nummer'" color="orange lighten-1" @click="repeat(currentDataset1)">Wiederholen</v-btn>
+              <v-btn v-if="currentDataset1.bactnr != null && sorted.title != 'Lauf Nummer'" color="orange lighten-1" @click="repeat(currentDataset1)">Wiederholen</v-btn>
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog> 
@@ -434,7 +434,7 @@ import RepeatWindow from './RepeatWindow.vue'
       ],
       patientList:[],
       currentDataset1: {
-        bactnr: "",
+        bactnr: null,
         processnr: 4,
         received: true,
         firstname: "",
@@ -723,6 +723,7 @@ import RepeatWindow from './RepeatWindow.vue'
         this.sorted = item
         this.selected =[]
         this.currentDataset1 = {}
+        this.setCurrentData([])
       },
       //Method that sets the filter for the innerSorted Property (Card where the Dataset gets displayed)
       setInnerSorted(item){

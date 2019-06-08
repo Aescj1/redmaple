@@ -126,16 +126,16 @@
             </v-container>
             <!--Buttons for that are being used to edit the data -->
            <div class="text-xs-right">
-            <v-btn v-if="currentDataset1.bactnr != ''" @click="this.editDataset">Bearbeiten</v-btn>
+            <v-btn v-if="currentDataset1.bactnr != null" @click="this.editDataset">Bearbeiten</v-btn>
               <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
                 <NgsFormular></NgsFormular>
               </v-dialog>
 
-            <v-btn v-if="currentDataset1.bactnr != ''" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
+            <v-btn v-if="currentDataset1.bactnr != null" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog> 
-            <v-btn v-if="currentDataset1.bactnr != ''" color="orange lighten-1" @click="this.repeat">Verschieben nach Geplant</v-btn>
+            <v-btn v-if="currentDataset1.bactnr != null" color="orange lighten-1" @click="this.repeat">Verschieben nach Geplant</v-btn>
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog> 
@@ -427,7 +427,7 @@ import Papa from 'papaparse'
       ],
       patientList:[],
       currentDataset1: {
-        bactnr: "",
+        bactnr: null,
         processnr: 2,
         received: true,
         firstname: "",
@@ -523,6 +523,7 @@ import Papa from 'papaparse'
         }
         this.selected = []
         this.$store.state.export = this.selected;
+        this.$store.commit('SET_SELECTEDISOLAT', [])
         this.$router.push('/'+item)
 
       },
@@ -683,9 +684,9 @@ import Papa from 'papaparse'
           this.downloadCSV()
           var myDate = new Date();
           var month = ('0' + (myDate.getMonth() + 1)).slice(-2);
-          var date = ('0' + myDate.getDate()).slice(-2);
+          var day = ('0' + myDate.getDate()).slice(-2);
           var year = myDate.getFullYear();
-          var formattedDate = year + '-' + month + '-' + date;
+          var formattedDate = year + '-' + month + '-' + day;
 
         for(var i=0; i<this.selected.length;i++){
           this.selected[i].processnr = 3
@@ -700,8 +701,10 @@ import Papa from 'papaparse'
           this.isorunnr++
           delete this.selected[i].selected
           this.$store.dispatch('putNgs', this.selected[i])
+          .catch((error) => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+        })
         }
-        this.$store.dispatch('requestUnlock', this.lockedId)
         this.snackColor="success"
         this.snackText="Übertragung erfolgreich"
         this.selected = []
@@ -738,13 +741,13 @@ import Papa from 'papaparse'
               this.selected.push(isolatD)
               this.$store.commit('PUSH_LOCKEDID', isolatD.id)
               this.$store.dispatch('requestLock', lockArray)
-
             }
          }
           this.runFillerDialog = false
         }else{
           this.runFillerDialog = false
         } 
+        this.runFilled = true
       },
       //method for the sorting algorithm, sets the item.
       setSorted(item){

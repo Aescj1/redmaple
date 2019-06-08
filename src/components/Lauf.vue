@@ -344,7 +344,7 @@ import {mapState} from 'vuex'
       ],
       patientList:[],
       currentDataset1: {
-        bactnr: "",
+        bactnr: null,
         processnr: 2,
         received: true,
         firstname: "",
