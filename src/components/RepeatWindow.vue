@@ -253,7 +253,6 @@ export default {
             delete list[i].modality
             delete list[i].sequencingvisum
             delete list[i].dataqualityvisum
-            delete list[i].id
                 this.$store.dispatch('putNgs', list[i] )
           .catch((error) => {
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)

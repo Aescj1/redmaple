@@ -439,26 +439,3 @@ export default new Vuex.Store({
     }
   }
 }) 
-
-
-
-
-
-
-
-
-
-
-
-
-//This can be used but the store import in the main.js has to be altered to {store}
-/*
-export const store = new Vuex.Store({
-    state:{
-        ngs:[]
-           
-    },
-    setters:{
-    }
-})
-*/

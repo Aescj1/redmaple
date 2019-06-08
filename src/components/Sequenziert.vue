@@ -670,9 +670,20 @@ import RepeatWindow from './RepeatWindow.vue'
          //   )
       },
       repeat(isolat){
-        this.$store.commit('SET_SELECTEDISOLAT', isolat)
+       for(var i=0; i<this.selected.length;i++){
+         this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
+        }
+        this.$store.dispatch('requestLock', this.lockedId)
+          .catch((error) => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            this.negativeNotification()
+        this.$store.state.repeatDialog = false
+          })
+          .then(
+            this.$store.commit('SET_SELECTEDISOLAT', isolat),
+            this.neutralNotification(),
         this.$store.state.repeatDialog = true,
-        this.neutralNotification()
+          )
       },
       //Methods that define the snackbars and notify the user
           positiveNotification(){
