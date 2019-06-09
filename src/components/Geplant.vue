@@ -505,7 +505,6 @@ import DeleteWindow from './DeleteWindow.vue'
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
               this.negativeNotification(error)
               this.$store.state.deleteDialog = false
-              this.$store.commit('SET_LOCKEDID', [])
         })   
       },
       //functio
@@ -533,7 +532,6 @@ import DeleteWindow from './DeleteWindow.vue'
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
               this.negativeNotification(error)
               this.dialog = false
-              this.$store.commit('SET_LOCKEDID', [])
         })   
         
       },
@@ -563,7 +561,6 @@ import DeleteWindow from './DeleteWindow.vue'
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
               this.negativeNotification(error)
         })   
-        this.$store.commit('SET_LOCKEDID', [])
         this.selected = []
         this.$store.state.export = this.selected
         this.dialog = false
@@ -586,7 +583,6 @@ import DeleteWindow from './DeleteWindow.vue'
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
               this.negativeNotification(error)
               this.$store.state.formDialog = false
-              this.$store.commit('SET_LOCKEDID', [])
         })       
       }
     }

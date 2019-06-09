@@ -110,9 +110,9 @@ import store from './store/store.js'
         this.snackText="Aktion erfolgreich"
         this.snackbar =true
       },
-      negativeNotification(){
+      negativeNotification(error){
         this.snackColor="error"
-        this.snackText="Der Datensatz wird bereits bearbeitet."
+        this.snackText= error.statusCode + ": " + error.statusMessage
         this.snackbar=true
       },
       neutralNotification(){
@@ -120,7 +120,6 @@ import store from './store/store.js'
           this.snackText="Sie können den Datensatz nun bearbeiten"
           this.snackbar=true
       },
-
       //var csv is the CSV file with headers
     fileSelection(csv){
       var file = csv.target.files[0];
@@ -236,12 +235,15 @@ import store from './store/store.js'
       })
 
       bus.$on('positiveNotification', (data) =>{
-        console.log("home view")
         this.positiveNotification()
       })
 
+      bus.$on('neutralNotification', (data) =>{
+        this.neutralNotification()
+      })
+
       bus.$on('negativeNotification', (error) =>{
-        this.negativeNotification()
+        this.negativeNotification(error)
       })
     }
   }

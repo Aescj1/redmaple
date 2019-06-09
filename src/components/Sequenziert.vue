@@ -92,6 +92,7 @@
                   @click.native="setCurrentInnerData(item)"
                   >
                   <div slot="header">
+                    <v-icon v-if="singleDisplayLocked(item)">lock</v-icon>
                     <span class="spacer"><b>NGS-Projekt:</b>{{item.ngsproject}}</span>
                     <span class="spacer"><b> Run Nr.:</b> {{item.runnr}}</span>
                     <span class="spacer"><b> NGS-Nr:</b> {{item.isorunnr}}</span>
@@ -152,7 +153,8 @@
                           </v-layout>
                           <div class="text-xs-right">
                             <v-btn @click="editDataset(item)">Bearbeiten</v-btn>
-                            <v-btn color="orange lighten-1" @click="repeat(item)">Wiederholen</v-btn>
+                            <v-btn color="orange lighten-1" @click="repeatDataset(item)">Wiederholen</v-btn>
+                            <v-btn v-if="currentDataset1.bactnr != null" color="red lighten-1" @click="deleteStep1()">löschen</v-btn>
                           </div>
                         </v-card-text>
                       </v-card>
@@ -179,7 +181,7 @@
                       :key="index"
                       @click="setInnerSorted(item)"
                     >
-                      <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                      <v-list-tile-title :class="{'is-active': index == innerActiveIndex, 'is-locked': displayLocked(item)}">{{ item.title }}</v-list-tile-title>
                     </v-list-tile>
                   </v-list>
                 </v-menu>
@@ -190,7 +192,7 @@
                     <v-list-tile
                       :key="patient.index"
                       @click="setCurrentInnerData(patient,index)"
-                      :class="{'is-active': index == innerActiveIndex, 'is-locked': displayLocked(patient)}"
+                      :class="{'is-active': index == innerActiveIndex, 'is-locked': singleDisplayLocked(patient)}"
                     >
                       <v-list-tile-content>
                         <v-list-tile-title>{{patient.priority}} | {{patient.bactnr}}</v-list-tile-title>
@@ -311,21 +313,31 @@
             </v-container>
           
           </v-card-text>
-          <!-- div that contains the buttons to delete or repeate a sequencing (sets the data back to extrahiert (processNr 2),  gets display when the filter is NOT set to runNr)----------->
-            <div class="text-xs-right">
+          <!-- div that contains the buttons to delete or repeate a sequencing s display when the filter ist set to PROJECT NGS----------->
+            <div class="text-xs-right" v-if="sorted.value == 'ngsproject'">
               <v-btn v-if="currentDataset1.bactnr != null && sorted.title != 'Lauf Nummer'" @click="editDataset(currentDataset1)">Bearbeiten</v-btn>
               <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
                 <NgsFormular></NgsFormular>
               </v-dialog>
 
-            <v-btn v-if="this.selected.length>0 && sorted.title != 'Lauf Nummer'" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
+            <v-btn v-if="currentDataset1.bactnr != null && sorted.title != 'Lauf Nummer'" color="red lighten-1" @click="deleteStep1()">löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
-              <v-btn v-if="currentDataset1.bactnr != null && sorted.title != 'Lauf Nummer'" color="orange lighten-1" @click="repeat(currentDataset1)">Wiederholen</v-btn>
+              <v-btn v-if="currentDataset1.bactnr != null && sorted.title != 'Lauf Nummer'" color="orange lighten-1" @click="repeatDataset(currentDataset1)">Wiederholen</v-btn>
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog> 
+          </div>
+          <!-- div that contains the buttons to delete or repeate a sequencing (sets the data back to extrahiert (processNr 2),  gets display when the filter is NOT set to runNr)----------->
+            <div class="text-xs-right" v-if="sorted.title != 'Lauf Nummer' && sorted.value != 'ngsproject'">
+              <v-btn v-if="currentDataset1.bactnr != null" @click="editDataset(currentDataset1)">Bearbeiten</v-btn>
+
+            <v-btn v-if="currentDataset1.bactnr != null" color="red lighten-1" @click="deleteStep1()">löschen</v-btn>
+              <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
+                <DeleteWindow></DeleteWindow>
+              </v-dialog>
+              <v-btn v-if="currentDataset1.bactnr != null" color="orange lighten-1" @click="repeatDataset(currentDataset1)">Wiederholen</v-btn>
           </div>
         </v-card>
 
@@ -371,11 +383,14 @@
             </v-snackbar>
                       <!-- div that contains the buttons to delete or repeate a sequencing (sets the data back to extrahiert (processNr 2))----------->
             <div class="text-xs-right">
-            <v-btn v-if="this.selected.length>0" color="red lighten-1" @click="this.deleteStep1">Alle löschen</v-btn>
+              <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
+                <NgsFormular></NgsFormular>
+              </v-dialog>
+            <v-btn v-if="this.selected.length>0" color="red lighten-1" @click="deleteStep1()">Alle löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
-              <v-btn v-if="this.selected.length>0" color="orange lighten-1" @click="repeat(selected)">Alle Wiederholen</v-btn>
+              <v-btn v-if="this.selected.length>0" color="orange lighten-1" @click="repeatGroup(selected)">Alle Wiederholen</v-btn>
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog>   
@@ -385,11 +400,12 @@
 <script>
 
 /* eslint-disable */ 
-import _ from 'lodash';
+import _ from 'lodash'
 import {mapState} from 'vuex'
 import NgsFormular from './NgsFormular.vue'
 import DeleteWindow from './DeleteWindow.vue'
 import RepeatWindow from './RepeatWindow.vue'
+import {bus} from '../main.js'
 
   export default {
     components: {
@@ -648,72 +664,66 @@ import RepeatWindow from './RepeatWindow.vue'
         this.selected=[]
         this.selected.push(patient)
       },
+  
       //Method that allows to edit the selected Isolat dataset. locks the dataset and opens the ngsformular component
-      editDataset(isolat){
-              for(var i=0; i<this.selected.length;i++){
-         this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
-        }
+      editDataset(dataset){
+        this.$store.commit('PUSH_LOCKEDID', dataset.id)
         this.$store.dispatch('requestLock', this.lockedId)
-          .catch((error) => {
-            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-            this.negativeNotification()
-            this.$store.state.formDialog = false
-          })
-          .then(
-            this.$store.commit('SET_SELECTEDISOLAT', isolat),
-            this.neutralNotification(),
-            this.$store.state.formDialog = true,
-          )
+          .then(response => {
+          this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
+          bus.$emit('neutralNotification', true)
+          this.$store.state.formDialog = true
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          bus.$emit('negativeNotification', error)
+          this.$store.state.formDialog = false
+        })
       },
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
 
        //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
       deleteStep1(){
-       /*   this.lockedId.push(this.selectedIsolat.id)
-          console.log(this.lockedId)
-          this.$store.dispatch('requestLock', this.lockedId)
-            .catch((error) => {
-              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              this.negativeNotification()
-              this.$store.state.deleteDialog = false
-          })
-            .then( */
-              this.$store.state.deleteDialog = true,
-              this.neutralNotification()
-         //   )
+        this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
+        this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
+        this.$store.dispatch('requestLock', this.lockedId)
+          .then(response => {
+          this.$store.state.deleteDialog = true
+          bus.$emit('neutralNotification', true)
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          bus.$emit('negativeNotification', error)
+          this.$store.state.deleteDialog = false
+        }) 
       },
-      repeat(isolat){
+      repeatDataset(dataset){
+        this.$store.commit('PUSH_LOCKEDID', dataset.id)
+        this.$store.dispatch('requestLock', this.lockedId)
+          .then(response => {
+          this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
+          bus.$emit('neutralNotification', true)
+          this.$store.state.repeatDialog = true
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          bus.$emit('negativeNotification', error)
+          this.$store.state.repeatDialog = false
+        })
+      },
+
+      repeatGroup(){
        for(var i=0; i<this.selected.length;i++){
          this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
         }
+        this.$store.commit('SET_SELECTEDISOLAT', this.selected)
         this.$store.dispatch('requestLock', this.lockedId)
-          .catch((error) => {
-            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-            this.negativeNotification()
-        this.$store.state.repeatDialog = false
-          })
-          .then(
-            this.$store.commit('SET_SELECTEDISOLAT', isolat),
-            this.neutralNotification(),
-        this.$store.state.repeatDialog = true,
-          )
+          .then(response => {
+          bus.$emit('neutralNotification', true)
+          this.$store.state.repeatDialog = true
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          bus.$emit('negativeNotification', error)
+          this.$store.state.repeatDialog = false
+        })
       },
-      //Methods that define the snackbars and notify the user
-          positiveNotification(){
-            this.snackColor="success"
-            this.snackText="Übertragung erfolgreich"
-            this.snackbar =true
-          },
-          negativeNotification(){
-            this.snackColor="error"
-            this.snackText="Der Datensatz wird bereits bearbeitet."
-            this.snackbar=true
-          },
-          neutralNotification(){
-              this.snackColor="warning"
-              this.snackText="Sie können den Datensatz nun bearbeiten"
-              this.snackbar=true
-          },
 
       //Method that is being used for the checkboxes. It adds or removes the datasets to a list, which is used for handling the data that need to be send 
       //to the next processstep. The if checks what the outersorting is, if it is ngs projekt it will check the checkboxes of the dataset inside a NGS Project on selection.
@@ -745,10 +755,18 @@ import RepeatWindow from './RepeatWindow.vue'
       },
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
       displayLocked(patient){  
-        if(this.sorted.value == 'runnr'){
-          if(this.lockedList.includes(patient[0].id)) return true  
-        }else if(this.lockedList.includes(patient.id)) return true  
+        if(this.sorted.value == 'runnr' || this.sorted.value == 'ngsproject'){
+          for(var i = 0; i < patient.length; i++){
+            if(this.lockedList.includes(patient[i].id)) return true  
+          }
+        }else{ 
+          singleDisplayLocked(patient)  
+        }
       },
+      //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
+      singleDisplayLocked(patient){  
+        if(this.lockedList.includes(patient.id)) return true  
+      }
     }
   }
 </script>

@@ -528,9 +528,9 @@ import Papa from 'papaparse'
         this.snackText="Aktion erfolgreich"
         this.snackbar =true
       },
-      negativeNotification(){
+      negativeNotification(error){
         this.snackColor="error"
-        this.snackText="Der Datensatz wird bereits bearbeitet."
+        this.snackText= error.statusCode + ": " + error.statusMessage
         this.snackbar=true
       },
       neutralNotification(){
@@ -623,9 +623,8 @@ import Papa from 'papaparse'
           this.neutralNotification()
         }, error => {
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              this.negativeNotification(error)
-              this.$store.state.formDialog = false
-              this.$store.commit('SET_LOCKEDID', [])
+          this.negativeNotification(error)
+          this.$store.state.formDialog = false
         })     
         
       },
@@ -639,9 +638,8 @@ import Papa from 'papaparse'
           this.neutralNotification()
         }, error => {
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              this.negativeNotification(error)
-              this.$store.state.deleteDialog = false
-              this.$store.commit('SET_LOCKEDID', [])
+          this.negativeNotification(error)
+          this.$store.state.deleteDialog = false
         }) 
       },
       //Method to put a selected dataset back to an earlier processstepp. opens the dialog window
@@ -654,9 +652,8 @@ import Papa from 'papaparse'
             this.neutralNotification()
           }, error => {
             console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-                this.negativeNotification(error)
-                this.$store.state.repeatDialog = false
-                this.$store.commit('SET_LOCKEDID', [])
+            this.negativeNotification(error)
+            this.$store.state.repeatDialog = false
           }) 
       },
       //Adds additionals information to the dataset, so that it is ready to be sent to the next processstep
@@ -670,9 +667,8 @@ import Papa from 'papaparse'
             this.neutralNotification()
           }, error => {
             console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-                this.negativeNotification(error)
-                this.dialog = false
-                this.$store.commit('SET_LOCKEDID', [])
+            this.negativeNotification(error)
+            this.dialog = false
           }) 
       },
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
@@ -728,12 +724,11 @@ import Papa from 'papaparse'
           console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
               this.negativeNotification(error)
         })
-        this.$store.commit('SET_LOCKEDID', [])
         this.selected = []
         this.$store.state.export = this.selected
         this.dialog = false
         this.selected = []
-        this.closePopup()
+        this.runFilled = false
       },
       //Method that closes the runFiller Dialog Window when user decides to either cancel or press "No". 
       closeRunFillerDialog(decision){

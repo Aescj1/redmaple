@@ -66,7 +66,7 @@
             </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-              <v-btn @click="this.cancel" flat >Abbrechen</v-btn>
+              <v-btn @click="cancel()" flat >Abbrechen</v-btn>
                 <v-dialog
                   v-if="this.dialog==true"
                   v-model="this.dialog"
@@ -112,7 +112,7 @@
 
 <script>
 import {mapState} from 'vuex'
-import {bus} from '../main.js';
+import {bus} from '../main.js'
 
 export default {
       data:() =>({
@@ -201,22 +201,25 @@ export default {
         //Method that deletes the isolatdataset
         deletefinal(){
         this.$store.dispatch('deleteNgs', this.selectedIsolat.id)
-        .then(response => {
-          bus.$emit('positiveNotification', true)
-        }, error => {
-          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-          bus.$emit('negativeNotification', error)
+          .then(response => {
+            bus.$emit('positiveNotification', true)
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            bus.$emit('negativeNotification', error)
           })
-        
-        this.$store.commit('SET_LOCKEDID', [])
         this.dialog = false
         this.$store.state.deleteDialog = false
         },
+
         //Method that closes the Popup Form to edit the current Isolat and unlocks it again.
         cancel(){
         this.$store.dispatch('requestUnlock', this.lockedId)
+          .then(response => {
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            bus.$emit('negativeNotification', error)
+          })
         this.dialog = false
-
         this.$store.state.deleteDialog = false
         }
     },

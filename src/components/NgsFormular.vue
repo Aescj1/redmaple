@@ -172,6 +172,7 @@
 
 <script>
 import {mapState} from 'vuex'
+import {bus} from '../main.js'
 
 export default {
       data:() =>({
@@ -253,18 +254,29 @@ export default {
       //Method that submits the changes made to the isolat, submits it to the database and unlocks the isolatdataset again.
       submit(){
         this.$store.dispatch('putNgs', this.isolat)
+        .then(response => {
+              bus.$emit('positiveNotification', true)
+          }, error => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              bus.$emit('negativeNotification', error)
+          })
         this.lockedId.idArray.push(this.selectedIsolat.id)
         this.$store.state.formDialog = false
         this.$store.dispatch('requestUnlock', this.lockedId)
-        .catch((error) => {
-        if(error != ""){
-          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-        }
-        })
+        .then(response => {
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            bus.$emit('negativeNotification', error)
+          })
         },
         //Method that closes the Popup Form to edit the current Isolat and unlocks it again.
         cancel(){
           this.$store.dispatch('requestUnlock', this.lockedId)
+          .then(response => {
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            bus.$emit('negativeNotification', error)
+          })
             this.$store.state.formDialog = false
         },
     },

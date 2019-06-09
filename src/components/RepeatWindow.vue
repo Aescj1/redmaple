@@ -151,6 +151,8 @@
 
 <script>
 import {mapState} from 'vuex'
+import {bus} from '../main.js'
+
 
 export default {
       data:() =>({
@@ -224,16 +226,26 @@ export default {
       },
       //Method that submits the changes made to the isolat, submits it to the database and unlocks the isolatdataset again.
       submitExtracted(){
+        console.log(this.$store.state.accessToken)
         this.isolat.processnr = 1
         delete this.isolat.concentration
         delete this.isolat.extractiondate
         delete this.isolat.extractionvisum
         this.$store.dispatch('putNgs', this.isolat )
-          .catch((error) => {
-          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-            })  
+          .then(response => {
+              bus.$emit('positiveNotification', true)
+          }, error => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              bus.$emit('negativeNotification', error)
+            }) 
         this.$store.dispatch('requestUnlock', this.lockedId)
+        .then(response => {
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            bus.$emit('negativeNotification', error)
+          })
         this.$store.state.repeatDialog = false
+        console.log(this.$store.state.accessToken)
         },
       //Method that to repeat a ngs sequencing process. puts the wiederholen property to +1
       submitSequenced(){
@@ -257,9 +269,12 @@ export default {
               delete list[i].sequencingvisum
               delete list[i].dataqualityvisum
               this.$store.dispatch('putNgs', list[i] )
-              .catch((error) => {
-              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-              })  
+                  .then(response => {
+                  bus.$emit('positiveNotification', true)
+              }, error => {
+                  console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+                  bus.$emit('negativeNotification', error)
+              })
           }
 
         }else{
@@ -280,17 +295,30 @@ export default {
           delete obj.sequencingvisum
           delete obj.dataqualityvisum
           this.$store.dispatch('putNgs', obj )
-              .catch((error) => {
+            .then(response => {
+              bus.$emit('positiveNotification', true)
+          }, error => {
               console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-          }) 
-        }
+              bus.$emit('negativeNotification', error)
+            })
+          }
       
         this.$store.dispatch('requestUnlock', this.lockedId)
+        .then(response => {
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            bus.$emit('negativeNotification', error)
+          })
         this.$store.state.repeatDialog = false
         },
         //Method that closes the Popup Form to edit the current Isolat and unlocks it again.
         cancel(){
         this.$store.dispatch('requestUnlock', this.lockedId)
+        .then(response => {
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            bus.$emit('negativeNotification', error)
+          })
         this.$store.state.repeatDialog = false
         },
     },

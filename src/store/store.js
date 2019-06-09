@@ -176,7 +176,7 @@ export default new Vuex.Store({
         .get(REST_BASE_URL + 'ngs?access_token=' + this.state.accessToken)
         .then((response) => {
             context.commit('SET_NGS', response)
-            //Vue.set(this.$store.state, ngs, [])
+            //Vue.set(context.state, ngs, [])
 
         }).catch((err) => {
           let error = parseError(err)
@@ -214,8 +214,9 @@ export default new Vuex.Store({
       return axios
       .delete(REST_BASE_URL + 'ngs/' + id + '?access_token=' + this.state.accessToken)
       .then((response) => {
-
+        context.commit('SET_LOCKEDID', [])
       }).catch((err) => {
+        context.commit('SET_LOCKEDID', [])
         let error = parseError(err)
         throw error
       })
@@ -305,17 +306,20 @@ export default new Vuex.Store({
       .post(REST_BASE_URL + 'ngs/lockRequest?access_token=' + this.state.accessToken, idArray)
       .then((response) => {
       }).catch((err) => {
+        context.commit('SET_LOCKEDID', [])
         let error = parseError(err)
         throw error
       })
     },
 
     requestUnlock(context, idArray){
+      console.log("requesting for unlock...")
       return axios
       .post(REST_BASE_URL + 'ngs/unlockRequest?access_token=' + this.state.accessToken, idArray)
       .then((response) => {
         context.commit('SET_LOCKEDID', [])
       }).catch((err) => {
+        context.commit('SET_LOCKEDID', [])
         let error = parseError(err)
         throw error
       })
@@ -416,9 +420,6 @@ export default new Vuex.Store({
 
     SET_PATHOGEN (state, response){
       state.pathogen = response.data
-      console.log("This is the current pathogen array:")
-      console.log(state.pathogen)
-
     },
 
     PUSH_PATHOGEN (state, response){
@@ -436,14 +437,10 @@ export default new Vuex.Store({
 
     SET_LOCKEDID(state, lockedId){
       state.lockedId.idArray = lockedId
-      console.log("THIS IS SHOULD BE 0")
-      console.log(state.lockedId.idArray)
     },
 
     PUSH_LOCKEDID(state, lockedId){
       state.lockedId.idArray.push(lockedId)
-      console.log("THIS IS THE LOCK")
-      console.log(state.lockedId.idArray)
     },
 
     KICK(){
@@ -459,13 +456,10 @@ export default new Vuex.Store({
 
     SET_CURRENT_USER(state, currentUser){
       state.currentUser = currentUser
-      console.log(state.currentUser)
     },
 
     SET_USERS(state, users){
       state.users = users
-      console.log("These are all users")
-      console.log(state.users)
     },
 
     SET_HEADERS(state, headers){

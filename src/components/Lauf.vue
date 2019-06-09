@@ -307,6 +307,7 @@
 /* eslint-disable */
 import _ from 'lodash';
 import {mapState} from 'vuex'
+import {bus} from '../main.js'
 
 
   export default {
@@ -462,22 +463,7 @@ import {mapState} from 'vuex'
       },
     },
     methods:{
-        //Methods that define the snackbars and notify the user
-      positiveNotification(){
-        this.snackColor="success"
-        this.snackText="Übertragung erfolgreich"
-        this.snackbar =true
-      },
-      negativeNotification(){
-        this.snackColor="error"
-        this.snackText="Der Datensatz wird bereits bearbeitet."
-        this.snackbar=true
-      },
-      neutralNotification(){
-          this.snackColor="warning"
-          this.snackText="Sie können den Datensatz nun bearbeiten"
-          this.snackbar=true
-      },
+
       //Method that changes the view/ component
       changeworkflow(item){
         for(var i=0; i<this.selected.length;i++){
@@ -537,31 +523,38 @@ import {mapState} from 'vuex'
          this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
         }
         this.$store.dispatch('requestLock', this.lockedId)
-          .catch((error) => {
-            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-            this.negativeNotification()
-            this.dialog = false
-          })
-          .then(
-            this.dialog = true,
-            this.neutralNotification()
-          )
-        this.dialog=true
+          .then(response => {
+          this.dialog = true
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          bus.$emit('negativeNotification', error)
+          this.dialog = false
+        })  
         this.currentDataset1.runnr = this.selected[0].runnr
       },
       //sends a dataset to the next processstep (Lauf) and opens a popup 
- sendRun(){
+      sendRun(){
         for(var i=0; i<this.selected.length;i++){
           this.selected[i].processnr = 4
           this.selected[i].sequencingvisum = this.currentUser
           this.selected[i].dataqualityvisum="User"
           this.$store.dispatch('putNgs', this.selected[i])
+          .then(response => {
+              bus.$emit('positiveNotification', true)
+          }, error => {
+              console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+              bus.$emit('negativeNotification', error)
+            })
         }
         this.$store.dispatch('requestUnlock', this.lockedId)
+        .then(response => {
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          bus.$emit('negativeNotification', error)
+        })  
         this.selected = []
         this.$store.state.export = this.selected
         this.dialog = false
-        this.positiveNotification()
 
       },
       setSorted(item){
@@ -571,6 +564,11 @@ import {mapState} from 'vuex'
        //closes the window when cancel get pressed in lauf vorbereiten view
       closePopup(){
         this.$store.dispatch('requestUnlock', this.lockedId)
+        .then(response => {
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          bus.$emit('negativeNotification', error)
+        }) 
         this.dialog = false
         this.runFilled = false
       },
