@@ -154,7 +154,7 @@
                           <div class="text-xs-right">
                             <v-btn @click="editDataset(item)">Bearbeiten</v-btn>
                             <v-btn color="orange lighten-1" @click="repeatDataset(item)">Wiederholen</v-btn>
-                            <v-btn v-if="currentDataset1.bactnr != null" color="red lighten-1" @click="deleteStep1()">löschen</v-btn>
+                            <v-btn color="red lighten-1" @click="deleteStep1(item)">löschen</v-btn>
                           </div>
                         </v-card-text>
                       </v-card>
@@ -320,7 +320,7 @@
                 <NgsFormular></NgsFormular>
               </v-dialog>
 
-            <v-btn v-if="currentDataset1.bactnr != null && sorted.title != 'Lauf Nummer'" color="red lighten-1" @click="deleteStep1()">löschen</v-btn>
+            <v-btn v-if="currentDataset1.bactnr != null && sorted.title != 'Lauf Nummer'" color="red lighten-1" @click="deleteStep1(currentDataset1)">löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
@@ -333,7 +333,7 @@
             <div class="text-xs-right" v-if="sorted.title != 'Lauf Nummer' && sorted.value != 'ngsproject'">
               <v-btn v-if="currentDataset1.bactnr != null" @click="editDataset(currentDataset1)">Bearbeiten</v-btn>
 
-            <v-btn v-if="currentDataset1.bactnr != null" color="red lighten-1" @click="deleteStep1()">löschen</v-btn>
+            <v-btn v-if="currentDataset1.bactnr != null" color="red lighten-1" @click="deleteStep1(currentDataset1)">löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
@@ -386,11 +386,11 @@
               <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
                 <NgsFormular></NgsFormular>
               </v-dialog>
-            <v-btn v-if="this.selected.length>0" color="red lighten-1" @click="deleteStep1()">Alle löschen</v-btn>
+            <v-btn v-if="this.selected.length>1" color="red lighten-1" @click="deleteGroupStep1()">Alle löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
               </v-dialog>
-              <v-btn v-if="this.selected.length>0" color="orange lighten-1" @click="repeatGroup(selected)">Alle Wiederholen</v-btn>
+              <v-btn v-if="this.selected.length>1" color="orange lighten-1" @click="repeatGroup()">Alle Wiederholen</v-btn>
               <v-dialog v-if="this.$store.state.repeatDialog==true" v-model="this.$store.state.repeatDialog" max-width="1000px">
                 <RepeatWindow></RepeatWindow>
               </v-dialog>   
@@ -670,7 +670,7 @@ import {bus} from '../main.js'
         this.$store.commit('PUSH_LOCKEDID', dataset.id)
         this.$store.dispatch('requestLock', this.lockedId)
           .then(response => {
-          this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
+          this.$store.commit('SET_SELECTEDISOLAT', dataset)
           bus.$emit('neutralNotification', true)
           this.$store.state.formDialog = true
         }, error => {
@@ -682,11 +682,11 @@ import {bus} from '../main.js'
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red
 
        //method that initializes the delete dataset process. locks the dataset with the id and then opens the deleteWindow component by changig the deleteDialog value.
-      deleteStep1(){
-        this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
-        this.$store.commit('PUSH_LOCKEDID', this.selectedIsolat.id)
+      deleteStep1(item){
+        this.$store.commit('PUSH_LOCKEDID', item.id)
         this.$store.dispatch('requestLock', this.lockedId)
           .then(response => {
+          this.$store.commit('SET_SELECTEDISOLAT', item)
           this.$store.state.deleteDialog = true
           bus.$emit('neutralNotification', true)
         }, error => {
@@ -695,11 +695,27 @@ import {bus} from '../main.js'
           this.$store.state.deleteDialog = false
         }) 
       },
+      deleteGroupStep1(){
+        for(var i=0; i<this.selected.length;i++){
+         this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
+        }
+        this.$store.commit('SET_SELECTEDISOLAT', this.selected)
+        this.$store.dispatch('requestLock', this.lockedId)
+          .then(response => {
+          bus.$emit('neutralNotification', true)
+          this.$store.state.deleteDialog = true
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          bus.$emit('negativeNotification', error)
+          this.$store.state.deleteDialog = false
+        })
+      },
+      //These are the methods for repeating a sequence process. you can either repeat a single dataset or repeat a group of selected datasets.
       repeatDataset(dataset){
         this.$store.commit('PUSH_LOCKEDID', dataset.id)
         this.$store.dispatch('requestLock', this.lockedId)
           .then(response => {
-          this.$store.commit('SET_SELECTEDISOLAT', this.currentDataset1)
+          this.$store.commit('SET_SELECTEDISOLAT', dataset)
           bus.$emit('neutralNotification', true)
           this.$store.state.repeatDialog = true
         }, error => {
@@ -760,7 +776,7 @@ import {bus} from '../main.js'
             if(this.lockedList.includes(patient[i].id)) return true  
           }
         }else{ 
-          singleDisplayLocked(patient)  
+          if(this.lockedList.includes(patient.id)) return true  
         }
       },
       //This Method parses the locks arraylist in $store and sets according to the locks a css class to the locked dataset. gets colored red

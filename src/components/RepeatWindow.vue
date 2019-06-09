@@ -8,7 +8,7 @@
               <div>
                <div class="headline">Datenset wiederholen</div>
                 <span v-if="this.isolat.processnr == 2" class="title">Soll folgendes Datenset tatsächlich neu extrahiert werden?</span>
-                <span v-if="this.isolat.processnr == 4" class="title">Soll folgendes Datenset tatsächlich neu sequenziert werden?</span>
+                <span v-if="this.isolat.processnr == 4" class="title">Sollen folgende Datensets tatsächlich neu sequenziert werden?</span>
               </div>
               </v-card-title>
 
@@ -150,6 +150,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import {mapState} from 'vuex'
 import {bus} from '../main.js'
 
@@ -157,14 +158,6 @@ import {bus} from '../main.js'
 export default {
       data:() =>({
       dataset:[],
-      menuBirthday:false,
-      menuIsoentry:false,
-      menuProcessingdate:false,
-      menuExtractiondate:false,
-      menuSampling:false,
-      menuLibrary:false,
-      menuSequencing:false,
-
       isolat: {
         bactnr: "",
         processnr: 4,

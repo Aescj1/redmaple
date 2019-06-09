@@ -136,14 +136,13 @@
             </v-container>
             <!--Buttons for that are being used to edit the data -->
             <div class="text-xs-right">
-            <v-btn v-if="currentDataset1.bactnr != null" @click="this.editDataset">Bearbeiten</v-btn>
-              <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
-                <NgsFormular></NgsFormular>
-              </v-dialog>
-
             <v-btn v-if="currentDataset1.bactnr != null" color="red lighten-1" @click="this.deleteStep1">löschen</v-btn>
               <v-dialog v-if="this.$store.state.deleteDialog==true" v-model="this.$store.state.deleteDialog" max-width="1000px">
                 <DeleteWindow></DeleteWindow>
+              </v-dialog>
+              <v-btn v-if="currentDataset1.bactnr != null" @click="this.editDataset">Bearbeiten</v-btn>
+              <v-dialog v-if="this.$store.state.formDialog==true" v-model="this.$store.state.formDialog" persistent max-width="1000px">
+                <NgsFormular></NgsFormular>
               </v-dialog>
               <v-dialog
                 v-if="this.dialog==true"
@@ -230,6 +229,7 @@
                 </v-item-group>
             </v-layout>
             <div class="text-xs-right">
+              <v-btn v-if="this.selected.length>1" color="red lighten-1" @click="deleteGroupStep1()">Alle löschen</v-btn>
               <v-btn
               color="primary"
               dark
@@ -506,6 +506,21 @@ import DeleteWindow from './DeleteWindow.vue'
               this.negativeNotification(error)
               this.$store.state.deleteDialog = false
         })   
+      },
+      deleteGroupStep1(){
+        for(var i=0; i<this.selected.length;i++){
+         this.$store.commit('PUSH_LOCKEDID', this.selected[i].id)
+        }
+        this.$store.commit('SET_SELECTEDISOLAT', this.selected)
+        this.$store.dispatch('requestLock', this.lockedId)
+          .then(response => {
+          this.neutralNotification()
+          this.$store.state.deleteDialog = true
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          this.negativeNotification(error)
+          this.$store.state.deleteDialog = false
+        })
       },
       //functio
       startExtraction(){
