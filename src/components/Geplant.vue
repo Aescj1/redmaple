@@ -28,7 +28,8 @@
               <p style="margin:15px"><b>bis</b></p>
               <v-text-field :value=this.activeIndex+1 type="number" style="max-width:80px" hide-details label="Ende" solo></v-text-field>
               <v-btn color="primary" @click="multiSelectIsolat">Auswählen</v-btn>
-          <v-btn style="margin-left:20px; margin-right:150px" color="primary" @click="resetSelected">Auswahl löschen</v-btn>
+          <v-btn style="margin-left:10px; margin-right:40px" color="primary" @click="resetSelected">Auswahl löschen</v-btn>
+          <v-btn color="primary" @click="createDataset">Datensatz erstellen</v-btn>
           </v-layout>
           <v-text-field
             hide-details
@@ -599,6 +600,13 @@ import DeleteWindow from './DeleteWindow.vue'
               this.negativeNotification(error)
               this.$store.state.formDialog = false
         })       
+      },
+      //Method that allows to create a new Dataset. locks the dataset and opens the ngsformular component
+      createDataset(){
+          var isolat = {}
+          this.$store.commit('SET_SELECTEDISOLAT', isolat)
+          this.$store.state.formDialog = true
+          this.neutralNotification()
       }
     }
   }

@@ -7,13 +7,20 @@
               <v-layout wrap>
                 <v-flex xs3 md3 > 
                 <v-card row wrap flat color="green lighten-4">
-                <v-text-field v-model="isolat.bactnr" label="Bact Nummer" ></v-text-field>
-                <v-text-field v-model="isolat.repetition" label="Wiederholung"></v-text-field>
+                <v-text-field v-model="isolat.bactnr" type="string" label="Bact Nummer" :rules="required" required></v-text-field>
+                <v-text-field v-model="isolat.repetition" label="Wiederholung" :rules="required" required></v-text-field>
                 <v-text-field v-model="isolat.altid" label="alternative ID"></v-text-field>
-                <v-text-field v-model="isolat.priority" label="Priority"></v-text-field>
-                <v-text-field v-model="isolat.pathogen" label="Pathogen (g)"></v-text-field>
-                <v-text-field v-model="isolat.lastname" label="Nachname"></v-text-field>
-                <v-text-field v-model="isolat.firstname" label="Vorname"></v-text-field>
+                <v-text-field v-model="isolat.priority" type="char" label="Priority" :rules="required" required></v-text-field>
+                <v-combobox
+                  v-model="isolat.pathogen"
+                  :items="pathogenList"
+                  :label="'Pathogen'"
+                  persistent-hint
+                  :rules="required"
+                   required
+                ></v-combobox>
+                <v-text-field v-model="isolat.lastname" type="string" label="Nachname" :rules="required" required></v-text-field>
+                <v-text-field v-model="isolat.firstname" type="string" label="Vorname" :rules="required" required></v-text-field>
                 <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Geburtsdatum)  -->
                 <v-menu
                   lazy
@@ -50,7 +57,7 @@
               </v-flex>
               <v-flex xs3 md3> 
                 <v-card row wrap flat color="green lighten-3">
-                <v-text-field v-model="isolat.sender" label="Einsender"></v-text-field>
+                <v-text-field v-model="isolat.sender" label="Einsender" type="string" :rules="required" required></v-text-field>
                 <v-text-field v-model="isolat.department" label="Station"></v-text-field>
                <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Bearbeitungsdatum)  -->
                 <v-menu 
@@ -68,8 +75,15 @@
                     <v-date-picker v-model="isolat.processingdate" no-title scrollable actions @input="Seqmenu =false" locale="de">
                   </v-date-picker>
                 </v-menu>
-                <v-text-field v-model="isolat.material" label="Material"></v-text-field>
-                <v-text-field v-model="isolat.ngsproject" label="NGS - Projekt"></v-text-field>
+                <v-combobox
+                  v-model="isolat.material"
+                  :items="material"
+                  :label="'Material'"
+                  persistent-hint
+                  :rules="required"
+                   required
+                ></v-combobox>
+                <v-text-field v-model="isolat.ngsproject" label="NGS - Projekt" type="string" :rules="required" required></v-text-field>
                 <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Datum DNA-extraktion)  -->
                 <v-menu 
                   lazy
@@ -162,7 +176,8 @@
             </v-container>
             <div class="text-xs-right">
               <v-btn flat @click="cancel()">Abbrechen</v-btn>
-              <v-btn color="primary" @click="submit()">Bestätigen</v-btn>
+              <v-btn v-if="!this.isolat.bactnr" color="primary" @click="create()">Erstellen</v-btn>
+              <v-btn v-else color="primary" @click="submit()">Bestätigen</v-btn>
             </div>
           </v-card-text>
         </v-card>
@@ -184,11 +199,17 @@ export default {
       menuSampling:false,
       menuLibrary:false,
       menuSequencing:false,
-
+      pathogenList: [],
+      material:["Abzess","Biopsie","Dialysat","Implantat","Gehörgangabstrich","Knochen","Punktat",
+      "Hornhaut (Cornea-Set)","Konjunktivalabstrich","Liquor","Muttermilch","Spendermilch","Pleurapunktat","Wundabstrich, oberfl.",
+      "Wundabstrich, tief","Anderes","BAL","Bronchialsekret","Bürste","Munde/Zungenabstrich","Nasenabstrich",
+       "Nasen/Rachen gepoolt","Nasopharynxabstrich (PCR)","Blut","Blutprodukt","Rachen/Tonsillenabstrich","Trachealsekret","Blasenpunktion",
+        "Dauerkatheter","Einmalkatheter","Mittelstrahl","Urinsäckchen (Säuglinge)","Cervixabstrich","Penisabstrich","Sperma",
+        "Urethralabstrich","Vaginalabstrich","Vulvaabstrich","Plazenta","Stuhl","Rektalabstrich"],
       isolat: {
         bactnr: "",
-        processnr: 4,
-        received: true,
+        processnr: 1,
+        received: false,
         firstname: "",
         lastname: "",
         birthdate: "",
@@ -220,13 +241,20 @@ export default {
         modality:"",
         id:""
       },
+      required:[
+        value => !!value || 'Datenwert ist erforderlich'
+      ]
     }),
     computed:{
       ...mapState(['selectedIsolat']),
       ...mapState(['lockedId']),
+      ...mapState(['pathogen']),
     
     },
     created(){
+      for(var i=0; i<this.pathogen.length; i++){
+        this.pathogenList.push(this.pathogen[i].Abbreviation)
+      }
       this.isolat = JSON.parse(JSON.stringify(this.selectedIsolat)) //this method just places it as a json..
      // this.isolat = this.selectedIsolat
       if(this.isolat.birthdate)this.isolat.birthdate = this.dateFormatter(new Date(this.isolat.birthdate))
@@ -268,6 +296,20 @@ export default {
             console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
             bus.$emit('negativeNotification', error)
           })
+        },
+        //Method that submits the changes made to the isolat, submits it to the database and unlocks the isolatdataset again.
+      create(){
+        console.log(this.isolat)
+        if(this.isolat.bactnr && this.isolat.repetition && this.isolat.priority && this.isolat.pathogen && this.isolat.firstname && this.isolat.lastname && this.isolat.sender &&this.isolat.material &&this.isolat.ngsproject ){
+          this.$store.dispatch('putNgs', this.isolat)
+            .then(response => {
+              bus.$emit('positiveNotification', true)
+                this.$store.state.formDialog = false
+              }, error => {
+                console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+                bus.$emit('negativeNotification', error)
+            })
+          }
         },
         //Method that closes the Popup Form to edit the current Isolat and unlocks it again.
         cancel(){
