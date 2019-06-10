@@ -133,14 +133,32 @@ import store from './store/store.js'
       })
     },
     importDataset(){
+      console.log(this.ngsList)
       for(var i=0; i<this.ngsList.length;i++){
         if(this.ngsList[i].bactnr != null){
-        if(this.ngsList[i].birthdate)this.ngsList[i].birthdate = this.dateFormat(this.ngsList[i].birthdate)
-       if(this.ngsList[i].entrydate)this.ngsList[i].entrydate = this.dateFormat(this.ngsList[i].entrydate)
-       if(this.ngsList[i].entrydate)this.ngsList[i].isoentrydate = this.dateFormat(this.ngsList[i].isoentrydate)
-       if(this.ngsList[i].entrydate)this.ngsList[i].samplingdate = this.dateFormat(this.ngsList[i].samplingdate)
+        if(this.ngsList[i].birthdate != null){
+          this.ngsList[i].birthdate = this.dateFormat(this.ngsList[i].birthdate)
+        }else{delete this.ngsList[i].birthdate}
+       if(this.ngsList[i].entrydate != null){
+         this.ngsList[i].entrydate = this.dateFormat(this.ngsList[i].entrydate)
+       }else{delete this.ngsList[i].entrydate}
+       if(this.ngsList[i].isoentrydate != null){
+         this.ngsList[i].isoentrydate = this.dateFormat(this.ngsList[i].isoentrydate)
+       }else{
+         delete this.ngsList[i].isoentrydate
+         this.ngsList[i].received = false
+         }
+       if(this.ngsList[i].entrydate != null){
+         this.ngsList[i].samplingdate = this.dateFormat(this.ngsList[i].samplingdate)
+       }else{delete this.ngsList[i].samplingdate}
         this.ngsList[i].processnr = 1
         this.$store.dispatch('putNgs', this.ngsList[i])
+        .then(response => {
+            this.positiveNotification()
+        }, error => {
+          console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+          this.negativeNotification(error)
+          })
         }
         }
         this.ngsList = []

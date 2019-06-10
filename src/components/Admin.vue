@@ -42,7 +42,7 @@
               </v-data-table>
             </v-flex>
             <v-flex xs12 md12>
-             <v-btn color="orange" class="knopf headline" @click="testUnlockAll()">Alle Datensätze entsperren</v-btn>
+             <v-btn color="orange" class="knopf subheading" @click="testUnlockAll()">Alle Datensätze entsperren</v-btn>
             </v-flex>
         </v-layout>    
     </v-container>
@@ -50,10 +50,12 @@
 <script>
 /* eslint-disable */
 import {mapState} from 'vuex'
+import Axios from 'axios';
 
   export default {
     data: () => ({
       counter:0,
+      csvUrl: './assets/template.csv',
       show1:false,
       credentials: {
         username: '',
@@ -147,7 +149,7 @@ display:inline-block;
 }
 .knopf{
   margin-top: 30px;
-  height:200%;
-  width:30%
+  height:100%;
+  width:2 0%
 }
 </style>
