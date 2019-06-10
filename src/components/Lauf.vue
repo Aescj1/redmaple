@@ -537,7 +537,7 @@ import {bus} from '../main.js'
         for(var i=0; i<this.selected.length;i++){
           this.selected[i].processnr = 4
           this.selected[i].sequencingvisum = this.currentUser
-          this.selected[i].dataqualityvisum="User"
+          this.selected[i].dataqualityvisum= this.currentUser
           this.$store.dispatch('putNgs', this.selected[i])
           .then(response => {
               bus.$emit('positiveNotification', true)

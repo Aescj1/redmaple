@@ -87,7 +87,7 @@
             </v-snackbar>
     </v-content> 
     <v-footer app fixed>
-      <span>&copy; 2018 - Universitätsspital Basel NGS Webportal </span>
+      <span>&copy; 2019 - Berner Fachhochschule Medizininformatik </span>
     </v-footer>
  </v-app>
 </template>

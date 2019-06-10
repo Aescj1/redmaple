@@ -3,12 +3,12 @@
   <v-card >
       <v-toolbar flat class="transparent, user_status">
         <v-list class="pa-0">
-          <v-list-tile avatar >
-            <v-list-tile-avatar >
-              <img src="../assets/User.jpg" class="user-image"  >
+          <v-list-tile avatar>
+            <v-list-tile-avatar>
+              <img src="../assets/User.jpg" class="user-image">
             </v-list-tile-avatar>
             <v-list-tile-content class="mt-5">
-              <v-list-tile-title class="text-md-center"><b>Admin User</b></v-list-tile-title>
+              <v-list-tile-title class="text-md-center" ><b>Benutzer: {{capitalize}}</b></v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -69,7 +69,7 @@
             </v-list-tile>
           </v-list-group>
 
-          <v-list-tile @click="userManagement">
+          <v-list-tile @click="userManagement" v-if="this.currentUser =='admin'">
           <v-list-tile-action>
             <v-icon>group</v-icon>
           </v-list-tile-action>
@@ -93,6 +93,7 @@
 
 <script>
 import {bus} from '../main.js'
+import {mapState} from 'vuex'
 
   export default {
 
@@ -132,6 +133,12 @@ import {bus} from '../main.js'
       dark:true,
       }
     ),
+    computed:{
+      ...mapState(['currentUser']),
+      capitalize(s){
+        return this.currentUser && this.currentUser[0].toUpperCase() + this.currentUser.slice(1);
+      },
+    },
     methods:{
       userManagement(){
         this.$router.push('/admin')

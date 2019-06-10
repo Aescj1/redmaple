@@ -98,6 +98,7 @@ import { async } from 'q';
             //console.log("The accessToken is: " + this.$store.state.accessToken)
             //this.$router.push('/workflow')
           //})
+          this.credentials.username = this.credentials.username.toLowerCase()
           this.$store.dispatch('login', this.credentials)
             .then(() => {
               //this.$store.dispatch('loadNgs')
