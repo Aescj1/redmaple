@@ -1,16 +1,25 @@
 <template>
   <v-layout row justify-center>
     <v-dialog v-model="this.$store.state.formDialog" persistent max-width="1000px">
-        <v-card>
+        <v-card color="grey lighten-3">
           <v-card-text>
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs3 md3 > 
-                <v-card row wrap flat color="green lighten-4">
+                <v-card row wrap flat color="light-blue lighten-4">
                 <v-text-field v-model="isolat.bactnr" type="string" label="Bact Nummer" :rules="required" required></v-text-field>
                 <v-text-field v-model="isolat.repetition" label="Wiederholung" :rules="required" required></v-text-field>
-                <v-text-field v-model="isolat.altid" label="alternative ID"></v-text-field>
-                <v-text-field v-model="isolat.priority" type="char" label="Priority" :rules="required" required></v-text-field>
+                <v-text-field v-model="isolat.altid" label="Alternative ID"></v-text-field>
+                <v-combobox
+                  v-model="isolat.priority"
+                  :items="priorityList"
+                  :mask="priorityMask"
+                  :label="'Priorität'"
+                  persistent-hint
+                  :rules="required"
+                  required
+                  max-length:1
+                ></v-combobox>
                 <v-combobox
                   v-model="isolat.pathogen"
                   :items="pathogenList"
@@ -56,7 +65,7 @@
                 </v-card>
               </v-flex>
               <v-flex xs3 md3> 
-                <v-card row wrap flat color="green lighten-3">
+                <v-card row wrap flat color="light-blue lighten-4">
                 <v-text-field v-model="isolat.sender" label="Einsender" type="string" :rules="required" required></v-text-field>
                 <v-text-field v-model="isolat.department" label="Station"></v-text-field>
                <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Bearbeitungsdatum)  -->
@@ -84,6 +93,24 @@
                    required
                 ></v-combobox>
                 <v-text-field v-model="isolat.ngsproject" label="NGS - Projekt" type="string" :rules="required" required></v-text-field>
+                <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Abnahme)  -->
+                <v-menu 
+                  lazy
+                  :close-on-content-click="false"
+                  v-model="menuSampling"
+                  transition="scale-transition"
+                  offset-y
+                  full-width
+                  :nudge-right="40"
+                  max-width="290px"
+                  min-width="290px"
+                  >
+                    <v-text-field slot="activator" label="Abnahme" v-model="isolat.samplingdate" readonly></v-text-field>
+                    <v-date-picker v-model="isolat.samplingdate" no-title scrollable actions @input="Seqmenu =false" locale="de">
+                  </v-date-picker>
+                </v-menu>
+                </v-card>
+                <v-card row wrap flat color="cyan lighten-3">
                 <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Datum DNA-extraktion)  -->
                 <v-menu 
                   lazy
@@ -102,29 +129,12 @@
                 </v-menu>
                 <v-text-field v-if="isolat.processnr>=2" v-model="isolat.concentration" label="DNA Konz. (ng/ul)"></v-text-field>
                 <v-text-field v-if="isolat.processnr>=2" v-model="isolat.extractionvisum" label="Visum DNA"></v-text-field>
-                <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Abnahme)  -->
-                <v-menu 
-                  lazy
-                  :close-on-content-click="false"
-                  v-model="menuSampling"
-                  transition="scale-transition"
-                  offset-y
-                  full-width
-                  :nudge-right="40"
-                  max-width="290px"
-                  min-width="290px"
-                  >
-                    <v-text-field slot="activator" label="Abnahme" v-model="isolat.samplingdate" readonly></v-text-field>
-                    <v-date-picker v-model="isolat.samplingdate" no-title scrollable actions @input="Seqmenu =false" locale="de">
-                  </v-date-picker>
-                </v-menu>
                 </v-card>         
               </v-flex>
               <v-flex xs3 md3> 
-                <v-card row wrap flat color="green lighten-2">
-                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.runtype" label="Runtype"></v-text-field>
-                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.runnr" label="NGS Run Nummer"></v-text-field>
-                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.isorunnr" label="Isolat Run Nummer"></v-text-field>
+                <v-card row wrap flat color="teal lighten-2">
+                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.runnr" label="NGS Lauf Nummer"></v-text-field>
+                <v-text-field v-if="isolat.processnr>=3" v-model="isolat.isorunnr" label="Isolat Lauf Nummer"></v-text-field>
                 <v-text-field v-if="isolat.processnr>=3" v-model="isolat.librarytype" label="Library Typ"></v-text-field>
                 <!--This is the datepicker for the Date textfield. the menu opens the datepicker which then contains the textfield (Datum Library)  -->
                 <v-menu 
@@ -160,16 +170,15 @@
                   </v-date-picker>
                 </v-menu>
                 <v-text-field v-if="isolat.processnr>=3" v-model="isolat.modality" label="NGS-Gerät"></v-text-field>
-                <v-text-field v-model="isolat.comment" label="Kommentar"></v-text-field>  
                 </v-card>
               </v-flex>
               <v-flex xs3 md3> 
-                <v-card row wrap flat color="green lighten-1">
+                <v-card row wrap flat color="green lighten-2">
                 <v-text-field v-if="isolat.processnr>=4" v-model="isolat.sequencingvisum" label="Sequenzierungs Visum"></v-text-field>
                 <v-text-field v-if="isolat.processnr>=4" v-model="isolat.dataqualityvisum" label="Datenqualität Visum"></v-text-field>
                 <v-text-field v-model="isolat.publicid" label="Public ID"></v-text-field>
                 <v-text-field v-model="isolat.billing" label="Abrechnung"></v-text-field>
-
+                <v-text-field v-model="isolat.comment" label="Kommentar"></v-text-field>  
                 </v-card>
               </v-flex>
               </v-layout>
@@ -200,6 +209,8 @@ export default {
       menuLibrary:false,
       menuSequencing:false,
       pathogenList: [],
+      priorityMask: 'A',
+      priorityList:["A","B","C","D"],
       material:["Abzess","Biopsie","Dialysat","Implantat","Gehörgangabstrich","Knochen","Punktat",
       "Hornhaut (Cornea-Set)","Konjunktivalabstrich","Liquor","Muttermilch","Spendermilch","Pleurapunktat","Wundabstrich, oberfl.",
       "Wundabstrich, tief","Anderes","BAL","Bronchialsekret","Bürste","Munde/Zungenabstrich","Nasenabstrich",
