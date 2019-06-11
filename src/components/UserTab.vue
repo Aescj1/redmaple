@@ -69,7 +69,7 @@
             </v-list-tile>
           </v-list-group>
 
-          <v-list-tile @click="userManagement" v-if="this.currentUser =='admin'">
+          <v-list-tile @click="userManagement">
           <v-list-tile-action>
             <v-icon>group</v-icon>
           </v-list-tile-action>
@@ -92,6 +92,7 @@
 </template>
 
 <script>
+ /* eslint-disable */
 import {bus} from '../main.js'
 import {mapState} from 'vuex'
 
@@ -135,7 +136,7 @@ import {mapState} from 'vuex'
     ),
     computed:{
       ...mapState(['currentUser']),
-      capitalize(s){
+      capitalize(){
         return this.currentUser && this.currentUser[0].toUpperCase() + this.currentUser.slice(1);
       },
     },

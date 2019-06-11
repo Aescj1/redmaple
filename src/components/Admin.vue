@@ -20,7 +20,7 @@
                       required
                       :error-messages='passwordCheckError()'
                     ></v-text-field>
-                    <v-select class="textfield" v-model="selectedRole" :items="role" label="role" required></v-select>
+                    <v-select class="textfield" v-model="credentials.type" :items="role" label="role" required></v-select>
                     </div>
                     <div class="text-xs-right">
                     <v-btn color="primary" @click="submit">Account anlegen</v-btn>
@@ -50,7 +50,8 @@
 <script>
 /* eslint-disable */
 import {mapState} from 'vuex'
-import Axios from 'axios';
+import Axios from 'axios'
+import {bus} from '../main.js'
 
   export default {
     data: () => ({
@@ -61,6 +62,7 @@ import Axios from 'axios';
         username: '',
         email: '',
         password:'',
+        type: null
       },
       passwordCheck:'',
       selectedRole:'',
@@ -120,16 +122,21 @@ import Axios from 'axios';
       submit () {
         if(this.passwordCheck === this.credentials.password){
         this.$store.dispatch('createNewUser', this.credentials)
-        .catch((error) => {
-        console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
-        })
+        .then(response => {
+            bus.$emit('positiveNotification', true)
+            this.clear()
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            bus.$emit('negativeNotification', error)
+          })
         }
       },
       clear () {
         this.passwordCheck=''
         this.credentials.password =''
-        this.credentials.name = ''
+        this.credentials.username = ''
         this.credentials.email = ''
+        this.credentials.type = null
         this.select = null
       },
       testUnlockAll(){

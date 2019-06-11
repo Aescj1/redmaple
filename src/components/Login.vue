@@ -19,7 +19,7 @@
                         <br>
                         <v-text-field class="textFields"
                         v-model="credentials.username"
-                        
+                        @keyup.enter ="submit"
                         label="Username"
                         light
                         required
@@ -65,7 +65,8 @@
 </template>
 <script>
 /* eslint-disable */
-import { async } from 'q';
+import { async } from 'q'
+import {bus} from '../main.js'
 
 
   export default {
@@ -89,24 +90,13 @@ import { async } from 'q';
     methods: {
       submit () {
         if ((this.$refs.form.validate())) {
-          // Native form submission is not yet supported
-          //this.$router.push('/workflow')
-          //this.$socket.emit('unlock', 13)
-          //this.$store.dispatch('loginWorkaround', {self: this})
-          //.then(() => {
-            //this.$store.dispatch('loadNgs')
-            //console.log("The accessToken is: " + this.$store.state.accessToken)
-            //this.$router.push('/workflow')
-          //})
-          this.credentials.username = this.credentials.username.toLowerCase()
           this.$store.dispatch('login', this.credentials)
-            .then(() => {
-              //this.$store.dispatch('loadNgs')
-              console.log("The accessToken is: " + this.$store.state.accessToken)
-              this.$router.push('/workflow')
-            }).catch((err) => {
-              console.log("Ups: " + err.statusCode + ": " + err.statusMessage)
-            })
+          .then(response => {
+            this.$router.push('/workflow')
+          }, error => {
+            console.log("Ups: " + error.statusCode + ": " + error.statusMessage)
+            bus.$emit('negativeNotification', error)
+          })
         }
       },
 
