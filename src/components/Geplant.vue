@@ -559,7 +559,6 @@ import DeleteWindow from './DeleteWindow.vue'
         var year = myDate.getFullYear();
         var formattedDate = year + '-' + month + '-' + day;
         for(var i=0; i<this.selected.length;i++){
-          this.selected[i].concentration = ''
           this.selected[i].extractiondate = formattedDate
           this.selected[i].extractionvisum = this.currentUser
           this.selected[i].processnr = 2
